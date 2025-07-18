@@ -1,17 +1,33 @@
-import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
-import { ActivityIndicator, View } from "react-native";
-import { AuthProvider } from "../context/AuthContext";
+import { Inter_400Regular, Inter_700Bold, useFonts } from '@expo-google-fonts/inter';
+import { Stack } from 'expo-router';
+import { ActivityIndicator, View } from 'react-native';
+import { AuthProvider, useAuth } from '../context/AuthContext';
+import LoginScreen from './LoginScreen';
+
+function MainLayout() {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <LoginScreen />;
+  }
+
+  return (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="+not-found" />
+    </Stack>
+  );
+}
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    Inter: require("@expo-google-fonts/inter/Inter-Regular.ttf"),
-    InterBold: require("@expo-google-fonts/inter/Inter-Bold.ttf"),
+    Inter_400Regular,
+    Inter_700Bold,
   });
 
   if (!fontsLoaded) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" />
       </View>
     );
@@ -19,7 +35,7 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <Stack screenOptions={{ headerShown: false }} />
+      <MainLayout />
     </AuthProvider>
   );
 }

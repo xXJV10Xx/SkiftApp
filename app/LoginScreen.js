@@ -1,54 +1,32 @@
-import { useContext, useState } from 'react';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import { AuthContext } from './AuthProvider';
+import * as Google from 'expo-auth-session/providers/google';
+import React, { useEffect } from 'react';
+import { Button, Text, View } from 'react-native';
+import { useAuth } from '../context/AuthContext';
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { login } = useContext(AuthContext);
-  const [error, setError] = useState(null);
+  const { setUser } = useAuth();
 
-  const handleLogin = async () => {
-    try {
-      await login(email, password);
-    } catch (e) {
-      setError('Fel vid inloggning');
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId: '189333127323-qgrjg25e28fe8cgp46jmiesaablnfa1n.apps.googleusercontent.com',
+  });
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { authentication } = response;
+      // Här kan du hämta användarinfo från Google om du vill
+      setUser({ email: 'googleuser@example.com', token: authentication.accessToken });
     }
-  };
+  }, [response]);
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-        autoCapitalize="none"
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Logga in</Text>
+      <Button
+        title="Logga in med Google"
+        disabled={!request}
+        onPress={() => promptAsync()}
       />
-      <TextInput
-        placeholder="Lösenord"
-        value={password}
-        onChangeText={setPassword}
-        style={styles.input}
-        secureTextEntry
-      />
-      <Button title="Logga in" onPress={handleLogin} />
-      {error && <Text style={styles.error}>{error}</Text>}
+      {/* Lägg till fler inloggningsalternativ här */}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { padding: 20 },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 10,
-  },
-  error: {
-    color: 'red',
-    marginTop: 10,
-  },
-});
