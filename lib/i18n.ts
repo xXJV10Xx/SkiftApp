@@ -24,7 +24,7 @@ export const translations = {
     send: 'Skicka',
     online: 'Online',
     offline: 'Offline',
-    teamMembers: 'Lagmedlemmar',
+    teamMembersList: 'Lagmedlemmar',
     noMessages: 'Inga meddelanden än',
     
     // Profile
@@ -92,7 +92,7 @@ export const translations = {
     send: 'Send',
     online: 'Online',
     offline: 'Offline',
-    teamMembers: 'Team members',
+    teamMembersList: 'Team members',
     noMessages: 'No messages yet',
     
     // Profile
