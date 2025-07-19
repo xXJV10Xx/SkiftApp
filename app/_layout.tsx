@@ -4,6 +4,8 @@ import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { ChatProvider } from '../context/ChatContext';
+import { LanguageProvider } from '../context/LanguageContext';
+import { ThemeProvider } from '../context/ThemeContext';
 import { testSupabaseConnection } from '../lib/test-connection';
 
 function MainLayout() {
@@ -54,10 +56,14 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <ChatProvider>
-        <MainLayout />
-      </ChatProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <ChatProvider>
+            <MainLayout />
+          </ChatProvider>
+        </AuthProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
