@@ -1,135 +1,191 @@
-# Skiftappen – App Specification
+# 🚀 Skiftappen
 
-## Overview
-Skiftappen is a modern, secure, and user-friendly app for managing shift schedules and work passes for employees at Sweden's 20 largest companies (e.g., SSAB, Volvo, Scania). The app supports user registration, authentication (Google, Apple ID, email), company and shift selection, group chat, personal schedule management, and payment integration. It is designed for both employees and managers, with a guest mode for viewing schedules.
+En modern React Native app med Supabase autentisering och real-time chatfunktion för lag och företag.
+
+## ✨ Funktioner
+
+- 🔐 **Supabase Autentisering** - Email/lösenord och Google OAuth
+- 💬 **Real-time Chat** - Lagbaserad chatt med medlemmar
+- 👥 **Laghantering** - Företag, lag och medlemshantering
+- 📱 **Online Status** - Se vem som är online i realtid
+- 🎨 **Modern UI** - Vackert svenskt gränssnitt
+- 🔒 **Säkerhet** - Row Level Security (RLS) i databasen
+
+## 🛠️ Teknisk Stack
+
+- **Frontend:** React Native + Expo
+- **Backend:** Supabase (PostgreSQL + Real-time)
+- **Autentisering:** Supabase Auth
+- **Styling:** React Native StyleSheet
+- **Navigation:** Expo Router
+- **Icons:** Expo Vector Icons
+
+## 📋 Förutsättningar
+
+- Node.js (version 16 eller högre)
+- npm eller yarn
+- Expo CLI
+- Supabase konto
+
+## 🚀 Installation
+
+### 1. Klona projektet
+```bash
+git clone https://github.com/ditt-användarnamn/skiftappen.git
+cd skiftappen
+```
+
+### 2. Installera dependencies
+```bash
+npm install
+```
+
+### 3. Konfigurera miljövariabler
+Skapa en `.env` fil i projektets rot:
+```env
+EXPO_PUBLIC_SUPABASE_URL=din_supabase_url
+EXPO_PUBLIC_SUPABASE_ANON_KEY=din_supabase_anon_key
+```
+
+### 4. Sätt upp databasen
+Följ instruktionerna i `DATABASE_SETUP.md` för att skapa tabeller och policies.
+
+### 5. Starta appen
+```bash
+npm start
+```
+
+## 📱 App-struktur
+
+```
+skiftappen/
+├── app/                    # Expo Router sidor
+│   ├── (tabs)/           # Tab-navigation
+│   │   ├── index.tsx     # Hem-sida
+│   │   ├── chat.tsx      # Chat-sida
+│   │   ├── explore.tsx   # Utforska-sida
+│   │   └── profile.tsx   # Profil-sida
+│   ├── auth/             # Autentiseringssidor
+│   │   ├── login.tsx     # Login/signup
+│   │   └── forgot-password.tsx
+│   └── _layout.tsx       # Huvudlayout
+├── context/              # React Context
+│   ├── AuthContext.tsx   # Autentisering
+│   └── ChatContext.tsx   # Chat-funktionalitet
+├── lib/                  # Utilities
+│   ├── supabase.ts       # Supabase klient
+│   └── test-connection.ts
+├── components/           # Återanvändbara komponenter
+└── assets/              # Bilder och resurser
+```
+
+## 🗄️ Databasstruktur
+
+### Tabeller:
+- **companies** - Företag
+- **teams** - Lag med färger
+- **team_members** - Medlemskap
+- **chat_messages** - Meddelanden
+- **online_status** - Online-status
+- **profiles** - Användarprofiler
+
+### Säkerhet:
+- Row Level Security (RLS) aktiverat
+- Användare ser endast relevant data
+- Lagbaserad åtkomstkontroll
+
+## 🧪 Testning
+
+### 1. Skapa testdata
+```sql
+-- Skapa företag och lag
+INSERT INTO companies (name, description) VALUES
+('TechCorp AB', 'Ett innovativt tech-företag');
+
+INSERT INTO teams (name, color, company_id, description) VALUES
+('Utvecklingsteam', '#007AFF', (SELECT id FROM companies WHERE name = 'TechCorp AB'), 'Huvudutvecklingsteam');
+```
+
+### 2. Lägg till användare i lag
+```sql
+INSERT INTO team_members (user_id, team_id, role) VALUES
+('ditt-user-id', (SELECT id FROM teams WHERE name = 'Utvecklingsteam'), 'member');
+```
+
+### 3. Testa chatfunktionen
+- Gå till Chat-fliken i appen
+- Välj ett lag
+- Skicka testmeddelanden
+
+## 🔧 Konfiguration
+
+### Supabase Setup
+1. Skapa ett Supabase projekt
+2. Kopiera URL och anon key
+3. Aktivera Google OAuth (valfritt)
+4. Skapa databasen med SQL-kommandon
+
+### Google OAuth (valfritt)
+Följ instruktionerna i `GOOGLE_OAUTH_SETUP.md`
+
+## 📦 Deployment
+
+### Expo Build
+```bash
+# För Android
+expo build:android
+
+# För iOS
+expo build:ios
+```
+
+### EAS Build (rekommenderat)
+```bash
+# Installera EAS CLI
+npm install -g @expo/eas-cli
+
+# Logga in
+eas login
+
+# Konfigurera build
+eas build:configure
+
+# Bygg för Android
+eas build --platform android
+
+# Bygg för iOS
+eas build --platform ios
+```
+
+## 🤝 Bidrag
+
+1. Forka projektet
+2. Skapa en feature branch (`git checkout -b feature/AmazingFeature`)
+3. Committa dina ändringar (`git commit -m 'Add some AmazingFeature'`)
+4. Pusha till branchen (`git push origin feature/AmazingFeature`)
+5. Öppna en Pull Request
+
+## 📄 Licens
+
+Detta projekt är licensierat under MIT License - se [LICENSE](LICENSE) filen för detaljer.
+
+## 📞 Support
+
+Om du har frågor eller stöter på problem:
+
+1. Kontrollera [Issues](https://github.com/ditt-användarnamn/skiftappen/issues)
+2. Skapa en ny issue om problemet inte redan finns
+3. Kontakta utvecklaren för direkta frågor
+
+## 🎯 Roadmap
+
+- [ ] Push-notifikationer
+- [ ] Filuppladdning i chat
+- [ ] Kalenderintegration
+- [ ] Skiftschema
+- [ ] Rapporter och analytics
+- [ ] Multi-språk support
 
 ---
 
-## Features & Flow
-
-### 1. **Authentication & Onboarding**
-- **Login Options:**
-  - **Apple ID** (implemented/planned)
-  - **Google** (implemented/planned)
-  - Register with email (create new user)
-- **Guest Mode:**
-  - Can log in and view company schedules, but cannot join chats or edit personal schedule.
-- **Onboarding Steps (after login/registration):**
-  1. **Profile Setup:**
-     - Enter name
-     - (Optional) Choose/upload profile picture
-     - Click "Next"
-  2. **Company & Shift Selection:**
-     - Select company (search or browse from top 20 list)
-     - Select department/shift (if available)
-     - Click "Next"
-  3. **Schedule Overview:**
-     - See current month's calendar with assigned shifts
-     - Above calendar: three round info boxes showing:
-       - Total hours worked
-       - Next shift's day and time
-       - Countdown to next shift
-     - Can navigate 2 years forward/back in calendar
-
----
-
-### 2. **Main App Navigation**
-- **Sidebar (left menu):**
-  - Top: Profile (round image)
-    - Click to go to settings (change name, company, shift)
-  - Below: "Välj företag" (Choose company)
-    - Search field for company
-    - Dropdown/popup with all companies (filter as you type)
-    - Select company to see available shifts/departments
-    - Select shift to view that schedule
-  - "Personligt schema" (Personal schedule)
-    - Edit your own shifts
-    - Add absences (sick, leave, VAB, etc.) – only visible to you
-
----
-
-### 3. **Schedule & Calendar**
-- **Calendar View:**
-  - Shows current month by default
-  - Days with assigned shifts are highlighted
-  - Can view 2 years forward/back
-  - Above calendar: info boxes (hours worked, next shift, countdown)
-  - Clicking a day shows shift details
-  - If a shift is swapped, it changes color and shows who swapped
-
----
-
-### 4. **Chat & Shift Swapping**
-- **Group Chat:**
-  - Each company/shift group has its own chat
-  - Members can chat and propose shift swaps
-  - When a shift is swapped, all group members see the update (color change on calendar)
-- **Personal Schedule:**
-  - Users can edit their own schedule (add sick days, leave, etc.)
-  - These changes are private (not visible to others)
-
----
-
-### 5. **User Roles**
-- **Employee:**
-  - Standard access to schedule, chat, and personal schedule
-- **Manager (Chef):**
-  - Can manage department/shift, approve swaps, and moderate chat
-- **Guest:**
-  - Can view schedules but not join chats or edit schedules
-
----
-
-### 6. **AI Support**
-- In-app AI assistant for help with:
-  - Schedule questions
-  - Company/shift info
-  - App usage
-
----
-
-### 7. **Payment & Subscription**
-- **Free 14-day trial**
-- After trial: 29kr/month
-- Payment options:
-  - Apple Pay
-  - Google Pay
-  - Stripe
-- Subscription required for full access (chat, personal schedule, shift swap, etc.)
-
----
-
-## **Technical Notes**
-- **Authentication:**
-  - Uses Expo AuthSession for Google/Apple login (see [Expo AuthSession docs](https://docs.expo.dev/versions/latest/sdk/auth-session/)).
-  - Apple ID login requires Apple Developer setup and device testing (see [Expo Apple Authentication docs](https://docs.expo.dev/versions/latest/sdk/apple-authentication/)).
-  - Google login requires a Google Cloud OAuth Client ID (see [Expo Google Auth docs](https://docs.expo.dev/guides/authentication/#google)).
-  - Custom backend or Firebase for email login.
-- **Navigation:** Use Expo Router with file-based routing.
-- **State Management:** Context API for auth/user, possibly Redux or Zustand for schedule/chat.
-- **Calendar:** Use a calendar component (e.g., react-native-calendars).
-- **Chat:** Use a real-time backend (e.g., Firebase, Supabase, or custom Node.js/Socket.io).
-- **Payments:** Integrate Stripe, Apple Pay, Google Pay via Expo or webview.
-- **AI:** Integrate with OpenAI API or similar for in-app support.
-
----
-
-## **App Flow Summary**
-1. **User opens app → sees login/registration/guest options (Apple ID, Google, email)**
-2. **Onboarding:** Profile → Company/shift selection → Calendar overview
-3. **Main app:** Sidebar navigation, calendar, chat, personal schedule
-4. **User can swap shifts, chat, edit personal schedule, and manage profile**
-5. **AI support and payment/subscription integrated throughout**
-
----
-
-## **For Developers**
-- Follow this flow for all new features.
-- Use Context for authentication and user state.
-- Keep UI modern, clean, and mobile-friendly.
-- Ensure all sensitive actions are secure and require authentication.
-- Use modular components for sidebar, calendar, chat, etc.
-
----
-
-**Questions? See this README or ask the product owner for clarifications.**
+**Skapad med ❤️ för svenska företag och lag**
