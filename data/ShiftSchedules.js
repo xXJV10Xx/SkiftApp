@@ -388,7 +388,6 @@ export function getShiftColor(shiftCode, company, team) {
 
 // 📊 Exporterade funktioner för appen
 export {
-    COMPANIES,
     SHIFT_TYPES,
     START_DATE,
     calculateShiftForDate, calculateWorkedHours, formatDate, generateMonthSchedule, getNextShift, getShiftColor
