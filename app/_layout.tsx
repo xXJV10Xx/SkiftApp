@@ -4,17 +4,13 @@ import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { ChatProvider } from '../context/ChatContext';
+import { CompanyProvider } from '../context/CompanyContext';
 import { LanguageProvider } from '../context/LanguageContext';
+import { ShiftProvider } from '../context/ShiftContext';
 import { ThemeProvider } from '../context/ThemeContext';
-import { testSupabaseConnection } from '../lib/test-connection';
 
 function MainLayout() {
   const { user, loading } = useAuth();
-
-  useEffect(() => {
-    // Test Supabase connection on app start
-    testSupabaseConnection();
-  }, []);
 
   if (loading) {
     return (
@@ -34,10 +30,16 @@ function MainLayout() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="+not-found" />
-    </Stack>
+    <CompanyProvider>
+      <ShiftProvider>
+        <ChatProvider>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </ChatProvider>
+      </ShiftProvider>
+    </CompanyProvider>
   );
 }
 
@@ -59,9 +61,7 @@ export default function RootLayout() {
     <ThemeProvider>
       <LanguageProvider>
         <AuthProvider>
-          <ChatProvider>
-            <MainLayout />
-          </ChatProvider>
+          <MainLayout />
         </AuthProvider>
       </LanguageProvider>
     </ThemeProvider>

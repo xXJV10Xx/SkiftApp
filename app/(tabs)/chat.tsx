@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { MessageSquare, Plus, Send, Users } from 'lucide-react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import {
     Alert,
@@ -14,33 +14,29 @@ import {
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { useChat } from '../../context/ChatContext';
-
-interface Message {
-  id: string;
-  message: string;
-  created_at: string;
-  user?: {
-    full_name: string;
-    email: string;
-  };
-  user_id: string;
-}
+import { useCompany } from '../../context/CompanyContext';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function ChatScreen() {
+  const { colors } = useTheme();
   const { user } = useAuth();
+  const { selectedCompany, selectedTeam, selectedDepartment } = useCompany();
   const {
     messages,
-    teamMembers,
-    currentTeam,
-    teams,
+    chatRooms,
+    currentChatRoom,
+    chatMembers,
     sendMessage,
-    setCurrentTeam,
-    joinTeam,
-    leaveTeam,
+    joinChatRoom,
+    leaveChatRoom,
+    setCurrentChatRoom,
+    fetchChatRooms,
+    createChatRoom,
+    loading
   } = useChat();
   
   const [newMessage, setNewMessage] = useState('');
-  const [showTeamSelector, setShowTeamSelector] = useState(false);
+  const [showRoomSelector, setShowRoomSelector] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
@@ -53,30 +49,74 @@ export default function ChatScreen() {
     }
   }, [messages]);
 
-  const handleSendMessage = async () => {
-    if (!newMessage.trim()) return;
-    
-    await sendMessage(newMessage.trim());
-    setNewMessage('');
-  };
+  // Create default chat rooms when company/team is selected
+  useEffect(() => {
+    if (selectedCompany && selectedTeam && selectedDepartment && chatRooms.length === 0) {
+      createDefaultChatRooms();
+    }
+  }, [selectedCompany, selectedTeam, selectedDepartment]);
 
-  const handleJoinTeam = async (team: any) => {
+  const createDefaultChatRooms = async () => {
+    if (!selectedCompany || !selectedTeam || !selectedDepartment) return;
+
     try {
-      await joinTeam(team.id);
-      setCurrentTeam(team);
-      setShowTeamSelector(false);
-      Alert.alert('Framgång', `Du har gått med i laget ${team.name}`);
+      // Create team chat room
+      await createChatRoom({
+        company_id: selectedCompany.id,
+        team_id: selectedTeam,
+        name: `Lag ${selectedTeam} - ${selectedCompany.name}`,
+        description: `Chat för lag ${selectedTeam}`,
+        type: 'team',
+        department: selectedDepartment,
+        is_private: false,
+        auto_join_team: true
+      });
+
+      // Create department chat room
+      await createChatRoom({
+        company_id: selectedCompany.id,
+        name: `${selectedDepartment} - ${selectedCompany.name}`,
+        description: `Chat för avdelning ${selectedDepartment}`,
+        type: 'department',
+        department: selectedDepartment,
+        is_private: false,
+        auto_join_department: selectedDepartment
+      });
+
+      // Refresh chat rooms
+      await fetchChatRooms();
     } catch (error) {
-      Alert.alert('Fel', 'Kunde inte gå med i laget');
+      console.error('Error creating default chat rooms:', error);
     }
   };
 
-  const handleLeaveTeam = async () => {
-    if (!currentTeam) return;
+  const handleSendMessage = async () => {
+    if (!newMessage.trim()) return;
+    
+    try {
+      await sendMessage(newMessage.trim());
+      setNewMessage('');
+    } catch (error) {
+      Alert.alert('Fel', 'Kunde inte skicka meddelandet');
+    }
+  };
+
+  const handleJoinRoom = async (room: any) => {
+    try {
+      await joinChatRoom(room.id);
+      setCurrentChatRoom(room);
+      setShowRoomSelector(false);
+    } catch (error) {
+      Alert.alert('Fel', 'Kunde inte gå med i chatten');
+    }
+  };
+
+  const handleLeaveRoom = async () => {
+    if (!currentChatRoom) return;
     
     Alert.alert(
-      'Lämna lag',
-      `Är du säker på att du vill lämna ${currentTeam.name}?`,
+      'Lämna chat',
+      `Är du säker på att du vill lämna ${currentChatRoom.name}?`,
       [
         { text: 'Avbryt', style: 'cancel' },
         {
@@ -84,11 +124,10 @@ export default function ChatScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await leaveTeam(currentTeam.id);
-              setCurrentTeam(null);
-              Alert.alert('Framgång', 'Du har lämnat laget');
+              await leaveChatRoom(currentChatRoom.id);
+              Alert.alert('Framgång', 'Du har lämnat chatten');
             } catch (error) {
-              Alert.alert('Fel', 'Kunde inte lämna laget');
+              Alert.alert('Fel', 'Kunde inte lämna chatten');
             }
           },
         },
@@ -96,8 +135,8 @@ export default function ChatScreen() {
     );
   };
 
-  const renderMessage = ({ item }: { item: Message }) => {
-    const isOwnMessage = item.user_id === user?.id;
+  const renderMessage = ({ item }: { item: any }) => {
+    const isOwnMessage = item.sender_id === user?.id;
     const time = new Date(item.created_at).toLocaleTimeString('sv-SE', {
       hour: '2-digit',
       minute: '2-digit',
@@ -105,14 +144,25 @@ export default function ChatScreen() {
 
     return (
       <View style={[styles.messageContainer, isOwnMessage && styles.ownMessage]}>
-        <View style={[styles.messageBubble, isOwnMessage && styles.ownMessageBubble]}>
+        <View style={[
+          styles.messageBubble, 
+          isOwnMessage ? styles.ownMessageBubble : styles.otherMessageBubble
+        ]}>
           {!isOwnMessage && (
-            <Text style={styles.messageAuthor}>{item.user?.full_name || 'Anonym'}</Text>
+            <Text style={styles.messageAuthor}>
+              {item.sender?.first_name} {item.sender?.last_name}
+            </Text>
           )}
-          <Text style={[styles.messageText, isOwnMessage && styles.ownMessageText]}>
-            {item.message}
+          <Text style={[
+            styles.messageText, 
+            isOwnMessage ? styles.ownMessageText : styles.otherMessageText
+          ]}>
+            {item.content}
           </Text>
-          <Text style={[styles.messageTime, isOwnMessage && styles.ownMessageTime]}>
+          <Text style={[
+            styles.messageTime, 
+            isOwnMessage ? styles.ownMessageTime : styles.otherMessageTime
+          ]}>
             {time}
           </Text>
         </View>
@@ -120,91 +170,339 @@ export default function ChatScreen() {
     );
   };
 
-  const renderTeamMember = (member: any) => {
-    const isOnline = member.online_status?.is_online;
-    const lastSeen = member.online_status?.last_seen;
-    
-    return (
-      <View style={styles.memberItem}>
-        <View style={styles.memberInfo}>
-          <View style={[styles.onlineIndicator, isOnline && styles.online]} />
-          <View style={styles.memberDetails}>
-            <Text style={styles.memberName}>
-              {member.user?.full_name || 'Anonym'}
+  const renderChatMember = (member: any) => (
+    <View key={member.id} style={styles.memberItem}>
+      <View style={styles.memberInfo}>
+        <View style={styles.memberDetails}>
+          <Text style={styles.memberName}>
+            {member.employees?.first_name} {member.employees?.last_name}
+          </Text>
+          <Text style={styles.memberEmail}>{member.employees?.email}</Text>
+          {member.employees?.department && (
+            <Text style={styles.memberDepartment}>
+              {member.employees.department}
             </Text>
-            <Text style={styles.memberEmail}>{member.user?.email}</Text>
-            {!isOnline && lastSeen && (
-              <Text style={styles.lastSeen}>
-                Senast sedd: {new Date(lastSeen).toLocaleString('sv-SE')}
-              </Text>
-            )}
-          </View>
+          )}
         </View>
-        <Text style={styles.memberRole}>{member.role}</Text>
       </View>
-    );
-  };
+      <Text style={styles.memberRole}>{member.role}</Text>
+    </View>
+  );
 
-  if (!currentTeam) {
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 16,
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    headerLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+    },
+    roomInfo: {
+      flex: 1,
+    },
+    roomName: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: colors.text,
+    },
+    roomDescription: {
+      fontSize: 14,
+      color: colors.textSecondary,
+    },
+    headerRight: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    membersPanel: {
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+      maxHeight: 200,
+    },
+    membersTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+      padding: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    membersList: {
+      padding: 16,
+    },
+    memberItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 8,
+    },
+    memberInfo: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+    },
+    memberDetails: {
+      flex: 1,
+    },
+    memberName: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.text,
+    },
+    memberEmail: {
+      fontSize: 12,
+      color: colors.textSecondary,
+    },
+    memberDepartment: {
+      fontSize: 11,
+      color: colors.textSecondary,
+      fontStyle: 'italic',
+    },
+    memberRole: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      fontStyle: 'italic',
+    },
+    messagesList: {
+      flex: 1,
+    },
+    messagesContainer: {
+      padding: 16,
+    },
+    messageContainer: {
+      marginBottom: 12,
+    },
+    ownMessage: {
+      alignItems: 'flex-end',
+    },
+    messageBubble: {
+      padding: 12,
+      borderRadius: 16,
+      maxWidth: '80%',
+    },
+    ownMessageBubble: {
+      backgroundColor: colors.primary,
+    },
+    otherMessageBubble: {
+      backgroundColor: colors.card,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    messageAuthor: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      marginBottom: 4,
+    },
+    messageText: {
+      fontSize: 14,
+      lineHeight: 20,
+    },
+    ownMessageText: {
+      color: 'white',
+    },
+    otherMessageText: {
+      color: colors.text,
+    },
+    messageTime: {
+      fontSize: 11,
+      marginTop: 4,
+      alignSelf: 'flex-end',
+    },
+    ownMessageTime: {
+      color: 'rgba(255, 255, 255, 0.7)',
+    },
+    otherMessageTime: {
+      color: colors.textSecondary,
+    },
+    inputContainer: {
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      padding: 16,
+      backgroundColor: colors.card,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+    },
+    textInput: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      borderRadius: 20,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      marginRight: 8,
+      maxHeight: 100,
+      fontSize: 14,
+      color: colors.text,
+    },
+    sendButton: {
+      backgroundColor: colors.primary,
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    sendButtonDisabled: {
+      backgroundColor: colors.border,
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: colors.text,
+    },
+    roomSelector: {
+      backgroundColor: colors.card,
+      margin: 16,
+      borderRadius: 12,
+      padding: 16,
+      maxHeight: 400,
+    },
+    roomSelectorTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: colors.text,
+      marginBottom: 16,
+    },
+    roomList: {
+      maxHeight: 300,
+    },
+    roomItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 16,
+      backgroundColor: colors.surface,
+      borderRadius: 8,
+      marginBottom: 8,
+    },
+    roomItemInfo: {
+      flex: 1,
+    },
+    roomItemName: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+    },
+    roomItemDescription: {
+      fontSize: 12,
+      color: colors.textSecondary,
+      marginTop: 4,
+    },
+    noRoomsText: {
+      textAlign: 'center',
+      color: colors.textSecondary,
+      fontStyle: 'italic',
+    },
+    closeButton: {
+      backgroundColor: colors.primary,
+      paddingVertical: 12,
+      borderRadius: 8,
+      alignItems: 'center',
+      marginTop: 16,
+    },
+    closeButtonText: {
+      color: 'white',
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    emptyState: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 32,
+    },
+    emptyTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: colors.text,
+      marginTop: 16,
+      marginBottom: 8,
+    },
+    emptySubtitle: {
+      fontSize: 16,
+      color: colors.textSecondary,
+      textAlign: 'center',
+      marginBottom: 24,
+    },
+    selectRoomButton: {
+      backgroundColor: colors.primary,
+      paddingHorizontal: 24,
+      paddingVertical: 12,
+      borderRadius: 8,
+    },
+    selectRoomButtonText: {
+      color: 'white',
+      fontSize: 16,
+      fontWeight: '600',
+    },
+  });
+
+  if (!currentChatRoom) {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Chat</Text>
-          <TouchableOpacity
-            style={styles.teamSelectorButton}
-            onPress={() => setShowTeamSelector(true)}
-          >
-            <Ionicons name="people" size={24} color="#007AFF" />
+          <TouchableOpacity onPress={() => setShowRoomSelector(true)}>
+            <MessageSquare size={24} color={colors.primary} />
           </TouchableOpacity>
         </View>
 
-        {showTeamSelector && (
-          <View style={styles.teamSelector}>
-            <Text style={styles.teamSelectorTitle}>Välj lag att chatta med</Text>
-            <ScrollView style={styles.teamList}>
-              {teams.map((team) => (
+        {showRoomSelector && (
+          <View style={styles.roomSelector}>
+            <Text style={styles.roomSelectorTitle}>Välj chattrum</Text>
+            <ScrollView style={styles.roomList}>
+              {chatRooms.map((room) => (
                 <TouchableOpacity
-                  key={team.id}
-                  style={[styles.teamItem, { borderLeftColor: team.color }]}
-                  onPress={() => handleJoinTeam(team)}
+                  key={room.id}
+                  style={styles.roomItem}
+                  onPress={() => handleJoinRoom(room)}
                 >
-                  <View style={styles.teamItemInfo}>
-                    <Text style={styles.teamName}>{team.name}</Text>
-                    <Text style={styles.teamCompany}>{team.company?.name}</Text>
-                    {team.description && (
-                      <Text style={styles.teamDescription}>{team.description}</Text>
+                  <View style={styles.roomItemInfo}>
+                    <Text style={styles.roomItemName}>{room.name}</Text>
+                    {room.description && (
+                      <Text style={styles.roomItemDescription}>{room.description}</Text>
                     )}
                   </View>
-                  <Ionicons name="chevron-forward" size={20} color="#666" />
                 </TouchableOpacity>
               ))}
-              {teams.length === 0 && (
-                <Text style={styles.noTeamsText}>
-                  Du är inte medlem i några lag än. Kontakta din administratör.
+              {chatRooms.length === 0 && (
+                <Text style={styles.noRoomsText}>
+                  Inga chattrum tillgängliga. Välj företag och lag först.
                 </Text>
               )}
             </ScrollView>
             <TouchableOpacity
               style={styles.closeButton}
-              onPress={() => setShowTeamSelector(false)}
+              onPress={() => setShowRoomSelector(false)}
             >
               <Text style={styles.closeButtonText}>Stäng</Text>
             </TouchableOpacity>
           </View>
         )}
 
-        {!showTeamSelector && (
-          <View style={styles.noTeamContainer}>
-            <Ionicons name="chatbubbles-outline" size={64} color="#ccc" />
-            <Text style={styles.noTeamTitle}>Inget lag valt</Text>
-            <Text style={styles.noTeamSubtitle}>
-              Välj ett lag för att börja chatta med dina kollegor
+        {!showRoomSelector && (
+          <View style={styles.emptyState}>
+            <MessageSquare size={64} color={colors.textSecondary} />
+            <Text style={styles.emptyTitle}>Inget chattrum valt</Text>
+            <Text style={styles.emptySubtitle}>
+              Välj ett chattrum för att börja chatta med dina kollegor
             </Text>
             <TouchableOpacity
-              style={styles.selectTeamButton}
-              onPress={() => setShowTeamSelector(true)}
+              style={styles.selectRoomButton}
+              onPress={() => setShowRoomSelector(true)}
             >
-              <Text style={styles.selectTeamButtonText}>Välj lag</Text>
+              <Text style={styles.selectRoomButtonText}>Välj chattrum</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -220,26 +518,19 @@ export default function ChatScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => setCurrentTeam(null)}
-          >
-            <Ionicons name="arrow-back" size={24} color="#007AFF" />
+          <TouchableOpacity onPress={() => setCurrentChatRoom(null)}>
+            <MessageSquare size={24} color={colors.primary} />
           </TouchableOpacity>
-          <View style={styles.teamInfo}>
-            <Text style={styles.teamName}>{currentTeam.name}</Text>
-            <Text style={styles.teamCompany}>{currentTeam.company?.name}</Text>
+          <View style={styles.roomInfo}>
+            <Text style={styles.roomName}>{currentChatRoom.name}</Text>
+            {currentChatRoom.description && (
+              <Text style={styles.roomDescription}>{currentChatRoom.description}</Text>
+            )}
           </View>
         </View>
         <View style={styles.headerRight}>
-          <TouchableOpacity
-            style={styles.membersButton}
-            onPress={() => setShowMembers(!showMembers)}
-          >
-            <Ionicons name="people" size={24} color="#007AFF" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.leaveButton} onPress={handleLeaveTeam}>
-            <Ionicons name="exit-outline" size={24} color="#FF3B30" />
+          <TouchableOpacity onPress={() => setShowMembers(!showMembers)}>
+            <Users size={24} color={colors.primary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -247,9 +538,9 @@ export default function ChatScreen() {
       {/* Members Panel */}
       {showMembers && (
         <View style={styles.membersPanel}>
-          <Text style={styles.membersTitle}>Lagmedlemmar ({teamMembers.length})</Text>
+          <Text style={styles.membersTitle}>Medlemmar ({chatMembers.length})</Text>
           <ScrollView style={styles.membersList}>
-            {teamMembers.map((member) => renderTeamMember(member))}
+            {chatMembers.map(renderChatMember)}
           </ScrollView>
         </View>
       )}
@@ -271,6 +562,7 @@ export default function ChatScreen() {
           value={newMessage}
           onChangeText={setNewMessage}
           placeholder="Skriv ett meddelande..."
+          placeholderTextColor={colors.textSecondary}
           multiline
           maxLength={500}
         />
@@ -279,278 +571,9 @@ export default function ChatScreen() {
           onPress={handleSendMessage}
           disabled={!newMessage.trim()}
         >
-          <Ionicons name="send" size={20} color="#fff" />
+          <Send size={20} color="white" />
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f9fa',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e1e1e1',
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  backButton: {
-    marginRight: 12,
-  },
-  teamInfo: {
-    flex: 1,
-  },
-  teamName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-  },
-  teamCompany: {
-    fontSize: 14,
-    color: '#666',
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  membersButton: {
-    marginRight: 12,
-  },
-  leaveButton: {
-    marginLeft: 8,
-  },
-  membersPanel: {
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e1e1e1',
-    maxHeight: 200,
-  },
-  membersTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1a1a1a',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e1e1e1',
-  },
-  membersList: {
-    padding: 16,
-  },
-  memberItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  memberInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  onlineIndicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#ccc',
-    marginRight: 8,
-  },
-  online: {
-    backgroundColor: '#28a745',
-  },
-  memberDetails: {
-    flex: 1,
-  },
-  memberName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1a1a1a',
-  },
-  memberEmail: {
-    fontSize: 12,
-    color: '#666',
-  },
-  lastSeen: {
-    fontSize: 11,
-    color: '#999',
-  },
-  memberRole: {
-    fontSize: 12,
-    color: '#666',
-    fontStyle: 'italic',
-  },
-  messagesList: {
-    flex: 1,
-  },
-  messagesContainer: {
-    padding: 16,
-  },
-  messageContainer: {
-    marginBottom: 12,
-  },
-  ownMessage: {
-    alignItems: 'flex-end',
-  },
-  messageBubble: {
-    backgroundColor: '#fff',
-    padding: 12,
-    borderRadius: 16,
-    maxWidth: '80%',
-    borderWidth: 1,
-    borderColor: '#e1e1e1',
-  },
-  ownMessageBubble: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
-  },
-  messageAuthor: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 4,
-  },
-  messageText: {
-    fontSize: 14,
-    color: '#1a1a1a',
-    lineHeight: 20,
-  },
-  ownMessageText: {
-    color: '#fff',
-  },
-  messageTime: {
-    fontSize: 11,
-    color: '#999',
-    marginTop: 4,
-    alignSelf: 'flex-end',
-  },
-  ownMessageTime: {
-    color: 'rgba(255, 255, 255, 0.7)',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    padding: 16,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#e1e1e1',
-  },
-  textInput: {
-    flex: 1,
-    backgroundColor: '#f8f9fa',
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginRight: 8,
-    maxHeight: 100,
-    fontSize: 14,
-  },
-  sendButton: {
-    backgroundColor: '#007AFF',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  sendButtonDisabled: {
-    backgroundColor: '#ccc',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-  },
-  teamSelectorButton: {
-    padding: 8,
-  },
-  teamSelector: {
-    backgroundColor: '#fff',
-    margin: 16,
-    borderRadius: 12,
-    padding: 16,
-    maxHeight: 400,
-  },
-  teamSelectorTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-    marginBottom: 16,
-  },
-  teamList: {
-    maxHeight: 300,
-  },
-  teamItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#f8f9fa',
-    borderRadius: 8,
-    marginBottom: 8,
-    borderLeftWidth: 4,
-  },
-  teamItemInfo: {
-    flex: 1,
-  },
-  teamDescription: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 4,
-  },
-  noTeamsText: {
-    textAlign: 'center',
-    color: '#666',
-    fontStyle: 'italic',
-  },
-  closeButton: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  closeButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  noTeamContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 32,
-  },
-  noTeamTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  noTeamSubtitle: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  selectTeamButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  selectTeamButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-}); 

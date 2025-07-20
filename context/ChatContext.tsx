@@ -5,56 +5,74 @@ import { useAuth } from './AuthContext';
 
 interface ChatMessage {
   id: string;
-  team_id: string;
-  user_id: string;
-  message: string;
+  chat_room_id: string;
+  sender_id: string;
+  content: string;
+  message_type: string;
+  file_url: string | null;
+  reply_to: string | null;
+  is_edited: boolean;
   created_at: string;
   updated_at: string;
-  user?: {
-    full_name: string;
-    email: string;
-  };
-}
-
-interface TeamMember {
-  id: string;
-  user_id: string;
-  team_id: string;
-  role: string;
-  joined_at: string;
-  user?: {
-    full_name: string;
+  sender?: {
+    first_name: string;
+    last_name: string;
     email: string;
     avatar_url: string | null;
   };
-  online_status?: {
-    is_online: boolean;
-    last_seen: string;
+}
+
+interface ChatRoom {
+  id: string;
+  company_id: string | null;
+  team_id: string | null;
+  name: string;
+  description: string | null;
+  type: string;
+  department: string | null;
+  is_private: boolean;
+  auto_join_department: string | null;
+  auto_join_team: boolean;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+  companies?: {
+    name: string;
+  };
+  teams?: {
+    name: string;
+    color: string;
   };
 }
 
-interface Team {
+interface ChatMember {
   id: string;
-  name: string;
-  color: string;
-  company_id: string;
-  description: string | null;
-  company?: {
-    name: string;
+  chat_room_id: string;
+  employee_id: string;
+  role: string;
+  joined_at: string;
+  employees?: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    avatar_url: string | null;
+    department: string | null;
+    position: string | null;
   };
 }
 
 interface ChatContextType {
   messages: ChatMessage[];
-  teamMembers: TeamMember[];
-  currentTeam: Team | null;
-  teams: Team[];
+  chatRooms: ChatRoom[];
+  currentChatRoom: ChatRoom | null;
+  chatMembers: ChatMember[];
   loading: boolean;
-  sendMessage: (message: string) => Promise<void>;
-  joinTeam: (teamId: string) => Promise<void>;
-  leaveTeam: (teamId: string) => Promise<void>;
-  setCurrentTeam: (team: Team | null) => void;
-  updateOnlineStatus: (isOnline: boolean) => Promise<void>;
+  sendMessage: (content: string, messageType?: string) => Promise<void>;
+  joinChatRoom: (roomId: string) => Promise<void>;
+  leaveChatRoom: (roomId: string) => Promise<void>;
+  setCurrentChatRoom: (room: ChatRoom | null) => void;
+  fetchChatRooms: () => Promise<void>;
+  createChatRoom: (roomData: any) => Promise<void>;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -62,82 +80,73 @@ const ChatContext = createContext<ChatContextType | undefined>(undefined);
 export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [currentTeam, setCurrentTeam] = useState<Team | null>(null);
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
+  const [currentChatRoom, setCurrentChatRoom] = useState<ChatRoom | null>(null);
+  const [chatMembers, setChatMembers] = useState<ChatMember[]>([]);
   const [loading, setLoading] = useState(false);
   const [channel, setChannel] = useState<RealtimeChannel | null>(null);
 
-  // Fetch user's teams
-  const fetchUserTeams = async () => {
+  // Fetch chat rooms user is member of
+  const fetchChatRooms = async () => {
     if (!user) return;
 
     try {
-      const { data: teamMemberships, error } = await supabase
-        .from('team_members')
+      setLoading(true);
+      
+      const { data, error } = await supabase
+        .from('chat_room_members')
         .select(`
-          team_id,
-          teams (
+          chat_rooms (
             id,
-            name,
-            color,
             company_id,
+            team_id,
+            name,
             description,
+            type,
+            department,
+            is_private,
+            auto_join_department,
+            auto_join_team,
+            created_by,
+            created_at,
+            updated_at,
             companies (
               name
+            ),
+            teams (
+              name,
+              color
             )
           )
         `)
-        .eq('user_id', user.id);
+        .eq('employee_id', user.id);
 
       if (error) throw error;
 
-      const userTeams = (teamMemberships?.map(tm => tm.teams).filter(Boolean) || []) as unknown as Team[];
-      setTeams(userTeams);
+      const rooms = data?.map(item => item.chat_rooms).filter(Boolean) as ChatRoom[];
+      setChatRooms(rooms || []);
     } catch (error) {
-      console.error('Error fetching teams:', error);
+      console.error('Error fetching chat rooms:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Fetch team members
-  const fetchTeamMembers = async (teamId: string) => {
+  // Fetch messages for current chat room
+  const fetchMessages = async (roomId: string) => {
     try {
       const { data, error } = await supabase
-        .from('team_members')
+        .from('messages')
         .select(`
           *,
-          user:profiles!user_id (
-            full_name,
+          sender:employees!sender_id (
+            first_name,
+            last_name,
             email,
             avatar_url
-          ),
-          online_status!user_id (
-            is_online,
-            last_seen
           )
         `)
-        .eq('team_id', teamId);
-
-      if (error) throw error;
-      setTeamMembers(data || []);
-    } catch (error) {
-      console.error('Error fetching team members:', error);
-    }
-  };
-
-  // Fetch chat messages
-  const fetchMessages = async (teamId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('chat_messages')
-        .select(`
-          *,
-          user:profiles!user_id (
-            full_name,
-            email
-          )
-        `)
-        .eq('team_id', teamId)
+        .eq('chat_room_id', roomId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
@@ -147,96 +156,141 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  // Fetch chat room members
+  const fetchChatMembers = async (roomId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('chat_room_members')
+        .select(`
+          *,
+          employees (
+            first_name,
+            last_name,
+            email,
+            avatar_url,
+            department,
+            position
+          )
+        `)
+        .eq('chat_room_id', roomId);
+
+      if (error) throw error;
+      setChatMembers(data || []);
+    } catch (error) {
+      console.error('Error fetching chat members:', error);
+    }
+  };
+
   // Send message
-  const sendMessage = async (message: string) => {
-    if (!user || !currentTeam) return;
+  const sendMessage = async (content: string, messageType = 'text') => {
+    if (!user || !currentChatRoom) return;
 
     try {
       const { error } = await supabase
-        .from('chat_messages')
+        .from('messages')
         .insert({
-          team_id: currentTeam.id,
-          user_id: user.id,
-          message,
+          chat_room_id: currentChatRoom.id,
+          sender_id: user.id,
+          content,
+          message_type: messageType
         });
 
       if (error) throw error;
     } catch (error) {
       console.error('Error sending message:', error);
+      throw error;
     }
   };
 
-  // Join team
-  const joinTeam = async (teamId: string) => {
+  // Join chat room
+  const joinChatRoom = async (roomId: string) => {
     if (!user) return;
 
     try {
       const { error } = await supabase
-        .from('team_members')
+        .from('chat_room_members')
         .insert({
-          user_id: user.id,
-          team_id: teamId,
-          role: 'member',
+          chat_room_id: roomId,
+          employee_id: user.id,
+          role: 'member'
         });
 
       if (error) throw error;
-      await fetchUserTeams();
+      await fetchChatRooms();
     } catch (error) {
-      console.error('Error joining team:', error);
+      console.error('Error joining chat room:', error);
+      throw error;
     }
   };
 
-  // Leave team
-  const leaveTeam = async (teamId: string) => {
+  // Leave chat room
+  const leaveChatRoom = async (roomId: string) => {
     if (!user) return;
 
     try {
       const { error } = await supabase
-        .from('team_members')
+        .from('chat_room_members')
         .delete()
-        .eq('user_id', user.id)
-        .eq('team_id', teamId);
+        .eq('chat_room_id', roomId)
+        .eq('employee_id', user.id);
 
       if (error) throw error;
-      await fetchUserTeams();
+      
+      if (currentChatRoom?.id === roomId) {
+        setCurrentChatRoom(null);
+      }
+      
+      await fetchChatRooms();
     } catch (error) {
-      console.error('Error leaving team:', error);
+      console.error('Error leaving chat room:', error);
+      throw error;
     }
   };
 
-  // Update online status
-  const updateOnlineStatus = async (isOnline: boolean) => {
+  // Create chat room
+  const createChatRoom = async (roomData: any) => {
     if (!user) return;
 
     try {
-      const { error } = await supabase
-        .from('online_status')
-        .upsert({
-          user_id: user.id,
-          is_online: isOnline,
-          last_seen: new Date().toISOString(),
-        });
+      const { data, error } = await supabase
+        .from('chat_rooms')
+        .insert({
+          ...roomData,
+          created_by: user.id
+        })
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Auto-join creator to the room
+      await joinChatRoom(data.id);
     } catch (error) {
-      console.error('Error updating online status:', error);
+      console.error('Error creating chat room:', error);
+      throw error;
     }
   };
 
   // Set up real-time subscription
   useEffect(() => {
-    if (!currentTeam) return;
+    if (!currentChatRoom) {
+      if (channel) {
+        channel.unsubscribe();
+        setChannel(null);
+      }
+      return;
+    }
 
     // Subscribe to new messages
     const messageChannel = supabase
-      .channel(`chat:${currentTeam.id}`)
+      .channel(`chat:${currentChatRoom.id}`)
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'chat_messages',
-          filter: `team_id=eq.${currentTeam.id}`,
+          table: 'messages',
+          filter: `chat_room_id=eq.${currentChatRoom.id}`,
         },
         (payload) => {
           const newMessage = payload.new as ChatMessage;
@@ -248,11 +302,16 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         {
           event: 'UPDATE',
           schema: 'public',
-          table: 'online_status',
+          table: 'messages',
+          filter: `chat_room_id=eq.${currentChatRoom.id}`,
         },
-        () => {
-          // Refresh team members to update online status
-          fetchTeamMembers(currentTeam.id);
+        (payload) => {
+          const updatedMessage = payload.new as ChatMessage;
+          setMessages(prev => 
+            prev.map(msg => 
+              msg.id === updatedMessage.id ? updatedMessage : msg
+            )
+          );
         }
       )
       .subscribe();
@@ -262,47 +321,38 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       messageChannel.unsubscribe();
     };
-  }, [currentTeam]);
+  }, [currentChatRoom]);
 
-  // Load data when current team changes
+  // Load data when current chat room changes
   useEffect(() => {
-    if (currentTeam) {
-      fetchMessages(currentTeam.id);
-      fetchTeamMembers(currentTeam.id);
+    if (currentChatRoom) {
+      fetchMessages(currentChatRoom.id);
+      fetchChatMembers(currentChatRoom.id);
+    } else {
+      setMessages([]);
+      setChatMembers([]);
     }
-  }, [currentTeam]);
+  }, [currentChatRoom]);
 
-  // Load user teams on mount
+  // Load chat rooms on mount
   useEffect(() => {
     if (user) {
-      fetchUserTeams();
-      updateOnlineStatus(true);
+      fetchChatRooms();
     }
   }, [user]);
 
-  // Update online status when app goes to background/foreground
-  useEffect(() => {
-    const handleAppStateChange = (isActive: boolean) => {
-      updateOnlineStatus(isActive);
-    };
-
-    // Set up app state listeners here if needed
-    return () => {
-      updateOnlineStatus(false);
-    };
-  }, []);
-
   const value = {
     messages,
-    teamMembers,
-    currentTeam,
-    teams,
+    chatRooms,
+    currentChatRoom,
+    chatMembers,
     loading,
     sendMessage,
-    joinTeam,
-    leaveTeam,
-    setCurrentTeam,
-    updateOnlineStatus,
+    joinChatRoom,
+    leaveChatRoom,
+    setCurrentChatRoom,
+    fetchChatRooms,
+    createChatRoom
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
@@ -314,4 +364,4 @@ export const useChat = () => {
     throw new Error('useChat must be used within a ChatProvider');
   }
   return context;
-}; 
+};
