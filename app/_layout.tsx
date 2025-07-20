@@ -7,7 +7,8 @@ import { ChatProvider } from '../context/ChatContext';
 import { CompanyProvider } from '../context/CompanyContext';
 import { LanguageProvider } from '../context/LanguageContext';
 import { ShiftProvider } from '../context/ShiftContext';
-import { ThemeProvider } from '../context/ThemeContext';
+import { ThemeProvider } from '../context/ThemeContext'
+import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 
 function MainLayout() {
   const { user, loading } = useAuth();
@@ -44,6 +45,7 @@ function MainLayout() {
 }
 
 export default function RootLayout() {
+  useFrameworkReady();
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_700Bold,
