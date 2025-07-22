@@ -1,13 +1,10 @@
 const puppeteer = require('puppeteer');
 const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
-);
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 (async () => {
-  const browser = await puppeteer.launch({ headless: "new" });
+  const browser = await puppeteer.launch({ headless: 'new' });
   const page = await browser.newPage();
   await page.goto('https://skiftschema.se');
 
@@ -27,10 +24,8 @@ const supabase = createClient(
     });
   });
 
-  // Rensa gamla poster (valfritt)
   await supabase.from('schedules').delete().neq('id', '');
 
-  // Spara nya poster
   for (const item of schema) {
     await supabase.from('schedules').insert([
       {
@@ -41,6 +36,6 @@ const supabase = createClient(
     ]);
   }
 
-  console.log('✅ Schemat är sparat i Supabase');
+  console.log('✅ Skiftdata sparat i Supabase!');
   await browser.close();
 })();
