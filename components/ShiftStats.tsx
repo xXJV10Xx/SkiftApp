@@ -1,8 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTheme } from '@/context/ThemeContext';
 import { Company } from '@/data/companies';
-import { calculateWorkedHours, generateMonthSchedule, getNextShift } from '@/data/ShiftSchedules';
-import { Calendar, Clock, TrendingUp, Users } from 'lucide-react';
+import { calculateWorkedHours, generateMonthSchedule, getNextShift } from '@/lib/shiftCalculations';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 interface ShiftStatsProps {
   company: Company;
@@ -15,6 +16,7 @@ export const ShiftStats: React.FC<ShiftStatsProps> = ({
   team,
   shiftTypeId
 }) => {
+  const { colors } = useTheme();
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
@@ -49,83 +51,149 @@ export const ShiftStats: React.FC<ShiftStatsProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <View style={styles.container}>
       {/* Arbetade timmar */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Arbetade timmar</CardTitle>
-          <Clock className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.totalHours}h</div>
-          <p className="text-xs text-muted-foreground">
-            {stats.workDays} arbetsdagar denna månad
-          </p>
-        </CardContent>
-      </Card>
+      <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+        <View style={styles.statHeader}>
+          <Text style={[styles.statTitle, { color: colors.text }]}>
+            Arbetade timmar
+          </Text>
+          <Ionicons name="time" size={16} color={colors.textSecondary} />
+        </View>
+        <Text style={[styles.statValue, { color: colors.text }]}>
+          {stats.totalHours}h
+        </Text>
+        <Text style={[styles.statSubtext, { color: colors.textSecondary }]}>
+          {stats.workDays} arbetsdagar denna månad
+        </Text>
+      </View>
 
       {/* Genomsnitt per dag */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Genomsnitt per dag</CardTitle>
-          <TrendingUp className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.averageHours}h</div>
-          <p className="text-xs text-muted-foreground">
-            {stats.workDays > 0 ? 'Baserat på arbetsdagar' : 'Inga arbetsdagar'}
-          </p>
-        </CardContent>
-      </Card>
+      <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+        <View style={styles.statHeader}>
+          <Text style={[styles.statTitle, { color: colors.text }]}>
+            Genomsnitt per dag
+          </Text>
+          <Ionicons name="trending-up" size={16} color={colors.textSecondary} />
+        </View>
+        <Text style={[styles.statValue, { color: colors.text }]}>
+          {stats.averageHours}h
+        </Text>
+        <Text style={[styles.statSubtext, { color: colors.textSecondary }]}>
+          {stats.workDays > 0 ? 'Baserat på arbetsdagar' : 'Inga arbetsdagar'}
+        </Text>
+      </View>
 
       {/* Nästa skift */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Nästa skift</CardTitle>
-          <Calendar className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          {nextShift ? (
-            <>
-              <div className="text-lg font-semibold">
-                {getShiftName(nextShift.shift.code)}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {formatDate(nextShift.date)}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {nextShift.daysUntil} dagar kvar
-              </p>
-            </>
-          ) : (
-            <div className="text-sm text-muted-foreground">
-              Inget kommande skift
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+        <View style={styles.statHeader}>
+          <Text style={[styles.statTitle, { color: colors.text }]}>
+            Nästa skift
+          </Text>
+          <Ionicons name="calendar" size={16} color={colors.textSecondary} />
+        </View>
+        {nextShift ? (
+          <>
+            <Text style={[styles.statValue, { color: colors.text }]}>
+              {getShiftName(nextShift.shift.code)}
+            </Text>
+            <Text style={[styles.statSubtext, { color: colors.textSecondary }]}>
+              {formatDate(nextShift.date)}
+            </Text>
+            <Text style={[styles.statSubtext, { color: colors.textSecondary }]}>
+              {nextShift.daysUntil} dagar kvar
+            </Text>
+          </>
+        ) : (
+          <Text style={[styles.statSubtext, { color: colors.textSecondary }]}>
+            Inget kommande skift
+          </Text>
+        )}
+      </View>
 
       {/* Team info */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Skiftlag</CardTitle>
-          <Users className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-2">
-            <div
-              className="w-6 h-6 rounded-full"
-              style={{ backgroundColor: company.colors[team] }}
-            />
-            <div>
-              <div className="font-semibold">Lag {team}</div>
-              <p className="text-xs text-muted-foreground">
-                {company.name}
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+      <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+        <View style={styles.statHeader}>
+          <Text style={[styles.statTitle, { color: colors.text }]}>
+            Skiftlag
+          </Text>
+          <Ionicons name="people" size={16} color={colors.textSecondary} />
+        </View>
+        <View style={styles.teamInfo}>
+          <View style={[
+            styles.teamColor,
+            { backgroundColor: company.colors[team] }
+          ]} />
+          <View style={styles.teamDetails}>
+            <Text style={[styles.teamName, { color: colors.text }]}>
+              {team}
+            </Text>
+            <Text style={[styles.teamCompany, { color: colors.textSecondary }]}>
+              {company.name}
+            </Text>
+          </View>
+        </View>
+      </View>
+    </View>
   );
-}; 
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  statCard: {
+    flex: 1,
+    minWidth: '45%',
+    padding: 12,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  statHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  statTitle: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  statSubtext: {
+    fontSize: 10,
+  },
+  teamInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  teamColor: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+  },
+  teamDetails: {
+    flex: 1,
+  },
+  teamName: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  teamCompany: {
+    fontSize: 10,
+  },
+}); 
