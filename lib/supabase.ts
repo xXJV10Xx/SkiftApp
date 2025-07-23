@@ -8,110 +8,28 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export type Database = {
   public: {
     Tables: {
-      companies: {
+      profiles: {
         Row: {
           id: string;
-          name: string;
-          slug: string;
-          logo_url: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          slug: string;
-          logo_url?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          slug?: string;
-          logo_url?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      employees: {
-        Row: {
-          id: string;
-          employee_id: string | null;
-          email: string;
-          first_name: string;
-          last_name: string;
-          company_id: string | null;
-          team_id: string | null;
-          department: string | null;
-          position: string | null;
+          username: string;
           avatar_url: string | null;
-          phone: string | null;
-          is_active: boolean;
-          profile_completed: boolean;
+          fcm_token: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id: string;
-          employee_id?: string | null;
-          email: string;
-          first_name: string;
-          last_name: string;
-          company_id?: string | null;
-          team_id?: string | null;
-          department?: string | null;
-          position?: string | null;
+          username: string;
           avatar_url?: string | null;
-          phone?: string | null;
-          is_active?: boolean;
-          profile_completed?: boolean;
+          fcm_token?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
-          employee_id?: string | null;
-          email?: string;
-          first_name?: string;
-          last_name?: string;
-          company_id?: string | null;
-          team_id?: string | null;
-          department?: string | null;
-          position?: string | null;
+          username?: string;
           avatar_url?: string | null;
-          phone?: string | null;
-          is_active?: boolean;
-          profile_completed?: boolean;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      teams: {
-        Row: {
-          id: string;
-          company_id: string | null;
-          name: string;
-          description: string | null;
-          color: string;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          company_id?: string | null;
-          name: string;
-          description?: string | null;
-          color?: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          company_id?: string | null;
-          name?: string;
-          description?: string | null;
-          color?: string;
+          fcm_token?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -119,178 +37,209 @@ export type Database = {
       shifts: {
         Row: {
           id: string;
-          employee_id: string | null;
-          company_id: string | null;
-          team_id: string | null;
+          owner_id: string;
           start_time: string;
           end_time: string;
-          position: string | null;
+          title: string;
+          description: string | null;
           location: string | null;
-          status: string;
-          notes: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
-          employee_id?: string | null;
-          company_id?: string | null;
-          team_id?: string | null;
+          owner_id: string;
           start_time: string;
           end_time: string;
-          position?: string | null;
+          title: string;
+          description?: string | null;
           location?: string | null;
-          status?: string;
-          notes?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
-          employee_id?: string | null;
-          company_id?: string | null;
-          team_id?: string | null;
+          owner_id?: string;
           start_time?: string;
           end_time?: string;
-          position?: string | null;
+          title?: string;
+          description?: string | null;
           location?: string | null;
-          status?: string;
-          notes?: string | null;
           created_at?: string;
           updated_at?: string;
         };
       };
-      chat_rooms: {
+      shift_trade_requests: {
         Row: {
           id: string;
-          company_id: string | null;
-          team_id: string | null;
-          name: string;
-          description: string | null;
-          type: string;
-          department: string | null;
-          is_private: boolean;
-          auto_join_department: string | null;
-          auto_join_team: boolean;
-          created_by: string | null;
+          shift_id: string;
+          requesting_user_id: string;
+          message: string | null;
+          status: string;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
-          company_id?: string | null;
-          team_id?: string | null;
-          name: string;
-          description?: string | null;
-          type?: string;
-          department?: string | null;
-          is_private?: boolean;
-          auto_join_department?: string | null;
-          auto_join_team?: boolean;
-          created_by?: string | null;
+          shift_id: string;
+          requesting_user_id: string;
+          message?: string | null;
+          status?: string;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
-          company_id?: string | null;
-          team_id?: string | null;
-          name?: string;
-          description?: string | null;
-          type?: string;
-          department?: string | null;
-          is_private?: boolean;
-          auto_join_department?: string | null;
-          auto_join_team?: boolean;
-          created_by?: string | null;
+          shift_id?: string;
+          requesting_user_id?: string;
+          message?: string | null;
+          status?: string;
           created_at?: string;
           updated_at?: string;
         };
       };
-      chat_room_members: {
+      private_chats: {
         Row: {
           id: string;
-          chat_room_id: string | null;
-          employee_id: string | null;
-          role: string;
-          joined_at: string;
+          trade_request_id: string;
+          participants: string[];
+          created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
-          chat_room_id?: string | null;
-          employee_id?: string | null;
-          role?: string;
-          joined_at?: string;
+          trade_request_id: string;
+          participants: string[];
+          created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
-          chat_room_id?: string | null;
-          employee_id?: string | null;
-          role?: string;
-          joined_at?: string;
+          trade_request_id?: string;
+          participants?: string[];
+          created_at?: string;
+          updated_at?: string;
         };
       };
       messages: {
         Row: {
           id: string;
-          chat_room_id: string | null;
-          sender_id: string | null;
+          chat_id: string;
+          sender_id: string;
           content: string;
-          message_type: string;
-          file_url: string | null;
-          reply_to: string | null;
-          is_edited: boolean;
           created_at: string;
-          updated_at: string;
         };
         Insert: {
           id?: string;
-          chat_room_id?: string | null;
-          sender_id?: string | null;
+          chat_id: string;
+          sender_id: string;
           content: string;
-          message_type?: string;
-          file_url?: string | null;
-          reply_to?: string | null;
-          is_edited?: boolean;
           created_at?: string;
-          updated_at?: string;
         };
         Update: {
           id?: string;
-          chat_room_id?: string | null;
-          sender_id?: string | null;
+          chat_id?: string;
+          sender_id?: string;
           content?: string;
-          message_type?: string;
-          file_url?: string | null;
-          reply_to?: string | null;
-          is_edited?: boolean;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      message_reactions: {
-        Row: {
-          id: string;
-          message_id: string | null;
-          employee_id: string | null;
-          emoji: string;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          message_id?: string | null;
-          employee_id?: string | null;
-          emoji: string;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          message_id?: string | null;
-          employee_id?: string | null;
-          emoji?: string;
           created_at?: string;
         };
       };
     };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      [_ in never]: never;
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
   };
+};
+
+// Type helpers
+export type Shift = Database['public']['Tables']['shifts']['Row'];
+export type ShiftInsert = Database['public']['Tables']['shifts']['Insert'];
+export type ShiftUpdate = Database['public']['Tables']['shifts']['Update'];
+
+export type Profile = Database['public']['Tables']['profiles']['Row'];
+export type ProfileInsert = Database['public']['Tables']['profiles']['Insert'];
+export type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
+
+export type ShiftTradeRequest = Database['public']['Tables']['shift_trade_requests']['Row'];
+export type ShiftTradeRequestInsert = Database['public']['Tables']['shift_trade_requests']['Insert'];
+export type ShiftTradeRequestUpdate = Database['public']['Tables']['shift_trade_requests']['Update'];
+
+export type PrivateChat = Database['public']['Tables']['private_chats']['Row'];
+export type PrivateChatInsert = Database['public']['Tables']['private_chats']['Insert'];
+export type PrivateChatUpdate = Database['public']['Tables']['private_chats']['Update'];
+
+export type Message = Database['public']['Tables']['messages']['Row'];
+export type MessageInsert = Database['public']['Tables']['messages']['Insert'];
+export type MessageUpdate = Database['public']['Tables']['messages']['Update'];
+
+// Utility functions för Edge Functions
+export const callEdgeFunction = async (functionName: string, payload: any) => {
+  const { data, error } = await supabase.functions.invoke(functionName, {
+    body: JSON.stringify(payload),
+  });
+  
+  if (error) {
+    console.error(`Error calling ${functionName}:`, error);
+    throw error;
+  }
+  
+  return data;
+};
+
+// Realtime subscriptions helpers
+export const subscribeToMessages = (chatId: string, callback: (payload: any) => void) => {
+  return supabase
+    .channel(`messages:${chatId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `chat_id=eq.${chatId}`,
+      },
+      callback
+    )
+    .subscribe();
+};
+
+export const subscribeToShifts = (userId: string, callback: (payload: any) => void) => {
+  return supabase
+    .channel(`shifts:${userId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'shifts',
+        filter: `owner_id=eq.${userId}`,
+      },
+      callback
+    )
+    .subscribe();
+};
+
+export const subscribeToTradeRequests = (userId: string, callback: (payload: any) => void) => {
+  return supabase
+    .channel(`trade_requests:${userId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'shift_trade_requests',
+        filter: `requesting_user_id=eq.${userId}`,
+      },
+      callback
+    )
+    .subscribe();
 };

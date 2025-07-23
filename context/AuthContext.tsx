@@ -1,6 +1,13 @@
 import { Session, User } from '@supabase/supabase-js';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { 
+  registerForPushNotificationsAsync, 
+  updateUserFCMToken, 
+  clearUserFCMToken,
+  setupNotificationListeners,
+  removeNotificationListeners
+} from '../lib/notifications';
 
 interface AuthContextType {
   user: User | null;
@@ -23,6 +30,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [notificationListeners, setNotificationListeners] = useState<any>(null);
 
   useEffect(() => {
     // Get initial session
@@ -40,22 +48,39 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser(session?.user ?? null);
       setLoading(false);
 
-      // Create employee profile if user signs up
-      if (session?.user && _event === 'SIGNED_UP') {
-        const { error } = await supabase
-          .from('employees')
-          .insert({
-            id: session.user.id,
-            email: session.user.email!,
-            first_name: session.user.user_metadata?.full_name?.split(' ')[0] || '',
-            last_name: session.user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
-            avatar_url: session.user.user_metadata?.avatar_url,
-            is_active: true,
-            profile_completed: false
-          });
+      if (session?.user) {
+        // Setup notification listeners when user signs in
+        if (_event === 'SIGNED_IN' || _event === 'TOKEN_REFRESHED') {
+          const listeners = setupNotificationListeners();
+          setNotificationListeners(listeners);
 
-        if (error) {
-          console.error('Error creating employee profile:', error);
+          // Register for push notifications and update FCM token
+          const fcmToken = await registerForPushNotificationsAsync();
+          if (fcmToken) {
+            await updateUserFCMToken(session.user.id, fcmToken);
+          }
+        }
+
+        // Create profile if user signs up
+        if (_event === 'SIGNED_UP') {
+          const username = session.user.email?.split('@')[0] || 'user';
+          const { error } = await supabase
+            .from('profiles')
+            .insert({
+              id: session.user.id,
+              username,
+              avatar_url: session.user.user_metadata?.avatar_url,
+            });
+
+          if (error) {
+            console.error('Error creating user profile:', error);
+          }
+        }
+      } else if (_event === 'SIGNED_OUT') {
+        // Clean up on sign out
+        if (notificationListeners) {
+          removeNotificationListeners(notificationListeners);
+          setNotificationListeners(null);
         }
       }
     });
@@ -90,6 +115,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const signOut = async () => {
+    // Clear FCM token before signing out
+    if (user) {
+      await clearUserFCMToken(user.id);
+    }
+    
+    // Clean up notification listeners
+    if (notificationListeners) {
+      removeNotificationListeners(notificationListeners);
+      setNotificationListeners(null);
+    }
+    
     await supabase.auth.signOut();
   };
 

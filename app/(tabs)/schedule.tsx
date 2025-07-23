@@ -1,71 +1,152 @@
-import { Calendar, ChevronLeft, ChevronRight, Clock } from 'lucide-react-native';
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useCompany } from '../../context/CompanyContext';
-import { useShift } from '../../context/ShiftContext';
+import { Calendar, ChevronLeft, ChevronRight, Clock, Plus, MoreHorizontal } from 'lucide-react-native';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert, RefreshControl } from 'react-native';
+import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { supabase, Shift, subscribeToShifts } from '../../lib/supabase';
 
 export default function ScheduleScreen() {
   const { colors } = useTheme();
-  const { selectedCompany, selectedTeam } = useCompany();
-  const { monthSchedule, generateSchedule, selectedShiftType } = useShift();
+  const { user } = useAuth();
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [shifts, setShifts] = useState<Shift[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const goToPreviousMonth = () => {
+  // Load shifts for the current month
+  const loadShifts = async (date: Date = currentDate) => {
+    if (!user) return;
+
+    try {
+      setLoading(true);
+      
+      // Get first day of month and last day of month
+      const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+      const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+      
+      const { data, error } = await supabase
+        .from('shifts')
+        .select('*')
+        .eq('owner_id', user.id)
+        .gte('start_time', firstDay.toISOString())
+        .lte('start_time', lastDay.toISOString())
+        .order('start_time', { ascending: true });
+
+      if (error) {
+        console.error('Error loading shifts:', error);
+        Alert.alert('Fel', 'Kunde inte ladda arbetspass');
+        return;
+      }
+
+      setShifts(data || []);
+    } catch (error) {
+      console.error('Error loading shifts:', error);
+      Alert.alert('Fel', 'Ett oväntat fel uppstod');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Refresh handler
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadShifts();
+    setRefreshing(false);
+  };
+
+  // Load shifts when component mounts or user changes
+  useEffect(() => {
+    if (user) {
+      loadShifts();
+    }
+  }, [user]);
+
+  // Setup realtime subscription for shifts
+  useEffect(() => {
+    if (!user) return;
+
+    const subscription = subscribeToShifts(user.id, (payload) => {
+      console.log('Shift update received:', payload);
+      // Reload shifts when there's a change
+      loadShifts();
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user]);
+
+  const goToPreviousMonth = async () => {
     const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
     setCurrentDate(newDate);
-    generateSchedule(newDate.getFullYear(), newDate.getMonth());
+    await loadShifts(newDate);
   };
 
-  const goToNextMonth = () => {
+  const goToNextMonth = async () => {
     const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
     setCurrentDate(newDate);
-    generateSchedule(newDate.getFullYear(), newDate.getMonth());
+    await loadShifts(newDate);
   };
 
-  const goToToday = () => {
+  const goToToday = async () => {
     const today = new Date();
     setCurrentDate(today);
-    generateSchedule(today.getFullYear(), today.getMonth());
+    await loadShifts(today);
   };
 
-  const getShiftColor = (shiftCode: string) => {
-    if (shiftCode === 'L') return colors.border; // Ledig = grå
+  // Get shifts for a specific date
+  const getShiftsForDate = (date: Date) => {
+    return shifts.filter(shift => {
+      const shiftDate = new Date(shift.start_time);
+      return (
+        shiftDate.getDate() === date.getDate() &&
+        shiftDate.getMonth() === date.getMonth() &&
+        shiftDate.getFullYear() === date.getFullYear()
+      );
+    });
+  };
+
+  // Format time for display
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('sv-SE', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  };
+
+  // Format duration
+  const getShiftDuration = (startTime: string, endTime: string) => {
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    const diffMs = end.getTime() - start.getTime();
+    const diffHours = Math.round(diffMs / (1000 * 60 * 60) * 10) / 10;
+    return `${diffHours}h`;
+  };
+
+  // Generate calendar days
+  const generateCalendarDays = () => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
     
-    if (selectedCompany && selectedTeam) {
-      const teamColor = selectedCompany.colors[selectedTeam];
-      if (teamColor) return teamColor;
+    const firstDayOfMonth = new Date(year, month, 1);
+    const lastDayOfMonth = new Date(year, month + 1, 0);
+    const firstDayOfWeek = firstDayOfMonth.getDay();
+    const daysInMonth = lastDayOfMonth.getDate();
+    
+    const days = [];
+    
+    // Add empty cells for days before the first day of the month
+    for (let i = 0; i < firstDayOfWeek; i++) {
+      days.push(null);
     }
     
-    // Standardfärger för skift
-    const shiftColors: Record<string, string> = {
-      'M': '#FF6B6B', // Morgon = röd
-      'A': '#4ECDC4', // Kväll = turkos
-      'N': '#45B7D1', // Natt = blå
-      'F': '#96CEB4', // Förmiddag = grön
-      'E': '#FFA502', // Eftermiddag = orange
-      'D': '#9B59B6'  // Dag = lila
-    };
+    // Add days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      days.push(new Date(year, month, day));
+    }
     
-    return shiftColors[shiftCode] || '#95A5A6';
-  };
-
-  const getShiftName = (shiftCode: string) => {
-    const shiftNames: Record<string, string> = {
-      'M': 'Morgon',
-      'A': 'Kväll',
-      'N': 'Natt',
-      'F': 'Förmiddag',
-      'E': 'Eftermiddag',
-      'D': 'Dag',
-      'L': 'Ledig'
-    };
-    return shiftNames[shiftCode] || shiftCode;
-  };
-
-  const formatTime = (timeStr: string) => {
-    if (!timeStr) return '';
-    return timeStr.substring(0, 5); // Remove seconds
+    return days;
   };
 
   const monthNames = [
@@ -73,246 +154,47 @@ export default function ScheduleScreen() {
     'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'
   ];
 
-  const dayNames = ['Sön', 'Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör'];
+  const weekDays = ['Sön', 'Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör'];
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    header: {
-      backgroundColor: colors.card,
-      padding: 20,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border,
-    },
-    headerTop: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 16,
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: colors.text,
-    },
-    navigationButtons: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 8,
-    },
-    navButton: {
-      backgroundColor: colors.primary,
-      borderRadius: 8,
-      padding: 8,
-    },
-    todayButton: {
-      backgroundColor: colors.secondary,
-      borderRadius: 8,
-      paddingHorizontal: 12,
-      paddingVertical: 8,
-    },
-    todayButtonText: {
-      color: 'white',
-      fontSize: 14,
-      fontWeight: '600',
-    },
-    monthTitle: {
-      fontSize: 20,
-      fontWeight: '600',
-      color: colors.text,
-      textAlign: 'center',
-    },
-    companyInfo: {
-      fontSize: 14,
-      color: colors.textSecondary,
-      textAlign: 'center',
-    },
-    calendarContainer: {
-      padding: 16,
-    },
-    weekHeader: {
-      flexDirection: 'row',
-      marginBottom: 8,
-    },
-    weekDay: {
-      flex: 1,
-      textAlign: 'center',
-      fontSize: 12,
-      fontWeight: '600',
-      color: colors.textSecondary,
-      paddingVertical: 8,
-    },
-    calendarGrid: {
-      gap: 1,
-    },
-    weekRow: {
-      flexDirection: 'row',
-      gap: 1,
-    },
-    dayCell: {
-      flex: 1,
-      minHeight: 80,
-      backgroundColor: colors.card,
-      borderRadius: 8,
-      padding: 8,
-      borderWidth: 1,
-      borderColor: colors.border,
-    },
-    todayCell: {
-      borderColor: colors.primary,
-      borderWidth: 2,
-    },
-    weekendCell: {
-      backgroundColor: colors.surface,
-    },
-    dayNumber: {
-      fontSize: 14,
-      fontWeight: '600',
-      color: colors.text,
-      marginBottom: 4,
-    },
-    shiftBadge: {
-      borderRadius: 4,
-      paddingHorizontal: 6,
-      paddingVertical: 2,
-      marginBottom: 2,
-    },
-    shiftText: {
-      fontSize: 10,
-      fontWeight: '600',
-      color: 'white',
-    },
-    shiftTime: {
-      fontSize: 9,
-      color: colors.textSecondary,
-    },
-    legendContainer: {
-      backgroundColor: colors.card,
-      padding: 16,
-      borderTopWidth: 1,
-      borderTopColor: colors.border,
-    },
-    legendTitle: {
-      fontSize: 16,
-      fontWeight: '600',
-      color: colors.text,
-      marginBottom: 12,
-    },
-    legendGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: 12,
-    },
-    legendItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 8,
-    },
-    legendColor: {
-      width: 16,
-      height: 16,
-      borderRadius: 8,
-    },
-    legendText: {
-      fontSize: 14,
-      color: colors.text,
-    },
-    emptyState: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 40,
-    },
-    emptyTitle: {
-      fontSize: 18,
-      fontWeight: '600',
-      color: colors.text,
-      marginBottom: 8,
-    },
-    emptyText: {
-      fontSize: 14,
-      color: colors.textSecondary,
-      textAlign: 'center',
-    },
-  });
-
-  if (!selectedCompany || !selectedTeam) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.emptyState}>
-          <Calendar size={64} color={colors.textSecondary} />
-          <Text style={styles.emptyTitle}>Inget schema tillgängligt</Text>
-          <Text style={styles.emptyText}>
-            Välj företag och lag på startsidan för att se ditt schema
-          </Text>
-        </View>
-      </View>
-    );
-  }
-
-  // Group schedule by weeks
-  const weeks: any[][] = [];
-  let currentWeek: any[] = [];
-  
-  monthSchedule.forEach((day, index) => {
-    if (index === 0) {
-      // Add empty cells for days before the first day of the month
-      const firstDayOfWeek = day.date.getDay();
-      for (let i = 0; i < firstDayOfWeek; i++) {
-        currentWeek.push(null);
-      }
-    }
-    
-    currentWeek.push(day);
-    
-    if (currentWeek.length === 7) {
-      weeks.push(currentWeek);
-      currentWeek = [];
-    }
-  });
-  
-  // Add the last week if it's not complete
-  if (currentWeek.length > 0) {
-    while (currentWeek.length < 7) {
-      currentWeek.push(null);
-    }
-    weeks.push(currentWeek);
-  }
+  const calendarDays = generateCalendarDays();
+  const today = new Date();
 
   return (
-    <View style={styles.container}>
+    <ScrollView 
+      style={[styles.container, { backgroundColor: colors.background }]}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: colors.card }]}>
         <View style={styles.headerTop}>
-          <Text style={styles.title}>Schema</Text>
-          <View style={styles.navigationButtons}>
-            <TouchableOpacity style={styles.navButton} onPress={goToPreviousMonth}>
-              <ChevronLeft size={20} color="white" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.todayButton} onPress={goToToday}>
-              <Text style={styles.todayButtonText}>Idag</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.navButton} onPress={goToNextMonth}>
-              <ChevronRight size={20} color="white" />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={goToPreviousMonth} style={styles.navButton}>
+            <ChevronLeft size={24} color={colors.text} />
+          </TouchableOpacity>
+          
+          <Text style={[styles.monthYear, { color: colors.text }]}>
+            {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+          </Text>
+          
+          <TouchableOpacity onPress={goToNextMonth} style={styles.navButton}>
+            <ChevronRight size={24} color={colors.text} />
+          </TouchableOpacity>
         </View>
         
-        <Text style={styles.monthTitle}>
-          {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-        </Text>
-        <Text style={styles.companyInfo}>
-          {selectedCompany.name} - Lag {selectedTeam}
-        </Text>
+        <TouchableOpacity onPress={goToToday} style={[styles.todayButton, { backgroundColor: colors.primary }]}>
+          <Text style={[styles.todayButtonText, { color: colors.background }]}>
+            Idag
+          </Text>
+        </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.calendarContainer}>
-        {/* Week header */}
-        <View style={styles.weekHeader}>
-          {dayNames.map((day) => (
-            <Text key={day} style={styles.weekDay}>
+      {/* Calendar */}
+      <View style={[styles.calendar, { backgroundColor: colors.card }]}>
+        {/* Week days header */}
+        <View style={styles.weekDaysHeader}>
+          {weekDays.map((day, index) => (
+            <Text key={index} style={[styles.weekDay, { color: colors.textSecondary }]}>
               {day}
             </Text>
           ))}
@@ -320,65 +202,287 @@ export default function ScheduleScreen() {
 
         {/* Calendar grid */}
         <View style={styles.calendarGrid}>
-          {weeks.map((week, weekIndex) => (
-            <View key={weekIndex} style={styles.weekRow}>
-              {week.map((day, dayIndex) => (
-                <View
-                  key={dayIndex}
-                  style={[
-                    styles.dayCell,
-                    day?.isToday && styles.todayCell,
-                    day?.isWeekend && styles.weekendCell,
-                  ]}
-                >
-                  {day && (
-                    <>
-                      <Text style={styles.dayNumber}>{day.day}</Text>
-                      {day.shift.code !== 'L' && (
-                        <View
-                          style={[
-                            styles.shiftBadge,
-                            { backgroundColor: getShiftColor(day.shift.code) }
-                          ]}
-                        >
-                          <Text style={styles.shiftText}>
-                            {getShiftName(day.shift.code)}
-                          </Text>
-                        </View>
-                      )}
-                      {day.shift.time.start && day.shift.time.end && (
-                        <Text style={styles.shiftTime}>
-                          {formatTime(day.shift.time.start)}-{formatTime(day.shift.time.end)}
-                        </Text>
-                      )}
-                    </>
+          {calendarDays.map((date, index) => {
+            if (!date) {
+              return <View key={index} style={styles.emptyDay} />;
+            }
+
+            const dayShifts = getShiftsForDate(date);
+            const isToday = date.toDateString() === today.toDateString();
+
+            return (
+              <View key={index} style={styles.dayContainer}>
+                <View style={[
+                  styles.dayHeader,
+                  isToday && { backgroundColor: colors.primary }
+                ]}>
+                  <Text style={[
+                    styles.dayNumber,
+                    { color: isToday ? colors.background : colors.text }
+                  ]}>
+                    {date.getDate()}
+                  </Text>
+                </View>
+
+                {/* Shifts for this day */}
+                <View style={styles.dayShifts}>
+                  {dayShifts.slice(0, 2).map((shift, shiftIndex) => (
+                    <View
+                      key={shift.id}
+                      style={[
+                        styles.shiftIndicator,
+                        { backgroundColor: colors.primary }
+                      ]}
+                    >
+                      <Text style={[styles.shiftTime, { color: colors.background }]}>
+                        {formatTime(shift.start_time)}
+                      </Text>
+                    </View>
+                  ))}
+                  {dayShifts.length > 2 && (
+                    <Text style={[styles.moreShifts, { color: colors.textSecondary }]}>
+                      +{dayShifts.length - 2}
+                    </Text>
                   )}
                 </View>
-              ))}
-            </View>
-          ))}
-        </View>
-      </ScrollView>
-
-      {/* Legend */}
-      <View style={styles.legendContainer}>
-        <Text style={styles.legendTitle}>Förklaring</Text>
-        <View style={styles.legendGrid}>
-          {['M', 'A', 'N', 'F', 'E', 'D', 'L'].map((shiftCode) => (
-            <View key={shiftCode} style={styles.legendItem}>
-              <View
-                style={[
-                  styles.legendColor,
-                  { backgroundColor: getShiftColor(shiftCode) }
-                ]}
-              />
-              <Text style={styles.legendText}>
-                {getShiftName(shiftCode)}
-              </Text>
-            </View>
-          ))}
+              </View>
+            );
+          })}
         </View>
       </View>
-    </View>
+
+      {/* Upcoming shifts */}
+      <View style={[styles.section, { backgroundColor: colors.card }]}>
+        <View style={styles.sectionHeader}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Kommande pass
+          </Text>
+          <TouchableOpacity style={styles.addButton}>
+            <Plus size={20} color={colors.primary} />
+          </TouchableOpacity>
+        </View>
+
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+              Laddar pass...
+            </Text>
+          </View>
+        ) : shifts.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Calendar size={48} color={colors.textSecondary} />
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+              Inga pass schemalagda denna månad
+            </Text>
+            <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
+              Tryck på + för att lägga till ett nytt pass
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.shiftsList}>
+            {shifts.slice(0, 5).map((shift) => (
+              <View key={shift.id} style={[styles.shiftCard, { backgroundColor: colors.background }]}>
+                <View style={styles.shiftCardContent}>
+                  <View style={styles.shiftInfo}>
+                    <Text style={[styles.shiftTitle, { color: colors.text }]}>
+                      {shift.title}
+                    </Text>
+                    <View style={styles.shiftDetails}>
+                      <Clock size={14} color={colors.textSecondary} />
+                      <Text style={[styles.shiftTime, { color: colors.textSecondary }]}>
+                        {formatTime(shift.start_time)} - {formatTime(shift.end_time)} 
+                        ({getShiftDuration(shift.start_time, shift.end_time)})
+                      </Text>
+                    </View>
+                    {shift.location && (
+                      <Text style={[styles.shiftLocation, { color: colors.textSecondary }]}>
+                        📍 {shift.location}
+                      </Text>
+                    )}
+                    {shift.description && (
+                      <Text style={[styles.shiftDescription, { color: colors.textSecondary }]}>
+                        {shift.description}
+                      </Text>
+                    )}
+                  </View>
+                  <TouchableOpacity style={styles.shiftMenu}>
+                    <MoreHorizontal size={20} color={colors.textSecondary} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    padding: 16,
+    marginBottom: 8,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  navButton: {
+    padding: 8,
+  },
+  monthYear: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  todayButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    alignSelf: 'center',
+  },
+  todayButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  calendar: {
+    margin: 16,
+    borderRadius: 12,
+    padding: 16,
+  },
+  weekDaysHeader: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  weekDay: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 12,
+    fontWeight: '600',
+    paddingVertical: 8,
+  },
+  calendarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  emptyDay: {
+    width: '14.28%',
+    height: 60,
+  },
+  dayContainer: {
+    width: '14.28%',
+    height: 60,
+    padding: 2,
+  },
+  dayHeader: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 24,
+    borderRadius: 12,
+  },
+  dayNumber: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  dayShifts: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  shiftIndicator: {
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+    borderRadius: 4,
+    marginVertical: 1,
+    minWidth: 30,
+  },
+  shiftTime: {
+    fontSize: 8,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  moreShifts: {
+    fontSize: 8,
+    fontWeight: '600',
+  },
+  section: {
+    margin: 16,
+    borderRadius: 12,
+    padding: 16,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  addButton: {
+    padding: 8,
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    paddingVertical: 32,
+  },
+  loadingText: {
+    fontSize: 16,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    paddingVertical: 32,
+  },
+  emptyText: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  shiftsList: {
+    gap: 12,
+  },
+  shiftCard: {
+    borderRadius: 8,
+    padding: 12,
+  },
+  shiftCardContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  shiftInfo: {
+    flex: 1,
+  },
+  shiftTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  shiftDetails: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+    gap: 4,
+  },
+  shiftLocation: {
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  shiftDescription: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  shiftMenu: {
+    padding: 4,
+  },
+});
