@@ -1,0 +1,16 @@
+{
+  "tasks": {
+    "start": "deno run --allow-net --allow-env --allow-read server.ts",
+    "dev": "deno run --allow-net --allow-env --allow-read --watch server.ts"
+  },
+  "imports": {
+    "oak": "https://deno.land/x/oak@v17.1.3/mod.ts",
+    "cors": "https://deno.land/x/cors@v1.2.2/mod.ts",
+    "supabase": "https://esm.sh/@supabase/supabase-js@2.52.0"
+  },
+  "compilerOptions": {
+    "allowJs": true,
+    "lib": ["deno.window"],
+    "strict": true
+  }
+}

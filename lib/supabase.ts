@@ -291,6 +291,87 @@ export type Database = {
           created_at?: string;
         };
       };
+      shift_trade_requests: {
+        Row: {
+          id: string;
+          shift_id: string;
+          requesting_user_id: string;
+          message: string | null;
+          status: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          shift_id: string;
+          requesting_user_id: string;
+          message?: string | null;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          shift_id?: string;
+          requesting_user_id?: string;
+          message?: string | null;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      private_chats: {
+        Row: {
+          id: string;
+          participant_ids: string[];
+          related_trade_request_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          participant_ids: string[];
+          related_trade_request_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          participant_ids?: string[];
+          related_trade_request_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      private_chat_messages: {
+        Row: {
+          id: string;
+          private_chat_id: string;
+          sender_id: string;
+          content: string;
+          message_type: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          private_chat_id: string;
+          sender_id: string;
+          content: string;
+          message_type?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          private_chat_id?: string;
+          sender_id?: string;
+          content?: string;
+          message_type?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
   };
 };

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/widget_background">
+
+    <TextView
+        android:id="@+id/widget_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Schema"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#666666"
+        android:layout_marginBottom="8dp" />
+
+    <LinearLayout
+        android:id="@+id/shift_info_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/shift_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="08:00"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/shift_position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reception"
+            android:textSize="12sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <View
+                android:id="@+id/status_indicator"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="#4CAF50"
+                android:layout_marginEnd="6dp" />
+
+            <TextView
+                android:id="@+id/shift_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Confirmed"
+                android:textSize="10sp"
+                android:textColor="#666666" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/no_shifts_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Inga kommande pass"
+        android:textSize="12sp"
+        android:textColor="#666666"
+        android:visibility="gone" />
+
+</LinearLayout>
