@@ -1,276 +1,164 @@
-# 🚀 Skiftappen - Team Chat App
+# 📱 Skiftappen - Avancerad Schemaläggning och Skiftbyten
 
-A modern React Native mobile application for team communication with real-time chat, authentication, and multi-language support.
+En modern React Native-app för schemahantering och skiftbyten, byggd med Expo, Supabase och designad för enkel deployment via Lovable.
 
-## 📱 Features
+## ✨ Funktioner
 
-### 🔐 Authentication
-- **Supabase Authentication** with email/password
-- **Google OAuth** integration
-- **Password reset** functionality
-- **Secure session management**
+### 🔐 Autentisering & Onboarding
+- Säker användarregistrering och inloggning
+- Komplett onboarding-process för nya användare
+- Profilhantering med företags- och laginformation
 
-### 💬 Real-time Chat
-- **Team-based chat** system
-- **Real-time messages** with Supabase
-- **Online status** indicators
-- **Team member management**
-- **Message history**
+### 📅 Avancerad Kalender
+- Färgkodade lag och schematyper
+- Intelligenta filter (Mitt lag, Alla lag, Specifika lag)
+- Interaktiv kalendervy med detaljerad information
+- Dynamisk legend som visar alla aktiva lag och schematyper
 
-### 🌍 Internationalization
-- **Swedish** (default)
-- **English** support
-- **Dynamic language switching**
-- **Localized UI elements**
+### 🔄 Skiftbyten
+- Skapa och hantera bytesförfrågningar
+- Visa intresse för andras byten
+- Automatisk chattfunktion för förhandlingar
+- Statusspårning (Öppen, Accepterad, Avbruten, Slutförd)
 
-### 🎨 Theme System
-- **Light mode**
-- **Dark mode**
-- **System theme** (follows device settings)
-- **Dynamic color schemes**
+### 💬 Realtidschatt
+- Privata konversationer för varje bytesförfrågan
+- Push-notiser via Firebase Cloud Messaging
+- Meddelanden med olika typer (text, förslag, accepterad/avvisad)
 
-### 📱 Mobile Features
-- **Push notifications** for new messages
-- **Offline support**
-- **Responsive design**
-- **Native performance**
+### 👤 Profilhantering
+- Personlig profil med avatar
+- Arbetsplatsinformation och lagmedlemskap
+- Inställningar och kontoadministration
 
-### 🚀 Production Ready
-- **EAS Build** configuration
-- **App Store** deployment ready
-- **Google Play Store** deployment ready
-- **Environment configuration**
+## 🏗️ Teknisk Arkitektur
 
-## 🛠️ Tech Stack
+### Frontend
+- **React Native** med Expo för cross-platform utveckling
+- **TypeScript** för typsäkerhet
+- **React Navigation** för navigation
+- **React Native Calendars** för kalenderkomponenter
+- **Supabase JS Client** för backend-integration
 
-- **React Native** - Mobile app framework
-- **Expo** - Development platform
-- **TypeScript** - Type safety
-- **Supabase** - Backend as a Service
-  - Authentication
-  - Real-time database
-  - Row Level Security (RLS)
-- **Expo Router** - File-based navigation
-- **React Context** - State management
+### Backend
+- **Supabase** som Backend-as-a-Service
+- **PostgreSQL** databas med Row Level Security (RLS)
+- **Supabase Auth** för användarautentisering
+- **Edge Functions** för serverlogik
+- **Realtime** för live-uppdateringar
 
-## 📋 Prerequisites
+### Säkerhet
+- Row Level Security (RLS) på alla databastabeller
+- JWT-baserad autentisering
+- Säkra API-endpoints med användarvalidering
+- Miljövariabler för känslig konfiguration
 
-- Node.js (v18 or higher)
-- npm or yarn
-- Expo CLI
-- iOS Simulator (for iOS development)
-- Android Studio (for Android development)
+## 🚀 Snabbstart
 
-## 🚀 Quick Start
+### Förutsättningar
+- Node.js 18+ och npm/yarn
+- Expo CLI (`npm install -g @expo/cli`)
+- Supabase CLI (`npm install -g supabase`)
+- Git
 
-### 1. Clone the repository
+### Installation
+
+1. **Klona repositoryt**
 ```bash
-git clone https://github.com/yourusername/skiftappen.git
+git clone https://github.com/ditt-username/skiftappen.git
 cd skiftappen
 ```
 
-### 2. Install dependencies
+2. **Installera beroenden**
 ```bash
 npm install
 ```
 
-### 3. Set up environment variables
-Create a `.env` file in the root directory:
-```env
-EXPO_PUBLIC_SUPABASE_URL=https://fsefeherdbtsddqimjco.supabase.co
-EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzZWZlaGVyZGJ0c2RkcWltamNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3ODUwNDcsImV4cCI6MjA2ODM2MTA0N30.YEltOJVQU6Ox5YrkZJGzbMiojyQClkFwG-mBPilIAfk
-```
-
-### 4. Set up Supabase
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
-2. Create a new project or use existing
-3. Run the SQL commands from `DATABASE_SETUP.md`
-4. Configure Google OAuth (optional)
-
-### 5. Start development server
+3. **Konfigurera miljövariabler**
 ```bash
-npx expo start
+cp .env.example .env
+# Redigera .env med dina Supabase-uppgifter
 ```
 
-### 6. Test on device
-- Install **Expo Go** app on your phone
-- Scan the QR code from terminal
-- Test all features
-
-## 🗄️ Database Setup
-
-### 1. Run SQL commands
-Copy and paste the SQL commands from `DATABASE_SETUP.md` into your Supabase SQL Editor.
-
-### 2. Enable real-time
-In Supabase Dashboard:
-- Go to **Database** → **Replication**
-- Enable real-time for all tables
-
-### 3. Test data
-Add some test companies and teams to test the chat functionality.
-
-## 📱 App Structure
-
-```
-skiftappen/
-├── app/                    # Expo Router pages
-│   ├── (tabs)/            # Tab navigation
-│   │   ├── index.tsx      # Home screen
-│   │   ├── chat.tsx       # Chat screen
-│   │   ├── profile.tsx    # Profile screen
-│   │   └── settings.tsx   # Settings screen
-│   ├── auth/              # Authentication
-│   │   ├── login.tsx      # Login screen
-│   │   └── forgot-password.tsx
-│   └── _layout.tsx        # Root layout
-├── context/               # React Context providers
-│   ├── AuthContext.tsx    # Authentication state
-│   ├── ChatContext.tsx    # Chat functionality
-│   ├── LanguageContext.tsx # Internationalization
-│   └── ThemeContext.tsx   # Theme management
-├── lib/                   # Utilities
-│   ├── supabase.ts        # Supabase client
-│   ├── i18n.ts           # Translations
-│   └── notifications.ts   # Push notifications
-└── components/            # Reusable components
-```
-
-## 🌍 Internationalization
-
-The app supports Swedish and English. To add more languages:
-
-1. Add translations to `lib/i18n.ts`
-2. Update the `Language` type
-3. Add language options to settings
-
-## 🎨 Theming
-
-The app supports three theme modes:
-- **Light** - Bright theme
-- **Dark** - Dark theme  
-- **System** - Follows device settings
-
-Colors are defined in `context/ThemeContext.tsx`.
-
-## 📱 Building for Production
-
-### 1. Install EAS CLI
+4. **Starta utvecklingsservern**
 ```bash
-npm install -g @expo/eas-cli
+npm start
 ```
 
-### 2. Login to Expo
+## 🗄️ Databasschema
+
+### Huvudtabeller
+- `shift_teams` - Lag med färgkodning
+- `profiles` - Användarprofilinformation
+- `shifts` - Scheman kopplade till lag
+- `shift_trade_requests` - Bytesförfrågningar
+- `private_chats` - Privata konversationer
+- `messages` - Chattmeddelanden
+
+### RPC-funktioner
+- `get_calendar_shifts()` - Hämtar filtrerade scheman
+- `is_profile_complete()` - Kontrollerar profilstatus
+
+## 📦 Deployment
+
+### Till GitHub
 ```bash
-eas login
+git add .
+git commit -m "Initial commit"
+git push origin main
 ```
 
-### 3. Configure build
+### Till Supabase
+1. Skapa nytt Supabase-projekt
+2. Kör SQL-schemat från `supabase_schema.sql`
+3. Deploya Edge Functions:
 ```bash
-eas build:configure
+supabase functions deploy create-trade-request
+supabase functions deploy handle-trade-interest
+supabase functions deploy send-chat-notification
 ```
 
-### 4. Build for platforms
-```bash
-# Android
-eas build --platform android --profile production
+### Till Lovable
+1. Importera GitHub-repository till Lovable
+2. Konfigurera miljövariabler
+3. Kör build och deploy
 
-# iOS
-eas build --platform ios --profile production
-```
+Se `DEPLOYMENT_COMPLETE_GUIDE.md` för detaljerade instruktioner.
 
-## 🚀 Deployment
+## 🎯 Kommande Funktioner
 
-### Android (Google Play Store)
-1. Create Google Play Console account
-2. Upload AAB file from EAS build
-3. Fill in app information
-4. Submit for review
+- [ ] **Kalenderintegration**: Export till Google/Apple Calendar
+- [ ] **Push-notiser**: Fullständig FCM-implementation
+- [ ] **Hemskärms-widgets**: iOS och Android widgets
+- [ ] **Offline-support**: Caching och synkronisering
+- [ ] **Admin-panel**: Laghantering och användaradministration
+- [ ] **Rapporter**: Schemastatistik och bytesanalys
 
-### iOS (App Store)
-1. Create Apple Developer account
-2. Upload IPA file to App Store Connect
-3. Fill in app information
-4. Submit for review
+## 🤝 Bidra
 
-See `DEPLOYMENT_GUIDE.md` for detailed instructions.
+1. Forka projektet
+2. Skapa en feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commita dina ändringar (`git commit -m 'Add some AmazingFeature'`)
+4. Pusha till branchen (`git push origin feature/AmazingFeature`)
+5. Öppna en Pull Request
 
-## 🔧 Configuration
+## 📄 Licens
 
-### Environment Variables
-- `EXPO_PUBLIC_SUPABASE_URL` - Supabase project URL
-- `EXPO_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
-
-### App Configuration
-- `app.json` - Expo configuration
-- `eas.json` - EAS build configuration
-
-## 📊 Features in Detail
-
-### Authentication
-- Email/password registration and login
-- Google OAuth integration
-- Password reset via email
-- Secure session management
-- Automatic login state persistence
-
-### Chat System
-- Real-time messaging with Supabase
-- Team-based chat rooms
-- Online status indicators
-- Message history
-- Team member management
-
-### User Interface
-- Modern, responsive design
-- Dark/light theme support
-- Multi-language interface
-- Intuitive navigation
-- Loading states and error handling
-
-### Performance
-- Optimized for mobile
-- Efficient real-time updates
-- Minimal network usage
-- Smooth animations
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Detta projekt är licensierat under MIT License - se [LICENSE](LICENSE) filen för detaljer.
 
 ## 🆘 Support
 
-If you encounter any issues:
+- 📧 **Email**: support@skiftappen.se
+- 🐛 **Buggar**: [GitHub Issues](https://github.com/ditt-username/skiftappen/issues)
+- 💬 **Diskussioner**: [GitHub Discussions](https://github.com/ditt-username/skiftappen/discussions)
 
-1. Check the [Expo documentation](https://docs.expo.dev/)
-2. Check the [Supabase documentation](https://supabase.com/docs)
-3. Create an issue on GitHub
-4. Check the troubleshooting section in `DEPLOYMENT_GUIDE.md`
+## 🙏 Tack
 
-## 🗺️ Roadmap
-
-- [ ] Voice messages
-- [ ] File sharing
-- [ ] Video calls
-- [ ] Advanced team management
-- [ ] Analytics dashboard
-- [ ] Custom themes
-- [ ] Offline message sync
-- [ ] Message reactions
-- [ ] User profiles with avatars
-
-## 📞 Contact
-
-For questions or support, please create an issue on GitHub or contact the development team.
+- [Supabase](https://supabase.com) för den fantastiska backend-plattformen
+- [Expo](https://expo.dev) för React Native-utvecklingsverktyg
+- [Lovable](https://lovable.dev) för deployment och hosting
+- [React Native Calendar](https://github.com/wix/react-native-calendars) för kalenderkomponenter
 
 ---
 
-**Made with ❤️ using React Native, Expo, and Supabase**
+**Skiftappen** - Förenkla ditt arbetsliv med intelligent schemahantering! 🚀
