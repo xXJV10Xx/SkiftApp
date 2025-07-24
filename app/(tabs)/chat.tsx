@@ -33,6 +33,7 @@ export default function ChatScreen() {
     sendShiftChangeRequest,
     approveShiftChange,
     rejectShiftChange,
+    createPrivateShiftChat,
     joinChatRoom,
     leaveChatRoom,
     setCurrentChatRoom,
@@ -135,6 +136,20 @@ export default function ChatScreen() {
     }
   };
 
+  const handleInterestedInExchange = async (requestId: string, requesterId: string) => {
+    try {
+      const privateChat = await createPrivateShiftChat(requesterId, requestId);
+      setCurrentChatRoom(privateChat);
+      Alert.alert(
+        'Privat chat skapad', 
+        'En privat chat har skapats för att diskutera skiftbytet. Kom ihåg att den som ansökt ansvarar för att meddela sin chef.'
+      );
+    } catch (error) {
+      console.error('Error creating private shift chat:', error);
+      Alert.alert('Fel', 'Kunde inte skapa privat chat för skiftbyte');
+    }
+  };
+
   const handleJoinRoom = async (room: any) => {
     try {
       await joinChatRoom(room.id);
@@ -188,6 +203,7 @@ export default function ChatScreen() {
               data={shiftChangeData}
               onApprove={handleApproveShiftChange}
               onReject={handleRejectShiftChange}
+              onInterestedInExchange={handleInterestedInExchange}
               isOwnMessage={isOwnMessage}
             />
             <Text style={[

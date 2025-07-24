@@ -72,6 +72,7 @@ interface ChatContextType {
   sendShiftChangeRequest: (shiftChangeData: ShiftChangeRequest) => Promise<void>;
   approveShiftChange: (requestId: string) => Promise<void>;
   rejectShiftChange: (requestId: string) => Promise<void>;
+  createPrivateShiftChat: (otherUserId: string, shiftChangeRequestId: string) => Promise<ChatRoom>;
   joinChatRoom: (roomId: string) => Promise<void>;
   leaveChatRoom: (roomId: string) => Promise<void>;
   setCurrentChatRoom: (room: ChatRoom | null) => void;
@@ -291,6 +292,121 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  // Create private chat for shift exchange
+  const createPrivateShiftChat = async (otherUserId: string, shiftChangeRequestId: string): Promise<ChatRoom> => {
+    if (!user) throw new Error('User not authenticated');
+
+    try {
+      // Get both users' information
+      const { data: users, error: usersError } = await supabase
+        .from('employees')
+        .select('id, first_name, last_name, company_id')
+        .in('id', [user.id, otherUserId]);
+
+      if (usersError) throw usersError;
+      if (!users || users.length !== 2) throw new Error('Could not find users');
+
+      const currentUser = users.find(u => u.id === user.id);
+      const otherUser = users.find(u => u.id === otherUserId);
+
+      if (!currentUser || !otherUser) throw new Error('User data incomplete');
+
+      // Check if private chat already exists between these users
+      const { data: existingChats, error: existingError } = await supabase
+        .from('chat_room_members')
+        .select(`
+          chat_room_id,
+          chat_rooms!inner (
+            id,
+            name,
+            type,
+            is_private,
+            company_id,
+            created_at
+          )
+        `)
+        .eq('employee_id', user.id);
+
+      if (existingError) throw existingError;
+
+      // Check if there's already a private chat with the other user
+      for (const chatMember of existingChats || []) {
+        const chatRoom = chatMember.chat_rooms;
+        if (chatRoom.is_private && chatRoom.type === 'shift_exchange') {
+          // Check if other user is also in this chat
+          const { data: otherMembers, error: otherMembersError } = await supabase
+            .from('chat_room_members')
+            .select('employee_id')
+            .eq('chat_room_id', chatRoom.id)
+            .eq('employee_id', otherUserId);
+
+          if (otherMembersError) throw otherMembersError;
+          
+          if (otherMembers && otherMembers.length > 0) {
+            // Private chat already exists, return it
+            return chatRoom as ChatRoom;
+          }
+        }
+      }
+
+      // Create new private chat room
+      const chatRoomName = `Skiftbyte: ${currentUser.first_name} & ${otherUser.first_name}`;
+      
+      const { data: newChatRoom, error: chatRoomError } = await supabase
+        .from('chat_rooms')
+        .insert({
+          company_id: currentUser.company_id,
+          name: chatRoomName,
+          description: `Privat chat för skiftbyte mellan ${currentUser.first_name} ${currentUser.last_name} och ${otherUser.first_name} ${otherUser.last_name}`,
+          type: 'shift_exchange',
+          is_private: true,
+          created_by: user.id
+        })
+        .select()
+        .single();
+
+      if (chatRoomError) throw chatRoomError;
+
+      // Add both users to the chat room
+      const { error: membersError } = await supabase
+        .from('chat_room_members')
+        .insert([
+          {
+            chat_room_id: newChatRoom.id,
+            employee_id: user.id,
+            role: 'member'
+          },
+          {
+            chat_room_id: newChatRoom.id,
+            employee_id: otherUserId,
+            role: 'member'
+          }
+        ]);
+
+      if (membersError) throw membersError;
+
+      // Send initial system message about responsibility
+      const { error: messageError } = await supabase
+        .from('messages')
+        .insert({
+          chat_room_id: newChatRoom.id,
+          sender_id: user.id,
+          content: `🔄 **Skiftbyte-chat skapad**\n\n📋 **Viktigt att komma ihåg:**\n• Den som ansökt om skiftbytet ansvarar för att meddela sin chef\n• Kom överens om alla detaljer innan ni informerar chefen\n• Se till att båda parter är överens om bytet\n\n💬 Ni kan nu diskutera detaljerna för ert skiftbyte här!`,
+          message_type: 'system'
+        });
+
+      if (messageError) throw messageError;
+
+      // Refresh chat rooms list
+      await fetchChatRooms();
+
+      return newChatRoom as ChatRoom;
+    } catch (error) {
+      console.error('Error creating private shift chat:', error);
+      throw error;
+    }
+  };
+
   // Join chat room
   const joinChatRoom = async (roomId: string) => {
     if (!user) return;
@@ -440,6 +556,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     sendShiftChangeRequest,
     approveShiftChange,
     rejectShiftChange,
+    createPrivateShiftChat,
     joinChatRoom,
     leaveChatRoom,
     setCurrentChatRoom,

@@ -1,4 +1,4 @@
-import { Calendar, Check, Clock, User, Users, X } from 'lucide-react-native';
+import { Calendar, Check, Clock, MessageCircle, User, Users, X } from 'lucide-react-native';
 import React from 'react';
 import {
     Alert,
@@ -15,6 +15,7 @@ interface ShiftChangeMessageProps {
   data: ShiftChangeRequest;
   onApprove?: (requestId: string) => void;
   onReject?: (requestId: string) => void;
+  onInterestedInExchange?: (requestId: string, requesterId: string) => void;
   isOwnMessage?: boolean;
 }
 
@@ -22,6 +23,7 @@ export default function ShiftChangeMessage({
   data, 
   onApprove, 
   onReject, 
+  onInterestedInExchange,
   isOwnMessage = false 
 }: ShiftChangeMessageProps) {
   const { colors } = useTheme();
@@ -78,6 +80,23 @@ export default function ShiftChangeMessage({
           text: 'Avvisa', 
           style: 'destructive',
           onPress: () => onReject?.(data.id!)
+        }
+      ]
+    );
+  };
+
+  const handleInterestedInExchange = () => {
+    if (!data.id || !data.requester_id) return;
+    
+    Alert.alert(
+      'Intresserad av skiftbyte',
+      'Vill du starta en privat chat för att diskutera detta skiftbyte? En privat chatkanal kommer att skapas mellan dig och den som ansökt.',
+      [
+        { text: 'Avbryt', style: 'cancel' },
+        { 
+          text: 'Ja, starta chat', 
+          style: 'default',
+          onPress: () => onInterestedInExchange?.(data.id!, data.requester_id)
         }
       ]
     );
@@ -183,6 +202,9 @@ export default function ShiftChangeMessage({
     rejectButton: {
       backgroundColor: colors.error || '#EF4444',
     },
+    interestedButton: {
+      backgroundColor: colors.primary,
+    },
     buttonText: {
       color: 'white',
       fontSize: 14,
@@ -197,6 +219,7 @@ export default function ShiftChangeMessage({
   });
 
   const canTakeAction = !isOwnMessage && data.status === 'pending' && onApprove && onReject;
+  const canShowInterest = !isOwnMessage && data.status === 'pending' && onInterestedInExchange;
 
   return (
     <View style={styles.container}>
@@ -242,6 +265,18 @@ export default function ShiftChangeMessage({
           <Text style={styles.reasonText}>{data.reason}</Text>
         </View>
       </View>
+
+      {canShowInterest && (
+        <View style={styles.buttonRow}>
+          <TouchableOpacity 
+            style={[styles.button, styles.interestedButton]} 
+            onPress={handleInterestedInExchange}
+          >
+            <MessageCircle size={16} color="white" />
+            <Text style={styles.buttonText}>Intresserad av byte</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {canTakeAction && (
         <View style={styles.buttonRow}>
