@@ -1,9 +1,10 @@
-import { MessageSquare, Send, Users } from 'lucide-react-native';
+import { MessageSquare, Plus, Send, Users } from 'lucide-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Alert,
     FlatList,
     KeyboardAvoidingView,
+    Modal,
     Platform,
     ScrollView,
     StyleSheet,
@@ -12,6 +13,11 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import DrawerLayout from '../../components/DrawerLayout';
+import ShiftChangeForm, { ShiftChangeRequest } from '../../components/ShiftChangeForm';
+import ShiftChangeMessage from '../../components/ShiftChangeMessage';
+import WorkExtraForm, { WorkExtraRequest } from '../../components/WorkExtraForm';
+import WorkExtraMessage from '../../components/WorkExtraMessage';
 import { useAuth } from '../../context/AuthContext';
 import { useChat } from '../../context/ChatContext';
 import { useCompany } from '../../context/CompanyContext';
@@ -27,6 +33,11 @@ export default function ChatScreen() {
     currentChatRoom,
     chatMembers,
     sendMessage,
+    sendShiftChangeRequest,
+    approveShiftChange,
+    rejectShiftChange,
+    sendWorkExtraRequest,
+    createPrivateWorkChat,
     joinChatRoom,
     leaveChatRoom,
     setCurrentChatRoom,
@@ -38,6 +49,9 @@ export default function ChatScreen() {
   const [newMessage, setNewMessage] = useState('');
   const [showRoomSelector, setShowRoomSelector] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
+  const [showShiftChangeForm, setShowShiftChangeForm] = useState(false);
+  const [showWorkExtraForm, setShowWorkExtraForm] = useState(false);
+  const [showFormSelector, setShowFormSelector] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
   // Auto-scroll to bottom when new messages arrive
@@ -97,6 +111,76 @@ export default function ChatScreen() {
     }
   };
 
+  const handleSendShiftChange = async (formData: ShiftChangeRequest) => {
+    try {
+      await sendShiftChangeRequest({ ...formData, requester_id: user?.id || '' });
+      setShowShiftChangeForm(false);
+      Alert.alert('Framgång', 'Skiftbyte-förfrågan har skickats');
+    } catch (error) {
+      console.error('Error sending shift change request:', error);
+      Alert.alert('Fel', 'Kunde inte skicka skiftbyte-förfrågan');
+    }
+  };
+
+  const handleApproveShiftChange = async (requestId: string) => {
+    try {
+      await approveShiftChange(requestId);
+      Alert.alert('Framgång', 'Skiftbyte-förfrågan har godkänts');
+    } catch (error) {
+      console.error('Error approving shift change:', error);
+      Alert.alert('Fel', 'Kunde inte godkänna skiftbyte-förfrågan');
+    }
+  };
+
+  const handleRejectShiftChange = async (requestId: string) => {
+    try {
+      await rejectShiftChange(requestId);
+      Alert.alert('Framgång', 'Skiftbyte-förfrågan har avvisats');
+    } catch (error) {
+      console.error('Error rejecting shift change:', error);
+      Alert.alert('Fel', 'Kunde inte avvisa skiftbyte-förfrågan');
+    }
+  };
+
+  const handleSendWorkExtra = async (formData: WorkExtraRequest) => {
+    try {
+      await sendWorkExtraRequest({ ...formData, requester_id: user?.id || '' });
+      setShowWorkExtraForm(false);
+      Alert.alert('Framgång', 'Extrajobb-förfrågan har skickats');
+    } catch (error) {
+      console.error('Error sending work extra request:', error);
+      Alert.alert('Fel', 'Kunde inte skicka extrajobb-förfrågan');
+    }
+  };
+
+  const handleInterestedInExchange = async (requestId: string, requesterId: string) => {
+    try {
+      const privateChat = await createPrivateWorkChat(requesterId, requestId, 'shift_exchange');
+      setCurrentChatRoom(privateChat);
+      Alert.alert(
+        'Privat chat skapad', 
+        'En privat chat har skapats för att diskutera skiftbytet. Kom ihåg att den som ansökt ansvarar för att meddela sin chef.'
+      );
+    } catch (error) {
+      console.error('Error creating private shift chat:', error);
+      Alert.alert('Fel', 'Kunde inte skapa privat chat för skiftbyte');
+    }
+  };
+
+  const handleInterestedInWork = async (requestId: string, requesterId: string) => {
+    try {
+      const privateChat = await createPrivateWorkChat(requesterId, requestId, 'work_extra');
+      setCurrentChatRoom(privateChat);
+      Alert.alert(
+        'Privat chat skapad', 
+        'En privat chat har skapats för att diskutera extrajobbet. Kom ihåg att den som publicerat jobbet ansvarar för att meddela sin chef.'
+      );
+    } catch (error) {
+      console.error('Error creating private work chat:', error);
+      Alert.alert('Fel', 'Kunde inte skapa privat chat för extrajobb');
+    }
+  };
+
   const handleJoinRoom = async (room: any) => {
     try {
       await joinChatRoom(room.id);
@@ -140,6 +224,61 @@ export default function ChatScreen() {
       minute: '2-digit',
     });
 
+    // Handle shift change request messages
+    if (item.message_type === 'shift_change_request') {
+      try {
+        const shiftChangeData = JSON.parse(item.content) as ShiftChangeRequest;
+        return (
+          <View style={[styles.messageContainer, isOwnMessage && styles.ownMessage]}>
+            <ShiftChangeMessage
+              data={shiftChangeData}
+              onApprove={handleApproveShiftChange}
+              onReject={handleRejectShiftChange}
+              onInterestedInExchange={handleInterestedInExchange}
+              isOwnMessage={isOwnMessage}
+            />
+            <Text style={[
+              styles.messageTime, 
+              isOwnMessage ? styles.ownMessageTime : styles.otherMessageTime,
+              styles.embeddedMessageTime
+            ]}>
+              {time}
+            </Text>
+          </View>
+        );
+      } catch (error) {
+        console.error('Error parsing shift change data:', error);
+        // Fall back to regular message display
+      }
+    }
+
+    // Handle work extra request messages
+    if (item.message_type === 'work_extra_request') {
+      try {
+        const workExtraData = JSON.parse(item.content) as WorkExtraRequest;
+        return (
+          <View style={[styles.messageContainer, isOwnMessage && styles.ownMessage]}>
+            <WorkExtraMessage
+              data={workExtraData}
+              onInterestedInWork={handleInterestedInWork}
+              isOwnMessage={isOwnMessage}
+            />
+            <Text style={[
+              styles.messageTime, 
+              isOwnMessage ? styles.ownMessageTime : styles.otherMessageTime,
+              styles.embeddedMessageTime
+            ]}>
+              {time}
+            </Text>
+          </View>
+        );
+      } catch (error) {
+        console.error('Error parsing work extra data:', error);
+        // Fall back to regular message display
+      }
+    }
+
+    // Regular text messages
     return (
       <View style={[styles.messageContainer, isOwnMessage && styles.ownMessage]}>
         <View style={[
@@ -332,6 +471,15 @@ export default function ChatScreen() {
       borderTopWidth: 1,
       borderTopColor: colors.border,
     },
+    attachButton: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: colors.surface,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 8,
+    },
     textInput: {
       flex: 1,
       backgroundColor: colors.surface,
@@ -444,11 +592,104 @@ export default function ChatScreen() {
       fontSize: 16,
       fontWeight: '600',
     },
+    embeddedMessageTime: {
+      textAlign: 'center',
+      marginTop: 8,
+    },
+    modalContainer: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    modalHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 16,
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    modalTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: colors.text,
+    },
+    modalCloseButton: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+    },
+    modalCloseText: {
+      fontSize: 16,
+      color: colors.primary,
+      fontWeight: '600',
+    },
+    modalContent: {
+      flex: 1,
+    },
+    formSelectorOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+    },
+    formSelectorContainer: {
+      backgroundColor: colors.background,
+      borderRadius: 16,
+      padding: 20,
+      width: '100%',
+      maxWidth: 400,
+    },
+    formSelectorTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: colors.text,
+      textAlign: 'center',
+      marginBottom: 20,
+    },
+    formSelectorOption: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    formSelectorTextContainer: {
+      flex: 1,
+      marginLeft: 16,
+    },
+    formSelectorOptionTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 4,
+    },
+    formSelectorOptionDescription: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      lineHeight: 18,
+    },
+    formSelectorCancel: {
+      backgroundColor: colors.textSecondary,
+      borderRadius: 12,
+      paddingVertical: 14,
+      alignItems: 'center',
+      marginTop: 8,
+    },
+    formSelectorCancelText: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: 'white',
+    },
   });
 
   if (!currentChatRoom) {
     return (
-      <View style={styles.container}>
+      <DrawerLayout title="Chat">
+        <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Chat</Text>
           <TouchableOpacity onPress={() => setShowRoomSelector(true)}>
@@ -505,14 +746,16 @@ export default function ChatScreen() {
           </View>
         )}
       </View>
+      </DrawerLayout>
     );
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
+    <DrawerLayout title={currentChatRoom.name}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
@@ -555,6 +798,12 @@ export default function ChatScreen() {
 
       {/* Message Input */}
       <View style={styles.inputContainer}>
+        <TouchableOpacity
+          style={styles.attachButton}
+          onPress={() => setShowFormSelector(true)}
+        >
+          <Plus size={20} color={colors.primary} />
+        </TouchableOpacity>
         <TextInput
           style={styles.textInput}
           value={newMessage}
@@ -572,6 +821,114 @@ export default function ChatScreen() {
           <Send size={20} color="white" />
         </TouchableOpacity>
       </View>
+
+      {/* Form Selector Modal */}
+      <Modal
+        visible={showFormSelector}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setShowFormSelector(false)}
+      >
+        <View style={styles.formSelectorOverlay}>
+          <View style={styles.formSelectorContainer}>
+            <Text style={styles.formSelectorTitle}>Välj formulärtyp</Text>
+            
+            <TouchableOpacity
+              style={styles.formSelectorOption}
+              onPress={() => {
+                setShowFormSelector(false);
+                setShowShiftChangeForm(true);
+              }}
+            >
+              <Users size={24} color={colors.primary} />
+              <View style={styles.formSelectorTextContainer}>
+                <Text style={styles.formSelectorOptionTitle}>Skiftbyte</Text>
+                <Text style={styles.formSelectorOptionDescription}>
+                  Ansök om att byta skift med en kollega
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.formSelectorOption}
+              onPress={() => {
+                setShowFormSelector(false);
+                setShowWorkExtraForm(true);
+              }}
+            >
+              <Clock size={24} color={colors.primary} />
+              <View style={styles.formSelectorTextContainer}>
+                <Text style={styles.formSelectorOptionTitle}>Extrajobb</Text>
+                <Text style={styles.formSelectorOptionDescription}>
+                  Publicera ett tillgängligt extrajobb
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.formSelectorCancel}
+              onPress={() => setShowFormSelector(false)}
+            >
+              <Text style={styles.formSelectorCancelText}>Avbryt</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Shift Change Form Modal */}
+      <Modal
+        visible={showShiftChangeForm}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowShiftChangeForm(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Skicka skiftbyte-förfrågan</Text>
+            <TouchableOpacity
+              onPress={() => setShowShiftChangeForm(false)}
+              style={styles.modalCloseButton}
+            >
+              <Text style={styles.modalCloseText}>Stäng</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.modalContent}>
+            <ShiftChangeForm
+              onSubmit={handleSendShiftChange}
+              onCancel={() => setShowShiftChangeForm(false)}
+              isEmbedded={false}
+            />
+          </ScrollView>
+        </View>
+      </Modal>
+
+      {/* Work Extra Form Modal */}
+      <Modal
+        visible={showWorkExtraForm}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowWorkExtraForm(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Publicera extrajobb</Text>
+            <TouchableOpacity
+              onPress={() => setShowWorkExtraForm(false)}
+              style={styles.modalCloseButton}
+            >
+              <Text style={styles.modalCloseText}>Stäng</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.modalContent}>
+            <WorkExtraForm
+              onSubmit={handleSendWorkExtra}
+              onCancel={() => setShowWorkExtraForm(false)}
+              isEmbedded={false}
+            />
+          </ScrollView>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
+    </DrawerLayout>
   );
 }

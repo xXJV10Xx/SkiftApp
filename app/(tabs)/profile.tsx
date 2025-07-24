@@ -9,9 +9,12 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import DrawerLayout from '../../components/DrawerLayout';
+import ProfilePicture from '../../components/ProfilePicture';
 import { useAuth } from '../../context/AuthContext';
 import { useCompany } from '../../context/CompanyContext';
 import { useTheme } from '../../context/ThemeContext';
+import { uploadProfileImage } from '../../lib/imageUpload';
 
 export default function ProfileScreen() {
   const { colors } = useTheme();
@@ -30,20 +33,57 @@ export default function ProfileScreen() {
   const [lastName, setLastName] = useState(employee?.last_name || '');
   const [phone, setPhone] = useState(employee?.phone || '');
   const [position, setPosition] = useState(employee?.position || '');
+  const [profileImageUri, setProfileImageUri] = useState(employee?.avatar_url || null);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const handleSave = async () => {
     try {
-      await updateEmployeeProfile({
+      const updateData: any = {
         first_name: firstName,
         last_name: lastName,
         phone: phone,
         position: position
-      });
+      };
+
+      // Include avatar_url if it has changed
+      if (profileImageUri !== employee?.avatar_url) {
+        updateData.avatar_url = profileImageUri;
+      }
+
+      await updateEmployeeProfile(updateData);
       
       setEditing(false);
       Alert.alert('Framgång', 'Profilen har uppdaterats');
     } catch (error) {
       Alert.alert('Fel', 'Kunde inte uppdatera profilen');
+    }
+  };
+
+  const handleImageSelected = async (imageUri: string) => {
+    if (!user) return;
+
+    try {
+      setUploadingImage(true);
+      
+      const uploadedImageUrl = await uploadProfileImage(user.id, imageUri);
+      
+      if (uploadedImageUrl) {
+        setProfileImageUri(uploadedImageUrl);
+        
+        // Auto-save the profile image
+        await updateEmployeeProfile({
+          avatar_url: uploadedImageUrl
+        });
+        
+        Alert.alert('Framgång', 'Profilbilden har uppdaterats');
+      } else {
+        Alert.alert('Fel', 'Kunde inte ladda upp bilden');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      Alert.alert('Fel', 'Kunde inte ladda upp bilden');
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -95,6 +135,12 @@ export default function ProfileScreen() {
     email: {
       fontSize: 16,
       color: colors.textSecondary,
+    },
+    uploadingText: {
+      fontSize: 14,
+      color: colors.primary,
+      marginTop: 8,
+      fontStyle: 'italic',
     },
     section: {
       backgroundColor: colors.card,
@@ -215,15 +261,22 @@ export default function ProfileScreen() {
   });
 
   return (
-    <ScrollView style={styles.container}>
+    <DrawerLayout title="Profil">
+      <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.avatarContainer}>
-          <User size={40} color="white" />
-        </View>
+        <ProfilePicture
+          imageUri={profileImageUri}
+          size={80}
+          onImageSelected={handleImageSelected}
+          editable={!uploadingImage}
+        />
         <Text style={styles.name}>
           {employee?.first_name} {employee?.last_name}
         </Text>
         <Text style={styles.email}>{user?.email}</Text>
+        {uploadingImage && (
+          <Text style={styles.uploadingText}>Laddar upp bild...</Text>
+        )}
       </View>
 
       <View style={styles.section}>
@@ -383,5 +436,6 @@ export default function ProfileScreen() {
         <Text style={styles.signOutText}>Logga ut</Text>
       </TouchableOpacity>
     </ScrollView>
+    </DrawerLayout>
   );
 }
