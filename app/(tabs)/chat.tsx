@@ -1,4 +1,4 @@
-import { MessageSquare, Plus, Send, Users } from 'lucide-react-native';
+import { AlertTriangle, Check, Clock, MessageSquare, Plus, RotateCcw, Send, Users } from 'lucide-react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import {
     Alert,
@@ -13,27 +13,32 @@ import {
     View,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
-import { useChat } from '../../context/ChatContext';
 import { useCompany } from '../../context/CompanyContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useChatStore, ChatMessage, MessageStatus } from '../../lib/chatStore';
+import { supabase } from '../../lib/supabase';
 
 export default function ChatScreen() {
   const { colors } = useTheme();
   const { user } = useAuth();
   const { selectedCompany, selectedTeam, selectedDepartment } = useCompany();
+  
+  // Zustand store
   const {
     messages,
     chatRooms,
     currentChatRoom,
     chatMembers,
-    sendMessage,
-    joinChatRoom,
-    leaveChatRoom,
+    loading,
+    addMessage,
+    retryMessage,
+    setMessages,
+    setChatRooms,
     setCurrentChatRoom,
-    fetchChatRooms,
-    createChatRoom,
-    loading
-  } = useChat();
+    setChatMembers,
+    setLoading,
+    handleRealtimeMessage
+  } = useChatStore();
   
   const [newMessage, setNewMessage] = useState('');
   const [showRoomSelector, setShowRoomSelector] = useState(false);
@@ -48,6 +53,218 @@ export default function ChatScreen() {
       }, 100);
     }
   }, [messages]);
+
+  // Fetch chat rooms user is member of
+  const fetchChatRooms = async () => {
+    if (!user) return;
+
+    try {
+      setLoading(true);
+      
+      const { data, error } = await supabase
+        .from('chat_room_members')
+        .select(`
+          chat_rooms (
+            id,
+            company_id,
+            team_id,
+            name,
+            description,
+            type,
+            department,
+            is_private,
+            auto_join_department,
+            auto_join_team,
+            created_by,
+            created_at,
+            updated_at,
+            companies (
+              name
+            ),
+            teams (
+              name,
+              color
+            )
+          )
+        `)
+        .eq('employee_id', user.id);
+
+      if (error) throw error;
+
+      const rooms = data?.map(item => item.chat_rooms).filter(Boolean) as any[];
+      setChatRooms(rooms || []);
+    } catch (error) {
+      console.error('Error fetching chat rooms:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch messages for current chat room
+  const fetchMessages = async (roomId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('messages')
+        .select(`
+          *,
+          sender:employees!sender_id (
+            first_name,
+            last_name,
+            email,
+            avatar_url
+          )
+        `)
+        .eq('chat_room_id', roomId)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      
+      // Add 'sent' status to all existing messages
+      const messagesWithStatus = (data || []).map(msg => ({ ...msg, status: 'sent' as MessageStatus }));
+      setMessages(messagesWithStatus);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    }
+  };
+
+  // Fetch chat room members
+  const fetchChatMembers = async (roomId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('chat_room_members')
+        .select(`
+          *,
+          employees (
+            first_name,
+            last_name,
+            email,
+            avatar_url,
+            department,
+            position
+          )
+        `)
+        .eq('chat_room_id', roomId);
+
+      if (error) throw error;
+      setChatMembers(data || []);
+    } catch (error) {
+      console.error('Error fetching chat members:', error);
+    }
+  };
+
+  // Join chat room
+  const joinChatRoom = async (roomId: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('chat_room_members')
+        .insert({
+          chat_room_id: roomId,
+          employee_id: user.id,
+          role: 'member'
+        });
+
+      if (error) throw error;
+      await fetchChatRooms();
+    } catch (error) {
+      console.error('Error joining chat room:', error);
+      throw error;
+    }
+  };
+
+  // Leave chat room
+  const leaveChatRoom = async (roomId: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('chat_room_members')
+        .delete()
+        .eq('chat_room_id', roomId)
+        .eq('employee_id', user.id);
+
+      if (error) throw error;
+      
+      if (currentChatRoom?.id === roomId) {
+        setCurrentChatRoom(null);
+      }
+      
+      await fetchChatRooms();
+    } catch (error) {
+      console.error('Error leaving chat room:', error);
+      throw error;
+    }
+  };
+
+  // Create chat room
+  const createChatRoom = async (roomData: any) => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('chat_rooms')
+        .insert({
+          ...roomData,
+          created_by: user.id
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Auto-join creator to the room
+      await joinChatRoom(data.id);
+    } catch (error) {
+      console.error('Error creating chat room:', error);
+      throw error;
+    }
+  };
+
+  // Set up real-time subscription
+  useEffect(() => {
+    if (!currentChatRoom) return;
+
+    // Subscribe to new messages
+    const messageChannel = supabase
+      .channel(`chat:${currentChatRoom.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `chat_room_id=eq.${currentChatRoom.id}`,
+        },
+        (payload) => {
+          const newMessage = payload.new as ChatMessage;
+          handleRealtimeMessage(newMessage);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      messageChannel.unsubscribe();
+    };
+  }, [currentChatRoom]);
+
+  // Load data when current chat room changes
+  useEffect(() => {
+    if (currentChatRoom) {
+      fetchMessages(currentChatRoom.id);
+      fetchChatMembers(currentChatRoom.id);
+    } else {
+      setMessages([]);
+      setChatMembers([]);
+    }
+  }, [currentChatRoom]);
+
+  // Load chat rooms on mount
+  useEffect(() => {
+    if (user) {
+      fetchChatRooms();
+    }
+  }, [user]);
 
   // Create default chat rooms when company/team is selected
   useEffect(() => {
@@ -91,13 +308,22 @@ export default function ChatScreen() {
   };
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || !user) return;
     
     try {
-      await sendMessage(newMessage.trim());
+      await addMessage(newMessage.trim(), user.id);
       setNewMessage('');
     } catch (error) {
-      Alert.alert('Fel', 'Kunde inte skicka meddelandet');
+      // Error is already handled in the store with optimistic updates
+      console.error('Failed to send message:', error);
+    }
+  };
+
+  const handleRetryMessage = async (tempId: string) => {
+    try {
+      await retryMessage(tempId);
+    } catch (error) {
+      Alert.alert('Fel', 'Kunde inte skicka meddelandet igen');
     }
   };
 
@@ -135,7 +361,33 @@ export default function ChatScreen() {
     );
   };
 
-  const renderMessage = ({ item }: { item: any }) => {
+  const renderMessageStatus = (message: ChatMessage) => {
+    const isOwnMessage = message.sender_id === user?.id;
+    if (!isOwnMessage) return null;
+
+    const status = message.status || 'sent';
+    const iconSize = 12;
+
+    switch (status) {
+      case 'pending':
+        return <Clock size={iconSize} color="rgba(255, 255, 255, 0.7)" />;
+      case 'sent':
+        return <Check size={iconSize} color="rgba(255, 255, 255, 0.7)" />;
+      case 'error':
+        return (
+          <TouchableOpacity 
+            onPress={() => message.tempId && handleRetryMessage(message.tempId)}
+            style={styles.retryButton}
+          >
+            <AlertTriangle size={iconSize} color="#ff4444" />
+          </TouchableOpacity>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const renderMessage = ({ item }: { item: ChatMessage }) => {
     const isOwnMessage = item.sender_id === user?.id;
     const time = new Date(item.created_at).toLocaleTimeString('sv-SE', {
       hour: '2-digit',
@@ -146,7 +398,8 @@ export default function ChatScreen() {
       <View style={[styles.messageContainer, isOwnMessage && styles.ownMessage]}>
         <View style={[
           styles.messageBubble, 
-          isOwnMessage ? styles.ownMessageBubble : styles.otherMessageBubble
+          isOwnMessage ? styles.ownMessageBubble : styles.otherMessageBubble,
+          item.status === 'error' && styles.errorMessageBubble
         ]}>
           {!isOwnMessage && (
             <Text style={styles.messageAuthor}>
@@ -159,12 +412,15 @@ export default function ChatScreen() {
           ]}>
             {item.content}
           </Text>
-          <Text style={[
-            styles.messageTime, 
-            isOwnMessage ? styles.ownMessageTime : styles.otherMessageTime
-          ]}>
-            {time}
-          </Text>
+          <View style={styles.messageFooter}>
+            <Text style={[
+              styles.messageTime, 
+              isOwnMessage ? styles.ownMessageTime : styles.otherMessageTime
+            ]}>
+              {time}
+            </Text>
+            {renderMessageStatus(item)}
+          </View>
         </View>
       </View>
     );
@@ -210,6 +466,7 @@ export default function ChatScreen() {
     },
     roomInfo: {
       flex: 1,
+      marginLeft: 12,
     },
     roomName: {
       fontSize: 18,
@@ -300,6 +557,10 @@ export default function ChatScreen() {
       borderWidth: 1,
       borderColor: colors.border,
     },
+    errorMessageBubble: {
+      borderColor: '#ff4444',
+      borderWidth: 1,
+    },
     messageAuthor: {
       fontSize: 12,
       color: colors.textSecondary,
@@ -315,16 +576,24 @@ export default function ChatScreen() {
     otherMessageText: {
       color: colors.text,
     },
+    messageFooter: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: 4,
+    },
     messageTime: {
       fontSize: 11,
-      marginTop: 4,
-      alignSelf: 'flex-end',
+      flex: 1,
     },
     ownMessageTime: {
       color: 'rgba(255, 255, 255, 0.7)',
     },
     otherMessageTime: {
       color: colors.textSecondary,
+    },
+    retryButton: {
+      padding: 2,
     },
     inputContainer: {
       flexDirection: 'row',
@@ -550,7 +819,7 @@ export default function ChatScreen() {
         ref={flatListRef}
         data={messages}
         renderItem={renderMessage}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.tempId || item.id}
         style={styles.messagesList}
         contentContainerStyle={styles.messagesContainer}
       />
