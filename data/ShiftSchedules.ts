@@ -1,7 +1,9 @@
 // 📋 Skiftscheman - Komplett Datastruktur för alla svenska industriföretag
 // Beräknad från 2024-01-01 med 10 års intervall (2020-2030)
 
-export const START_DATE = new Date('2024-01-01');
+// Startdatum justerat så att Lag 31 har rätt schema 24 juli 2025
+// Lag 31 ska ha E (sista eftermiddagen) 24/7 och sedan N N N från 25-27/7
+export const START_DATE = new Date('2025-07-19');
 
 // 🔄 Skifttyper och mönster
 export interface ShiftType {
@@ -74,11 +76,11 @@ export const SHIFT_TYPES: Record<string, ShiftType> = {
     id: 'ssab_3skift',
     name: 'SSAB 3-skift',
     description: 'Kontinuerligt 3-skiftssystem',
-    pattern: ['M', 'M', 'M', 'A', 'A', 'A', 'N', 'N', 'N', 'L', 'L', 'L', 'L', 'L'],
+    pattern: ['M', 'M', 'M', 'E', 'E', 'E', 'N', 'N', 'N', 'L', 'L', 'L', 'L', 'L'],
     cycle: 14,
     times: {
       'M': { start: '06:00', end: '14:00', name: 'Morgon' },
-      'A': { start: '14:00', end: '22:00', name: 'Kväll' },
+      'E': { start: '14:00', end: '22:00', name: 'Eftermiddag' },
       'N': { start: '22:00', end: '06:00', name: 'Natt' },
       'L': { start: '', end: '', name: 'Ledig' }
     }
@@ -178,19 +180,35 @@ export function calculateShiftForDate(date: Date, shiftType: ShiftType, team: st
 }
 
 export function getTeamOffset(team: string, shiftType: ShiftType) {
-  // Hitta företaget som använder denna skifttyp
-  const companyData = Object.values(require('./companies').COMPANIES).find((comp: any) => 
-    comp.shifts.includes(shiftType.id)
-  );
+  // Specialhantering för SSAB Oxelösund
+  if (shiftType.id === 'ssab_3skift') {
+    const ssabTeams = ['31', '32', '33', '34', '35'];
+    const teamIndex = ssabTeams.indexOf(team);
+    if (teamIndex !== -1) {
+      // SSAB-specifika offset för att få korrekt förskjutning mellan lagen
+      const ssabOffsets = [0, 3, 6, 9, 12]; // Förskjutning för lag 31, 32, 33, 34, 35
+      return ssabOffsets[teamIndex];
+    }
+  }
   
-  if (!companyData) return 0;
-  
-  const teamIndex = companyData.teams.indexOf(team);
-  if (teamIndex === -1) return 0;
-  
-  // Beräkna offset baserat på antal team och cykellängd
-  const offsetPerTeam = Math.floor(shiftType.cycle / companyData.teams.length);
-  return teamIndex * offsetPerTeam;
+  // Fallback: försök hitta företaget dynamiskt
+  try {
+    const companyData = Object.values(require('./companies').COMPANIES).find((comp: any) => 
+      comp.shifts.includes(shiftType.id)
+    );
+    
+    if (!companyData) return 0;
+    
+    const teamIndex = companyData.teams.indexOf(team);
+    if (teamIndex === -1) return 0;
+    
+    // Standard beräkning för andra företag
+    const offsetPerTeam = Math.floor(shiftType.cycle / companyData.teams.length);
+    return teamIndex * offsetPerTeam;
+  } catch (error) {
+    // Om require misslyckas, returnera 0
+    return 0;
+  }
 }
 
 export function generateMonthSchedule(year: number, month: number, shiftType: ShiftType, team: string) {

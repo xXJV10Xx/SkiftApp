@@ -221,7 +221,7 @@ export const SSABScheduleExample: React.FC<SSABScheduleProps> = ({
           </View>
           <View style={styles.legendItem}>
             <View style={[styles.legendColor, { backgroundColor: teamInfo.color }]} />
-            <Text style={styles.legendText}>A = Kväll (14:00-22:00)</Text>
+            <Text style={styles.legendText}>E = Eftermiddag (14:00-22:00)</Text>
           </View>
         </View>
         <View style={styles.legendRow}>
