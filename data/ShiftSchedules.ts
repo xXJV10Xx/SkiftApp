@@ -205,9 +205,9 @@ export function getTeamOffset(team: string, shiftType: ShiftType) {
   
   // Speciell hantering för SSAB Oxelösund
   if (shiftType.id === 'ssab_oxelosund_3skift') {
-    // Optimerade offsets för att sprida ut lagen över tid
-    // Lag 31: arbetar 21-27 juli, Lag 32: 17-23 juli, osv.
-    const teamOffsets = [7, 0, 0, 4, 3]; // Lag 31, 32, 33, 34, 35
+    // Korrigerade offsets baserat på faktiska arbetsmönster
+    // Lag 31: E idag, Lag 32: F idag
+    const teamOffsets = [7, 4, 0, 2, 3]; // Lag 31, 32, 33, 34, 35
     
     return teamOffsets[teamIndex] || 0;
   }
