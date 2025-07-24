@@ -1,7 +1,7 @@
 // 📋 Skiftscheman - Komplett Datastruktur
 // Beräknad från 2025-01-18 med 5 års intervall (2020-2030)
 
-export const START_DATE = new Date('2025-01-18');
+export const START_DATE = new Date('2023-01-01');
 
 // 🏭 Företag och deras skifttyper
 export const COMPANIES = {
@@ -304,9 +304,9 @@ export function getTeamOffset(team, shiftType) {
   
   // Speciell hantering för SSAB Oxelösund
   if (shiftType.id === 'ssab_oxelosund_3skift') {
-    // Korrigerade offsets baserat på faktiska arbetsmönster
+    // Korrigerade offsets för startdatum 2023-01-01
     // Lag 31: E idag, Lag 32: sista F idag, Lag 35: N idag
-    const teamOffsets = [7, 5, 0, 2, 10]; // Lag 31, 32, 33, 34, 35
+    const teamOffsets = [5, 3, 0, 2, 8]; // Lag 31, 32, 33, 34, 35
     
     return teamOffsets[teamIndex] || 0;
   }
