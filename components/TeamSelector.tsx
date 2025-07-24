@@ -20,7 +20,7 @@ export const TeamSelector: React.FC<TeamSelectorProps> = ({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
+            <Users size={20} />
             Välj ditt skiftlag
           </CardTitle>
           <p className="text-muted-foreground">

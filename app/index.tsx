@@ -54,10 +54,10 @@ const Index = () => {
                   onClick={() => setSidebarOpen(true)}
                   className="lg:hidden"
                 >
-                  <Menu className="h-5 w-5" />
+                  <Menu size={20} />
                 </Button>
                 <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
-                  <Building2 className="h-6 w-6 text-primary-foreground" />
+                  <Building2 size={24} color="white" />
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold text-foreground">Skiftappen</h1>
@@ -117,21 +117,21 @@ const Index = () => {
                 {/* Features */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
                   <div className="text-center p-4 rounded-lg bg-muted/50">
-                    <Calendar className="h-8 w-8 mx-auto mb-2 text-primary" />
+                    <Calendar size={32} color="#007AFF" />
                     <h3 className="font-medium">Kalendervy</h3>
                     <p className="text-sm text-muted-foreground">
                       Se dina skift 2020-2030
                     </p>
                   </div>
                   <div className="text-center p-4 rounded-lg bg-muted/50">
-                    <Users className="h-8 w-8 mx-auto mb-2 text-primary" />
+                    <Users size={32} color="#007AFF" />
                     <h3 className="font-medium">Skiftlag</h3>
                     <p className="text-sm text-muted-foreground">
                       Färgkodade team A-D
                     </p>
                   </div>
                   <div className="text-center p-4 rounded-lg bg-muted/50">
-                    <Building2 className="h-8 w-8 mx-auto mb-2 text-primary" />
+                    <Building2 size={32} color="#007AFF" />
                     <h3 className="font-medium">33+ Företag</h3>
                     <p className="text-sm text-muted-foreground">
                       Volvo, SSAB, Scania m.fl.
@@ -150,7 +150,7 @@ const Index = () => {
                 onClick={() => setSelectedCompany(null)}
                 className="flex items-center gap-2"
               >
-                <Building2 className="h-4 w-4" />
+                <Building2 size={16} />
                 Byt företag
               </Button>
               <div className="text-sm text-muted-foreground">
@@ -175,7 +175,7 @@ const Index = () => {
                   onClick={() => setSelectedTeam('')}
                   className="flex items-center gap-2"
                 >
-                  <Users className="h-4 w-4" />
+                  <Users size={16} />
                   Byt lag
                 </Button>
                 <Button
@@ -183,7 +183,7 @@ const Index = () => {
                   onClick={() => setSelectedCompany(null)}
                   className="flex items-center gap-2"
                 >
-                  <Building2 className="h-4 w-4" />
+                  <Building2 size={16} />
                   Byt företag
                 </Button>
               </div>

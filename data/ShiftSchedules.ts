@@ -179,9 +179,10 @@ export function calculateShiftForDate(date: Date, shiftType: ShiftType, team: st
 
 export function getTeamOffset(team: string, shiftType: ShiftType) {
   // Hitta företaget som använder denna skifttyp
-  const companyData = Object.values(require('./companies').COMPANIES).find((comp: any) => 
+  const { COMPANIES } = require('./companies');
+  const companyData = Object.values(COMPANIES).find((comp: any) => 
     comp.shifts.includes(shiftType.id)
-  );
+  ) as any;
   
   if (!companyData) return 0;
   
@@ -284,7 +285,8 @@ export function formatDate(date: Date) {
 export function getShiftColor(shiftCode: string, company: string, team: string) {
   if (shiftCode === 'L') return '#E8E8E8'; // Ledig = grå
   
-  const companyData = Object.values(require('./companies').COMPANIES).find((comp: any) => comp.id === company);
+  const { COMPANIES } = require('./companies');
+  const companyData = Object.values(COMPANIES).find((comp: any) => comp.id === company) as any;
   if (companyData && companyData.colors[team]) {
     return companyData.colors[team];
   }

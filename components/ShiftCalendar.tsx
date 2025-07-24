@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Company } from '@/data/companies';
-import { calculateShiftForDate, formatDate, generateMonthSchedule } from '@/data/ShiftSchedules';
+import { calculateShiftForDate, formatDate, generateMonthSchedule, SHIFT_TYPES } from '@/data/ShiftSchedules';
 import { Calendar, ChevronLeft, ChevronRight, Clock } from 'lucide-react-native';
 import React, { useState } from 'react';
 
@@ -23,7 +23,8 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
   const month = currentDate.getMonth();
 
   // Generera schema för aktuell månad
-  const monthSchedule = generateMonthSchedule(year, month, { id: shiftTypeId }, team);
+  const shiftType = Object.values(SHIFT_TYPES).find(st => st.id === shiftTypeId);
+  const monthSchedule = shiftType ? generateMonthSchedule(year, month, shiftType, team) : [];
 
   const goToPreviousMonth = () => {
     setCurrentDate(new Date(year, month - 1, 1));
@@ -83,7 +84,7 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
+            <Calendar size={20} />
             Skiftschema - {monthNames[month]} {year}
           </CardTitle>
           <div className="flex items-center gap-2">
@@ -92,7 +93,7 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
               size="sm"
               onClick={goToPreviousMonth}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft size={16} />
             </Button>
             <Button
               variant="outline"
@@ -106,7 +107,7 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
               size="sm"
               onClick={goToNextMonth}
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight size={16} />
             </Button>
           </div>
         </div>
@@ -162,7 +163,14 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
               {formatDate(selectedDate)}
             </h3>
             {(() => {
-              const shift = calculateShiftForDate(selectedDate, { id: shiftTypeId }, team);
+              const shift = shiftType ? calculateShiftForDate(selectedDate, shiftType, team) : null;
+              if (!shift) {
+                return (
+                  <div className="text-sm text-muted-foreground">
+                    Ingen skiftinformation tillgänglig
+                  </div>
+                );
+              }
               return (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
@@ -176,7 +184,7 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
                   </div>
                   {shift.time.start && shift.time.end && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="h-4 w-4" />
+                      <Clock size={16} />
                       {shift.time.start} - {shift.time.end}
                     </div>
                   )}

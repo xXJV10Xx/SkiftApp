@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Company } from '@/data/companies';
-import { calculateWorkedHours, generateMonthSchedule, getNextShift } from '@/data/ShiftSchedules';
+import { calculateWorkedHours, generateMonthSchedule, getNextShift, SHIFT_TYPES } from '@/data/ShiftSchedules';
 import { Calendar, Clock, TrendingUp, Users } from 'lucide-react-native';
 import React from 'react';
 
@@ -20,11 +20,12 @@ export const ShiftStats: React.FC<ShiftStatsProps> = ({
   const currentMonth = currentDate.getMonth();
 
   // Generera schema för aktuell månad
-  const monthSchedule = generateMonthSchedule(currentYear, currentMonth, { id: shiftTypeId }, team);
+  const shiftType = Object.values(SHIFT_TYPES).find(st => st.id === shiftTypeId);
+  const monthSchedule = shiftType ? generateMonthSchedule(currentYear, currentMonth, shiftType, team) : [];
   
   // Beräkna statistik
   const stats = calculateWorkedHours(monthSchedule);
-  const nextShift = getNextShift({ shiftType: { id: shiftTypeId }, team }, currentDate);
+  const nextShift = shiftType ? getNextShift(shiftType, team, currentDate) : null;
 
   const getShiftName = (shiftCode: string) => {
     const shiftNames: Record<string, string> = {
@@ -54,7 +55,7 @@ export const ShiftStats: React.FC<ShiftStatsProps> = ({
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Arbetade timmar</CardTitle>
-          <Clock className="h-4 w-4 text-muted-foreground" />
+          <Clock size={16} color="#666" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.totalHours}h</div>
@@ -68,7 +69,7 @@ export const ShiftStats: React.FC<ShiftStatsProps> = ({
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Genomsnitt per dag</CardTitle>
-          <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          <TrendingUp size={16} color="#666" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.averageHours}h</div>
@@ -82,7 +83,7 @@ export const ShiftStats: React.FC<ShiftStatsProps> = ({
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Nästa skift</CardTitle>
-          <Calendar className="h-4 w-4 text-muted-foreground" />
+          <Calendar size={16} color="#666" />
         </CardHeader>
         <CardContent>
           {nextShift ? (
@@ -109,7 +110,7 @@ export const ShiftStats: React.FC<ShiftStatsProps> = ({
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Skiftlag</CardTitle>
-          <Users className="h-4 w-4 text-muted-foreground" />
+          <Users size={16} color="#666" />
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-2">
