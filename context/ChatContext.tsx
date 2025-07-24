@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthContext';
 import { ShiftChangeRequest } from '../components/ShiftChangeForm';
+import { WorkExtraRequest } from '../components/WorkExtraForm';
 
 interface ChatMessage {
   id: string;
@@ -72,7 +73,8 @@ interface ChatContextType {
   sendShiftChangeRequest: (shiftChangeData: ShiftChangeRequest) => Promise<void>;
   approveShiftChange: (requestId: string) => Promise<void>;
   rejectShiftChange: (requestId: string) => Promise<void>;
-  createPrivateShiftChat: (otherUserId: string, shiftChangeRequestId: string) => Promise<ChatRoom>;
+  sendWorkExtraRequest: (workExtraData: WorkExtraRequest) => Promise<void>;
+  createPrivateWorkChat: (otherUserId: string, requestId: string, chatType: 'shift_exchange' | 'work_extra') => Promise<ChatRoom>;
   joinChatRoom: (roomId: string) => Promise<void>;
   leaveChatRoom: (roomId: string) => Promise<void>;
   setCurrentChatRoom: (room: ChatRoom | null) => void;
@@ -292,8 +294,45 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // Create private chat for shift exchange
-  const createPrivateShiftChat = async (otherUserId: string, shiftChangeRequestId: string): Promise<ChatRoom> => {
+  // Send work extra request
+  const sendWorkExtraRequest = async (workExtraData: WorkExtraRequest) => {
+    if (!user || !currentChatRoom) return;
+
+    try {
+      // First, save the work extra request to database
+      const requestData = {
+        ...workExtraData,
+        requester_id: user.id,
+        created_at: new Date().toISOString()
+      };
+
+      const { data: workRequest, error: workError } = await supabase
+        .from('work_extra_requests')
+        .insert(requestData)
+        .select()
+        .single();
+
+      if (workError) throw workError;
+
+      // Then send as a chat message
+      const { error: messageError } = await supabase
+        .from('messages')
+        .insert({
+          chat_room_id: currentChatRoom.id,
+          sender_id: user.id,
+          content: JSON.stringify({ ...requestData, id: workRequest.id }),
+          message_type: 'work_extra_request'
+        });
+
+      if (messageError) throw messageError;
+    } catch (error) {
+      console.error('Error sending work extra request:', error);
+      throw error;
+    }
+  };
+
+  // Create private chat for work requests (shift exchange or work extra)
+  const createPrivateWorkChat = async (otherUserId: string, requestId: string, chatType: 'shift_exchange' | 'work_extra'): Promise<ChatRoom> => {
     if (!user) throw new Error('User not authenticated');
 
     try {
@@ -329,41 +368,51 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (existingError) throw existingError;
 
-      // Check if there's already a private chat with the other user
-      for (const chatMember of existingChats || []) {
-        const chatRoom = chatMember.chat_rooms;
-        if (chatRoom.is_private && chatRoom.type === 'shift_exchange') {
-          // Check if other user is also in this chat
-          const { data: otherMembers, error: otherMembersError } = await supabase
-            .from('chat_room_members')
-            .select('employee_id')
-            .eq('chat_room_id', chatRoom.id)
-            .eq('employee_id', otherUserId);
+             // Check if there's already a private chat with the other user for this type
+       for (const chatMember of existingChats || []) {
+         const chatRoom = chatMember.chat_rooms;
+         if (chatRoom.is_private && chatRoom.type === chatType) {
+           // Check if other user is also in this chat
+           const { data: otherMembers, error: otherMembersError } = await supabase
+             .from('chat_room_members')
+             .select('employee_id')
+             .eq('chat_room_id', chatRoom.id)
+             .eq('employee_id', otherUserId);
 
-          if (otherMembersError) throw otherMembersError;
-          
-          if (otherMembers && otherMembers.length > 0) {
-            // Private chat already exists, return it
-            return chatRoom as ChatRoom;
-          }
-        }
-      }
+           if (otherMembersError) throw otherMembersError;
+           
+           if (otherMembers && otherMembers.length > 0) {
+             // Private chat already exists, return it
+             return chatRoom as ChatRoom;
+           }
+         }
+       }
 
-      // Create new private chat room
-      const chatRoomName = `Skiftbyte: ${currentUser.first_name} & ${otherUser.first_name}`;
-      
-      const { data: newChatRoom, error: chatRoomError } = await supabase
-        .from('chat_rooms')
-        .insert({
-          company_id: currentUser.company_id,
-          name: chatRoomName,
-          description: `Privat chat för skiftbyte mellan ${currentUser.first_name} ${currentUser.last_name} och ${otherUser.first_name} ${otherUser.last_name}`,
-          type: 'shift_exchange',
-          is_private: true,
-          created_by: user.id
-        })
-        .select()
-        .single();
+             // Create new private chat room
+       const chatTypeNames = {
+         'shift_exchange': 'Skiftbyte',
+         'work_extra': 'Extrajobb'
+       };
+       
+       const chatRoomName = `${chatTypeNames[chatType]}: ${currentUser.first_name} & ${otherUser.first_name}`;
+       
+       const descriptions = {
+         'shift_exchange': `Privat chat för skiftbyte mellan ${currentUser.first_name} ${currentUser.last_name} och ${otherUser.first_name} ${otherUser.last_name}`,
+         'work_extra': `Privat chat för extrajobb mellan ${currentUser.first_name} ${currentUser.last_name} och ${otherUser.first_name} ${otherUser.last_name}`
+       };
+       
+       const { data: newChatRoom, error: chatRoomError } = await supabase
+         .from('chat_rooms')
+         .insert({
+           company_id: currentUser.company_id,
+           name: chatRoomName,
+           description: descriptions[chatType],
+           type: chatType,
+           is_private: true,
+           created_by: user.id
+         })
+         .select()
+         .single();
 
       if (chatRoomError) throw chatRoomError;
 
@@ -385,15 +434,20 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (membersError) throw membersError;
 
-      // Send initial system message about responsibility
-      const { error: messageError } = await supabase
-        .from('messages')
-        .insert({
-          chat_room_id: newChatRoom.id,
-          sender_id: user.id,
-          content: `🔄 **Skiftbyte-chat skapad**\n\n📋 **Viktigt att komma ihåg:**\n• Den som ansökt om skiftbytet ansvarar för att meddela sin chef\n• Kom överens om alla detaljer innan ni informerar chefen\n• Se till att båda parter är överens om bytet\n\n💬 Ni kan nu diskutera detaljerna för ert skiftbyte här!`,
-          message_type: 'system'
-        });
+             // Send initial system message about responsibility
+       const systemMessages = {
+         'shift_exchange': `🔄 **Skiftbyte-chat skapad**\n\n📋 **Viktigt att komma ihåg:**\n• Den som ansökt om skiftbytet ansvarar för att meddela sin chef\n• Kom överens om alla detaljer innan ni informerar chefen\n• Se till att båda parter är överens om bytet\n\n💬 Ni kan nu diskutera detaljerna för ert skiftbyte här!`,
+         'work_extra': `💼 **Extrajobb-chat skapad**\n\n📋 **Viktigt att komma ihåg:**\n• Den som publicerat extrajobbet ansvarar för att meddela sin chef\n• Kom överens om alla detaljer innan jobbet bekräftas\n• Se till att båda parter är överens om villkoren\n\n💬 Ni kan nu diskutera detaljerna för extrajobbet här!`
+       };
+       
+       const { error: messageError } = await supabase
+         .from('messages')
+         .insert({
+           chat_room_id: newChatRoom.id,
+           sender_id: user.id,
+           content: systemMessages[chatType],
+           message_type: 'system'
+         });
 
       if (messageError) throw messageError;
 
@@ -553,10 +607,11 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     chatMembers,
     loading,
     sendMessage,
-    sendShiftChangeRequest,
-    approveShiftChange,
-    rejectShiftChange,
-    createPrivateShiftChat,
+         sendShiftChangeRequest,
+     approveShiftChange,
+     rejectShiftChange,
+     sendWorkExtraRequest,
+     createPrivateWorkChat,
     joinChatRoom,
     leaveChatRoom,
     setCurrentChatRoom,

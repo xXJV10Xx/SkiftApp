@@ -348,6 +348,50 @@ export type Database = {
           updated_at?: string;
         };
       };
+      work_extra_requests: {
+        Row: {
+          id: string;
+          requester_id: string;
+          date: string;
+          start_time: string;
+          end_time: string;
+          position: string;
+          location: string;
+          description: string;
+          hourly_rate: string | null;
+          status: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          requester_id: string;
+          date: string;
+          start_time: string;
+          end_time: string;
+          position: string;
+          location?: string;
+          description: string;
+          hourly_rate?: string | null;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          requester_id?: string;
+          date?: string;
+          start_time?: string;
+          end_time?: string;
+          position?: string;
+          location?: string;
+          description?: string;
+          hourly_rate?: string | null;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
   };
 };

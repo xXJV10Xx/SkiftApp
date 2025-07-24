@@ -15,6 +15,8 @@ import {
 } from 'react-native';
 import ShiftChangeForm, { ShiftChangeRequest } from '../../components/ShiftChangeForm';
 import ShiftChangeMessage from '../../components/ShiftChangeMessage';
+import WorkExtraForm, { WorkExtraRequest } from '../../components/WorkExtraForm';
+import WorkExtraMessage from '../../components/WorkExtraMessage';
 import { useAuth } from '../../context/AuthContext';
 import { useChat } from '../../context/ChatContext';
 import { useCompany } from '../../context/CompanyContext';
@@ -33,7 +35,8 @@ export default function ChatScreen() {
     sendShiftChangeRequest,
     approveShiftChange,
     rejectShiftChange,
-    createPrivateShiftChat,
+    sendWorkExtraRequest,
+    createPrivateWorkChat,
     joinChatRoom,
     leaveChatRoom,
     setCurrentChatRoom,
@@ -46,6 +49,8 @@ export default function ChatScreen() {
   const [showRoomSelector, setShowRoomSelector] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
   const [showShiftChangeForm, setShowShiftChangeForm] = useState(false);
+  const [showWorkExtraForm, setShowWorkExtraForm] = useState(false);
+  const [showFormSelector, setShowFormSelector] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
   // Auto-scroll to bottom when new messages arrive
@@ -136,9 +141,20 @@ export default function ChatScreen() {
     }
   };
 
+  const handleSendWorkExtra = async (formData: WorkExtraRequest) => {
+    try {
+      await sendWorkExtraRequest({ ...formData, requester_id: user?.id || '' });
+      setShowWorkExtraForm(false);
+      Alert.alert('Framgång', 'Extrajobb-förfrågan har skickats');
+    } catch (error) {
+      console.error('Error sending work extra request:', error);
+      Alert.alert('Fel', 'Kunde inte skicka extrajobb-förfrågan');
+    }
+  };
+
   const handleInterestedInExchange = async (requestId: string, requesterId: string) => {
     try {
-      const privateChat = await createPrivateShiftChat(requesterId, requestId);
+      const privateChat = await createPrivateWorkChat(requesterId, requestId, 'shift_exchange');
       setCurrentChatRoom(privateChat);
       Alert.alert(
         'Privat chat skapad', 
@@ -147,6 +163,20 @@ export default function ChatScreen() {
     } catch (error) {
       console.error('Error creating private shift chat:', error);
       Alert.alert('Fel', 'Kunde inte skapa privat chat för skiftbyte');
+    }
+  };
+
+  const handleInterestedInWork = async (requestId: string, requesterId: string) => {
+    try {
+      const privateChat = await createPrivateWorkChat(requesterId, requestId, 'work_extra');
+      setCurrentChatRoom(privateChat);
+      Alert.alert(
+        'Privat chat skapad', 
+        'En privat chat har skapats för att diskutera extrajobbet. Kom ihåg att den som publicerat jobbet ansvarar för att meddela sin chef.'
+      );
+    } catch (error) {
+      console.error('Error creating private work chat:', error);
+      Alert.alert('Fel', 'Kunde inte skapa privat chat för extrajobb');
     }
   };
 
@@ -217,6 +247,32 @@ export default function ChatScreen() {
         );
       } catch (error) {
         console.error('Error parsing shift change data:', error);
+        // Fall back to regular message display
+      }
+    }
+
+    // Handle work extra request messages
+    if (item.message_type === 'work_extra_request') {
+      try {
+        const workExtraData = JSON.parse(item.content) as WorkExtraRequest;
+        return (
+          <View style={[styles.messageContainer, isOwnMessage && styles.ownMessage]}>
+            <WorkExtraMessage
+              data={workExtraData}
+              onInterestedInWork={handleInterestedInWork}
+              isOwnMessage={isOwnMessage}
+            />
+            <Text style={[
+              styles.messageTime, 
+              isOwnMessage ? styles.ownMessageTime : styles.otherMessageTime,
+              styles.embeddedMessageTime
+            ]}>
+              {time}
+            </Text>
+          </View>
+        );
+      } catch (error) {
+        console.error('Error parsing work extra data:', error);
         // Fall back to regular message display
       }
     }
@@ -569,6 +625,64 @@ export default function ChatScreen() {
     modalContent: {
       flex: 1,
     },
+    formSelectorOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+    },
+    formSelectorContainer: {
+      backgroundColor: colors.background,
+      borderRadius: 16,
+      padding: 20,
+      width: '100%',
+      maxWidth: 400,
+    },
+    formSelectorTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: colors.text,
+      textAlign: 'center',
+      marginBottom: 20,
+    },
+    formSelectorOption: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    formSelectorTextContainer: {
+      flex: 1,
+      marginLeft: 16,
+    },
+    formSelectorOptionTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 4,
+    },
+    formSelectorOptionDescription: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      lineHeight: 18,
+    },
+    formSelectorCancel: {
+      backgroundColor: colors.textSecondary,
+      borderRadius: 12,
+      paddingVertical: 14,
+      alignItems: 'center',
+      marginTop: 8,
+    },
+    formSelectorCancelText: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: 'white',
+    },
   });
 
   if (!currentChatRoom) {
@@ -682,7 +796,7 @@ export default function ChatScreen() {
       <View style={styles.inputContainer}>
         <TouchableOpacity
           style={styles.attachButton}
-          onPress={() => setShowShiftChangeForm(true)}
+          onPress={() => setShowFormSelector(true)}
         >
           <Plus size={20} color={colors.primary} />
         </TouchableOpacity>
@@ -703,6 +817,59 @@ export default function ChatScreen() {
           <Send size={20} color="white" />
         </TouchableOpacity>
       </View>
+
+      {/* Form Selector Modal */}
+      <Modal
+        visible={showFormSelector}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setShowFormSelector(false)}
+      >
+        <View style={styles.formSelectorOverlay}>
+          <View style={styles.formSelectorContainer}>
+            <Text style={styles.formSelectorTitle}>Välj formulärtyp</Text>
+            
+            <TouchableOpacity
+              style={styles.formSelectorOption}
+              onPress={() => {
+                setShowFormSelector(false);
+                setShowShiftChangeForm(true);
+              }}
+            >
+              <Users size={24} color={colors.primary} />
+              <View style={styles.formSelectorTextContainer}>
+                <Text style={styles.formSelectorOptionTitle}>Skiftbyte</Text>
+                <Text style={styles.formSelectorOptionDescription}>
+                  Ansök om att byta skift med en kollega
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.formSelectorOption}
+              onPress={() => {
+                setShowFormSelector(false);
+                setShowWorkExtraForm(true);
+              }}
+            >
+              <Clock size={24} color={colors.primary} />
+              <View style={styles.formSelectorTextContainer}>
+                <Text style={styles.formSelectorOptionTitle}>Extrajobb</Text>
+                <Text style={styles.formSelectorOptionDescription}>
+                  Publicera ett tillgängligt extrajobb
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.formSelectorCancel}
+              onPress={() => setShowFormSelector(false)}
+            >
+              <Text style={styles.formSelectorCancelText}>Avbryt</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {/* Shift Change Form Modal */}
       <Modal
@@ -725,6 +892,33 @@ export default function ChatScreen() {
             <ShiftChangeForm
               onSubmit={handleSendShiftChange}
               onCancel={() => setShowShiftChangeForm(false)}
+              isEmbedded={false}
+            />
+          </ScrollView>
+        </View>
+      </Modal>
+
+      {/* Work Extra Form Modal */}
+      <Modal
+        visible={showWorkExtraForm}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowWorkExtraForm(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Publicera extrajobb</Text>
+            <TouchableOpacity
+              onPress={() => setShowWorkExtraForm(false)}
+              style={styles.modalCloseButton}
+            >
+              <Text style={styles.modalCloseText}>Stäng</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.modalContent}>
+            <WorkExtraForm
+              onSubmit={handleSendWorkExtra}
+              onCancel={() => setShowWorkExtraForm(false)}
               isEmbedded={false}
             />
           </ScrollView>
