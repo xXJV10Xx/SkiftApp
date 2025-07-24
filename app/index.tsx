@@ -6,7 +6,7 @@ import { TeamSelector } from '@/components/TeamSelector';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Company } from '@/data/companies';
-import { Building2, Calendar, Menu, Users } from 'lucide-react';
+import { Building2, Calendar, Menu, Users } from 'lucide-react-native';
 import React, { useState } from 'react';
 
 const Index = () => {

@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Company, COMPANY_LIST } from '@/data/companies';
-import { Building2, Search } from 'lucide-react';
+import { Building2, Search } from 'lucide-react-native';
 import React, { useState } from 'react';
 
 interface CompanySelectorProps {

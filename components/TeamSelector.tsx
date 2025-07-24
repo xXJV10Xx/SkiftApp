@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Company } from '@/data/companies';
-import { Users } from 'lucide-react';
+import { Users } from 'lucide-react-native';
 import React from 'react';
 
 interface TeamSelectorProps {

@@ -1,4 +1,4 @@
-import { Building2, Calendar, Clock, TrendingUp, Users } from 'lucide-react-native';
+import { Calendar, Clock, TrendingUp, Users } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useCompany } from '../../context/CompanyContext';
@@ -40,7 +40,7 @@ export default function HomeScreen() {
     };
 
     initializeData();
-  }, []);
+  }, [syncCompaniesToSupabase]);
 
   const handleCompanySelect = async (companyId: string) => {
     const company = COMPANIES[companyId];
@@ -56,6 +56,7 @@ export default function HomeScreen() {
         });
       }
     } catch (error) {
+      console.error('Error selecting company:', error);
       Alert.alert('Fel', 'Kunde inte uppdatera företagsinformation');
     }
   };
@@ -73,6 +74,7 @@ export default function HomeScreen() {
         });
       }
     } catch (error) {
+      console.error('Error selecting team:', error);
       Alert.alert('Fel', 'Kunde inte uppdatera laginformation');
     }
   };
@@ -89,6 +91,7 @@ export default function HomeScreen() {
         });
       }
     } catch (error) {
+      console.error('Error selecting department:', error);
       Alert.alert('Fel', 'Kunde inte uppdatera avdelningsinformation');
     }
   };

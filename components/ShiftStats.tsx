@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Company } from '@/data/companies';
 import { calculateWorkedHours, generateMonthSchedule, getNextShift } from '@/data/ShiftSchedules';
-import { Calendar, Clock, TrendingUp, Users } from 'lucide-react';
+import { Calendar, Clock, TrendingUp, Users } from 'lucide-react-native';
 import React from 'react';
 
 interface ShiftStatsProps {

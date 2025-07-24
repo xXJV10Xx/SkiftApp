@@ -1,5 +1,5 @@
-import { MessageSquare, Plus, Send, Users } from 'lucide-react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import { MessageSquare, Send, Users } from 'lucide-react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Alert,
     FlatList,
@@ -49,14 +49,7 @@ export default function ChatScreen() {
     }
   }, [messages]);
 
-  // Create default chat rooms when company/team is selected
-  useEffect(() => {
-    if (selectedCompany && selectedTeam && selectedDepartment && chatRooms.length === 0) {
-      createDefaultChatRooms();
-    }
-  }, [selectedCompany, selectedTeam, selectedDepartment]);
-
-  const createDefaultChatRooms = async () => {
+  const createDefaultChatRooms = useCallback(async () => {
     if (!selectedCompany || !selectedTeam || !selectedDepartment) return;
 
     try {
@@ -64,31 +57,33 @@ export default function ChatScreen() {
       await createChatRoom({
         company_id: selectedCompany.id,
         team_id: selectedTeam,
-        name: `Lag ${selectedTeam} - ${selectedCompany.name}`,
-        description: `Chat för lag ${selectedTeam}`,
-        type: 'team',
-        department: selectedDepartment,
-        is_private: false,
-        auto_join_team: true
+        department_id: selectedDepartment,
+        name: `${selectedTeam} Team Chat`,
+        description: `Chat för ${selectedTeam} teamet`,
+        is_default: true,
       });
 
       // Create department chat room
       await createChatRoom({
         company_id: selectedCompany.id,
-        name: `${selectedDepartment} - ${selectedCompany.name}`,
-        description: `Chat för avdelning ${selectedDepartment}`,
-        type: 'department',
-        department: selectedDepartment,
-        is_private: false,
-        auto_join_department: selectedDepartment
+        department_id: selectedDepartment,
+        name: `${selectedDepartment} Department`,
+        description: `Chat för ${selectedDepartment} avdelningen`,
+        is_default: true,
       });
-
-      // Refresh chat rooms
-      await fetchChatRooms();
     } catch (error) {
       console.error('Error creating default chat rooms:', error);
     }
-  };
+  }, [selectedCompany, selectedTeam, selectedDepartment, createChatRoom]);
+
+  // Create default chat rooms when company/team is selected
+  useEffect(() => {
+    if (selectedCompany && selectedTeam && selectedDepartment && chatRooms.length === 0) {
+      createDefaultChatRooms();
+    }
+  }, [selectedCompany, selectedTeam, selectedDepartment, chatRooms.length, createDefaultChatRooms]);
+
+
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
@@ -97,6 +92,7 @@ export default function ChatScreen() {
       await sendMessage(newMessage.trim());
       setNewMessage('');
     } catch (error) {
+      console.error('Error sending message:', error);
       Alert.alert('Fel', 'Kunde inte skicka meddelandet');
     }
   };
@@ -107,6 +103,7 @@ export default function ChatScreen() {
       setCurrentChatRoom(room);
       setShowRoomSelector(false);
     } catch (error) {
+      console.error('Error joining chat room:', error);
       Alert.alert('Fel', 'Kunde inte gå med i chatten');
     }
   };
@@ -127,6 +124,7 @@ export default function ChatScreen() {
               await leaveChatRoom(currentChatRoom.id);
               Alert.alert('Framgång', 'Du har lämnat chatten');
             } catch (error) {
+              console.error('Error leaving chat room:', error);
               Alert.alert('Fel', 'Kunde inte lämna chatten');
             }
           },

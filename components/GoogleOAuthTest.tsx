@@ -46,7 +46,7 @@ export default function GoogleOAuthTest() {
         <Text style={styles.infoItem}>✅ Supabase Google provider enabled</Text>
         <Text style={styles.infoItem}>✅ Google Cloud OAuth credentials created</Text>
         <Text style={styles.infoItem}>✅ Redirect URLs configured</Text>
-        <Text style={styles.infoItem}>✅ App scheme set to "skiftappen"</Text>
+        <Text style={styles.infoItem}>✅ App scheme set to &quot;skiftappen&quot;</Text>
       </View>
     </View>
   );

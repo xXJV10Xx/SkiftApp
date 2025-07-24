@@ -1,4 +1,4 @@
-import { Calendar, ChevronLeft, ChevronRight, Clock } from 'lucide-react-native';
+import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useCompany } from '../../context/CompanyContext';
@@ -8,7 +8,7 @@ import { useTheme } from '../../context/ThemeContext';
 export default function ScheduleScreen() {
   const { colors } = useTheme();
   const { selectedCompany, selectedTeam } = useCompany();
-  const { monthSchedule, generateSchedule, selectedShiftType } = useShift();
+  const { monthSchedule, generateSchedule } = useShift();
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const goToPreviousMonth = () => {

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, MessageSquare, Settings, User, X } from 'lucide-react';
+import { Calendar, MessageSquare, Settings, User, X } from 'lucide-react-native';
 import React from 'react';
 
 interface SidebarProps {

@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Company } from '@/data/companies';
 import { calculateShiftForDate, formatDate, generateMonthSchedule } from '@/data/ShiftSchedules';
-import { Calendar, ChevronLeft, ChevronRight, Clock } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Clock } from 'lucide-react-native';
 import React, { useState } from 'react';
 
 interface ShiftCalendarProps {
@@ -69,18 +69,7 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
     return shiftNames[shiftCode] || shiftCode;
   };
 
-  const getShiftTime = (shiftCode: string) => {
-    const shiftTimes: Record<string, string> = {
-      'M': '06:00-14:00',
-      'A': '14:00-22:00',
-      'N': '22:00-06:00',
-      'F': '06:00-14:00',
-      'E': '14:00-22:00',
-      'D': '07:00-16:00',
-      'L': ''
-    };
-    return shiftTimes[shiftCode] || '';
-  };
+
 
   const monthNames = [
     'Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni',
