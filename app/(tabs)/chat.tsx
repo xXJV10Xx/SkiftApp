@@ -1,9 +1,10 @@
-import { MessageSquare, Send, Users } from 'lucide-react-native';
+import { MessageSquare, Plus, Send, Users } from 'lucide-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Alert,
     FlatList,
     KeyboardAvoidingView,
+    Modal,
     Platform,
     ScrollView,
     StyleSheet,
@@ -12,6 +13,8 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import ShiftChangeForm, { ShiftChangeRequest } from '../../components/ShiftChangeForm';
+import ShiftChangeMessage from '../../components/ShiftChangeMessage';
 import { useAuth } from '../../context/AuthContext';
 import { useChat } from '../../context/ChatContext';
 import { useCompany } from '../../context/CompanyContext';
@@ -27,6 +30,9 @@ export default function ChatScreen() {
     currentChatRoom,
     chatMembers,
     sendMessage,
+    sendShiftChangeRequest,
+    approveShiftChange,
+    rejectShiftChange,
     joinChatRoom,
     leaveChatRoom,
     setCurrentChatRoom,
@@ -38,6 +44,7 @@ export default function ChatScreen() {
   const [newMessage, setNewMessage] = useState('');
   const [showRoomSelector, setShowRoomSelector] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
+  const [showShiftChangeForm, setShowShiftChangeForm] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
   // Auto-scroll to bottom when new messages arrive
@@ -97,6 +104,37 @@ export default function ChatScreen() {
     }
   };
 
+  const handleSendShiftChange = async (formData: ShiftChangeRequest) => {
+    try {
+      await sendShiftChangeRequest({ ...formData, requester_id: user?.id || '' });
+      setShowShiftChangeForm(false);
+      Alert.alert('Framgång', 'Skiftbyte-förfrågan har skickats');
+    } catch (error) {
+      console.error('Error sending shift change request:', error);
+      Alert.alert('Fel', 'Kunde inte skicka skiftbyte-förfrågan');
+    }
+  };
+
+  const handleApproveShiftChange = async (requestId: string) => {
+    try {
+      await approveShiftChange(requestId);
+      Alert.alert('Framgång', 'Skiftbyte-förfrågan har godkänts');
+    } catch (error) {
+      console.error('Error approving shift change:', error);
+      Alert.alert('Fel', 'Kunde inte godkänna skiftbyte-förfrågan');
+    }
+  };
+
+  const handleRejectShiftChange = async (requestId: string) => {
+    try {
+      await rejectShiftChange(requestId);
+      Alert.alert('Framgång', 'Skiftbyte-förfrågan har avvisats');
+    } catch (error) {
+      console.error('Error rejecting shift change:', error);
+      Alert.alert('Fel', 'Kunde inte avvisa skiftbyte-förfrågan');
+    }
+  };
+
   const handleJoinRoom = async (room: any) => {
     try {
       await joinChatRoom(room.id);
@@ -140,6 +178,34 @@ export default function ChatScreen() {
       minute: '2-digit',
     });
 
+    // Handle shift change request messages
+    if (item.message_type === 'shift_change_request') {
+      try {
+        const shiftChangeData = JSON.parse(item.content) as ShiftChangeRequest;
+        return (
+          <View style={[styles.messageContainer, isOwnMessage && styles.ownMessage]}>
+            <ShiftChangeMessage
+              data={shiftChangeData}
+              onApprove={handleApproveShiftChange}
+              onReject={handleRejectShiftChange}
+              isOwnMessage={isOwnMessage}
+            />
+            <Text style={[
+              styles.messageTime, 
+              isOwnMessage ? styles.ownMessageTime : styles.otherMessageTime,
+              styles.embeddedMessageTime
+            ]}>
+              {time}
+            </Text>
+          </View>
+        );
+      } catch (error) {
+        console.error('Error parsing shift change data:', error);
+        // Fall back to regular message display
+      }
+    }
+
+    // Regular text messages
     return (
       <View style={[styles.messageContainer, isOwnMessage && styles.ownMessage]}>
         <View style={[
@@ -332,6 +398,15 @@ export default function ChatScreen() {
       borderTopWidth: 1,
       borderTopColor: colors.border,
     },
+    attachButton: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: colors.surface,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 8,
+    },
     textInput: {
       flex: 1,
       backgroundColor: colors.surface,
@@ -444,6 +519,40 @@ export default function ChatScreen() {
       fontSize: 16,
       fontWeight: '600',
     },
+    embeddedMessageTime: {
+      textAlign: 'center',
+      marginTop: 8,
+    },
+    modalContainer: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    modalHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 16,
+      backgroundColor: colors.card,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    modalTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: colors.text,
+    },
+    modalCloseButton: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+    },
+    modalCloseText: {
+      fontSize: 16,
+      color: colors.primary,
+      fontWeight: '600',
+    },
+    modalContent: {
+      flex: 1,
+    },
   });
 
   if (!currentChatRoom) {
@@ -555,6 +664,12 @@ export default function ChatScreen() {
 
       {/* Message Input */}
       <View style={styles.inputContainer}>
+        <TouchableOpacity
+          style={styles.attachButton}
+          onPress={() => setShowShiftChangeForm(true)}
+        >
+          <Plus size={20} color={colors.primary} />
+        </TouchableOpacity>
         <TextInput
           style={styles.textInput}
           value={newMessage}
@@ -572,6 +687,33 @@ export default function ChatScreen() {
           <Send size={20} color="white" />
         </TouchableOpacity>
       </View>
+
+      {/* Shift Change Form Modal */}
+      <Modal
+        visible={showShiftChangeForm}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowShiftChangeForm(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Skicka skiftbyte-förfrågan</Text>
+            <TouchableOpacity
+              onPress={() => setShowShiftChangeForm(false)}
+              style={styles.modalCloseButton}
+            >
+              <Text style={styles.modalCloseText}>Stäng</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.modalContent}>
+            <ShiftChangeForm
+              onSubmit={handleSendShiftChange}
+              onCancel={() => setShowShiftChangeForm(false)}
+              isEmbedded={false}
+            />
+          </ScrollView>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }

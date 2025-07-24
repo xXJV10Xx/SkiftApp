@@ -2,6 +2,7 @@ import { RealtimeChannel } from '@supabase/supabase-js';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthContext';
+import { ShiftChangeRequest } from '../components/ShiftChangeForm';
 
 interface ChatMessage {
   id: string;
@@ -68,6 +69,9 @@ interface ChatContextType {
   chatMembers: ChatMember[];
   loading: boolean;
   sendMessage: (content: string, messageType?: string) => Promise<void>;
+  sendShiftChangeRequest: (shiftChangeData: ShiftChangeRequest) => Promise<void>;
+  approveShiftChange: (requestId: string) => Promise<void>;
+  rejectShiftChange: (requestId: string) => Promise<void>;
   joinChatRoom: (roomId: string) => Promise<void>;
   leaveChatRoom: (roomId: string) => Promise<void>;
   setCurrentChatRoom: (room: ChatRoom | null) => void;
@@ -198,6 +202,91 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       if (error) throw error;
     } catch (error) {
       console.error('Error sending message:', error);
+      throw error;
+    }
+  };
+
+  // Send shift change request
+  const sendShiftChangeRequest = async (shiftChangeData: ShiftChangeRequest) => {
+    if (!user || !currentChatRoom) return;
+
+    try {
+      // First, save the shift change request to database
+      const requestData = {
+        ...shiftChangeData,
+        requester_id: user.id,
+        created_at: new Date().toISOString()
+      };
+
+      const { data: shiftRequest, error: shiftError } = await supabase
+        .from('shift_change_requests')
+        .insert(requestData)
+        .select()
+        .single();
+
+      if (shiftError) throw shiftError;
+
+      // Then send as a chat message
+      const { error: messageError } = await supabase
+        .from('messages')
+        .insert({
+          chat_room_id: currentChatRoom.id,
+          sender_id: user.id,
+          content: JSON.stringify({ ...requestData, id: shiftRequest.id }),
+          message_type: 'shift_change_request'
+        });
+
+      if (messageError) throw messageError;
+    } catch (error) {
+      console.error('Error sending shift change request:', error);
+      throw error;
+    }
+  };
+
+  // Approve shift change
+  const approveShiftChange = async (requestId: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('shift_change_requests')
+        .update({ 
+          status: 'approved',
+          approved_by: user.id,
+          approved_at: new Date().toISOString()
+        })
+        .eq('id', requestId);
+
+      if (error) throw error;
+
+      // Send confirmation message
+      await sendMessage(`Skiftbyte-förfrågan har godkänts.`, 'system');
+    } catch (error) {
+      console.error('Error approving shift change:', error);
+      throw error;
+    }
+  };
+
+  // Reject shift change
+  const rejectShiftChange = async (requestId: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('shift_change_requests')
+        .update({ 
+          status: 'rejected',
+          rejected_by: user.id,
+          rejected_at: new Date().toISOString()
+        })
+        .eq('id', requestId);
+
+      if (error) throw error;
+
+      // Send confirmation message
+      await sendMessage(`Skiftbyte-förfrågan har avvisats.`, 'system');
+    } catch (error) {
+      console.error('Error rejecting shift change:', error);
       throw error;
     }
   };
@@ -348,6 +437,9 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     chatMembers,
     loading,
     sendMessage,
+    sendShiftChangeRequest,
+    approveShiftChange,
+    rejectShiftChange,
     joinChatRoom,
     leaveChatRoom,
     setCurrentChatRoom,
