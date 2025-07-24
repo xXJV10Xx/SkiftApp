@@ -1,6 +1,7 @@
 import { Calendar, Clock, TrendingUp, Users } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import DrawerLayout from '../../components/DrawerLayout';
 import { useCompany } from '../../context/CompanyContext';
 import { useShift } from '../../context/ShiftContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -380,7 +381,8 @@ export default function HomeScreen() {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <DrawerLayout title="Hem">
+      <ScrollView style={styles.container}>
       <View style={styles.scrollContainer}>
         <View style={styles.header}>
           <Text style={styles.title}>Skiftappen</Text>
@@ -479,5 +481,6 @@ export default function HomeScreen() {
         )}
       </View>
     </ScrollView>
+    </DrawerLayout>
   );
 }

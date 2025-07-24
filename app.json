@@ -17,7 +17,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.skiftappen.app",
-      "buildNumber": "1.0.0"
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Denna app behöver tillgång till kameran för att ta profilbilder.",
+        "NSPhotoLibraryUsageDescription": "Denna app behöver tillgång till fotobiblioteket för att välja profilbilder."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -25,7 +29,12 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.skiftappen.app",
-      "versionCode": 1
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
@@ -37,6 +46,13 @@
         {
           "icon": "./assets/images/icon.png",
           "color": "#ffffff"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Appen behöver tillgång till dina foton för att välja profilbild.",
+          "cameraPermission": "Appen behöver tillgång till kameran för att ta profilbilder."
         }
       ]
     ],

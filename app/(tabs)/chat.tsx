@@ -13,6 +13,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import DrawerLayout from '../../components/DrawerLayout';
 import ShiftChangeForm, { ShiftChangeRequest } from '../../components/ShiftChangeForm';
 import ShiftChangeMessage from '../../components/ShiftChangeMessage';
 import WorkExtraForm, { WorkExtraRequest } from '../../components/WorkExtraForm';
@@ -687,7 +688,8 @@ export default function ChatScreen() {
 
   if (!currentChatRoom) {
     return (
-      <View style={styles.container}>
+      <DrawerLayout title="Chat">
+        <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Chat</Text>
           <TouchableOpacity onPress={() => setShowRoomSelector(true)}>
@@ -744,14 +746,16 @@ export default function ChatScreen() {
           </View>
         )}
       </View>
+      </DrawerLayout>
     );
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
+    <DrawerLayout title={currentChatRoom.name}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
@@ -925,5 +929,6 @@ export default function ChatScreen() {
         </View>
       </Modal>
     </KeyboardAvoidingView>
+    </DrawerLayout>
   );
 }
