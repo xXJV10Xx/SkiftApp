@@ -1,0 +1,83 @@
+﻿{
+    "industry":  "Stalindustri",
+    "teams":  [
+                  {
+                      "offset":  0,
+                      "color":  "#FF6B6B",
+                      "name":  "Lag 31"
+                  },
+                  {
+                      "offset":  1,
+                      "color":  "#4ECDC4",
+                      "name":  "Lag 32"
+                  },
+                  {
+                      "offset":  2,
+                      "color":  "#45B7D1",
+                      "name":  "Lag 33"
+                  },
+                  {
+                      "offset":  3,
+                      "color":  "#96CEB4",
+                      "name":  "Lag 34"
+                  },
+                  {
+                      "offset":  4,
+                      "color":  "#FFEAA7",
+                      "name":  "Lag 35"
+                  }
+              ],
+    "company":  "SSAB OXELOSUND",
+    "location":  "Oxelosund",
+    "shiftPattern":  [
+                         "2F",
+                         "2E",
+                         "3N",
+                         "4L",
+                         "3F",
+                         "3E",
+                         "1N",
+                         "5L",
+                         "2F",
+                         "2E",
+                         "3N",
+                         "5L",
+                         "3F",
+                         "2E",
+                         "2N",
+                         "4L"
+                     ],
+    "allowedStartDays":  [
+                             1,
+                             3,
+                             5
+                         ],
+    "rules":  [
+                  "Endast mandag, onsdag eller fredag ar tillatna startdagar",
+                  "Varje arbetsblock = 7 dagar (exakt 7 skiftdagar i foljd)",
+                  "Varje ledighet = 4 eller 5 dagar, beroende pa var i rotationen",
+                  "Kedjelogik: Nar ett lag gar in i sitt forsta E, borjar nasta lag sitt 7-dagarsblock"
+              ],
+    "shiftTimes":  {
+                       "E":  {
+                                 "title":  "Eftermiddagsskift",
+                                 "end":  "22:00",
+                                 "start":  "14:00"
+                             },
+                       "F":  {
+                                 "title":  "Formiddagsskift",
+                                 "end":  "14:00",
+                                 "start":  "06:00"
+                             },
+                       "L":  {
+                                 "title":  "Ledig",
+                                 "end":  "23:59",
+                                 "start":  "00:00"
+                             },
+                       "N":  {
+                                 "title":  "Nattskift",
+                                 "end":  "06:00",
+                                 "start":  "22:00"
+                             }
+                   }
+}
