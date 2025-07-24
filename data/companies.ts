@@ -46,18 +46,18 @@ export const COMPANIES: Record<string, Company> = {
 
   SSAB: {
     id: 'ssab',
-    name: 'SSAB',
-    description: 'Stål och järn',
-    location: 'Borlänge, Sverige',
-    shifts: ['SSAB_3SKIFT', 'SSAB_2SKIFT', 'SSAB_DAG'],
-    teams: ['1', '2', '3', '4', '5'],
+    name: 'SSAB Oxelösund',
+    description: 'SSAB Oxelösund - 3-skift system',
+    location: 'Oxelösund, Sverige',
+    shifts: ['SSAB_3SKIFT'],
+    teams: ['31', '32', '33', '34', '35'],
     departments: ['Masugn', 'Stålverk', 'Varmvalsning', 'Kallvalsning', 'Underhåll'],
     colors: {
-      '1': '#FF6B35',
-      '2': '#004E89',
-      '3': '#1A936F',
-      '4': '#C6426E',
-      '5': '#6F1E51'
+      '31': '#FF6B35',
+      '32': '#004E89',
+      '33': '#1A936F',
+      '34': '#C6426E',
+      '35': '#6F1E51'
     }
   },
 
