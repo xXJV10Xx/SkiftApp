@@ -16,6 +16,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useChat } from '../../context/ChatContext';
 import { useCompany } from '../../context/CompanyContext';
 import { useTheme } from '../../context/ThemeContext';
+import SyncStatusIndicator from '../../components/SyncStatusIndicator';
 
 export default function ChatScreen() {
   const { colors } = useTheme();
@@ -453,9 +454,12 @@ export default function ChatScreen() {
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Chat</Text>
-          <TouchableOpacity onPress={() => setShowRoomSelector(true)}>
-            <MessageSquare size={24} color={colors.primary} />
-          </TouchableOpacity>
+          <View style={styles.headerRight}>
+            <SyncStatusIndicator />
+            <TouchableOpacity onPress={() => setShowRoomSelector(true)}>
+              <MessageSquare size={24} color={colors.primary} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {showRoomSelector && (
@@ -529,6 +533,7 @@ export default function ChatScreen() {
           </View>
         </View>
         <View style={styles.headerRight}>
+          <SyncStatusIndicator />
           <TouchableOpacity onPress={() => setShowMembers(!showMembers)}>
             <Users size={24} color={colors.primary} />
           </TouchableOpacity>

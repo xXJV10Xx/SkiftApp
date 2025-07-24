@@ -2,6 +2,8 @@ import { RealtimeChannel } from '@supabase/supabase-js';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthContext';
+import { useCompany } from './CompanyContext';
+import { useOfflineChatStore, startAutoSync, stopAutoSync } from '../stores/OfflineChatStore';
 
 interface ChatMessage {
   id: string;
@@ -79,80 +81,35 @@ const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
 export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
-  const [currentChatRoom, setCurrentChatRoom] = useState<ChatRoom | null>(null);
+  const { selectedCompany } = useCompany();
+  const offlineStore = useOfflineChatStore();
+  
+  // Legacy state for backward compatibility - now sourced from offline store
   const [chatMembers, setChatMembers] = useState<ChatMember[]>([]);
-  const [loading, setLoading] = useState(false);
   const [channel, setChannel] = useState<RealtimeChannel | null>(null);
+  
+  // Proxy offline store state for backward compatibility
+  const messages = offlineStore.messages;
+  const chatRooms = offlineStore.chatRooms;
+  const currentChatRoom = offlineStore.currentChatRoom;
+  const loading = offlineStore.loading;
 
-  // Fetch chat rooms user is member of
+  // Fetch chat rooms user is member of - now uses offline store
   const fetchChatRooms = async () => {
-    if (!user) return;
-
-    try {
-      setLoading(true);
-      
-      const { data, error } = await supabase
-        .from('chat_room_members')
-        .select(`
-          chat_rooms (
-            id,
-            company_id,
-            team_id,
-            name,
-            description,
-            type,
-            department,
-            is_private,
-            auto_join_department,
-            auto_join_team,
-            created_by,
-            created_at,
-            updated_at,
-            companies (
-              name
-            ),
-            teams (
-              name,
-              color
-            )
-          )
-        `)
-        .eq('employee_id', user.id);
-
-      if (error) throw error;
-
-      const rooms = data?.map(item => item.chat_rooms).filter(Boolean) as ChatRoom[];
-      setChatRooms(rooms || []);
-    } catch (error) {
-      console.error('Error fetching chat rooms:', error);
-    } finally {
-      setLoading(false);
+    if (!user || !selectedCompany) return;
+    
+    // Load from offline store and sync if online
+    await offlineStore.loadChatRooms(selectedCompany.id);
+    if (offlineStore.isOnline) {
+      await offlineStore.syncData();
     }
   };
 
-  // Fetch messages for current chat room
+  // Fetch messages for current chat room - now uses offline store
   const fetchMessages = async (roomId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('messages')
-        .select(`
-          *,
-          sender:employees!sender_id (
-            first_name,
-            last_name,
-            email,
-            avatar_url
-          )
-        `)
-        .eq('chat_room_id', roomId)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
-      setMessages(data || []);
-    } catch (error) {
-      console.error('Error fetching messages:', error);
+    await offlineStore.loadMessages(roomId);
+    if (offlineStore.isOnline) {
+      await offlineStore.syncData();
     }
   };
 
@@ -181,21 +138,12 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // Send message
+  // Send message - now uses offline store
   const sendMessage = async (content: string, messageType = 'text') => {
     if (!user || !currentChatRoom) return;
 
     try {
-      const { error } = await supabase
-        .from('messages')
-        .insert({
-          chat_room_id: currentChatRoom.id,
-          sender_id: user.id,
-          content,
-          message_type: messageType
-        });
-
-      if (error) throw error;
+      await offlineStore.sendMessage(content, messageType, user.id);
     } catch (error) {
       console.error('Error sending message:', error);
       throw error;
@@ -323,23 +271,36 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, [currentChatRoom]);
 
+  // Set current chat room
+  const setCurrentChatRoom = (room: ChatRoom | null) => {
+    offlineStore.setCurrentChatRoom(room);
+  };
+
+  // Initialize offline store and start auto-sync
+  useEffect(() => {
+    offlineStore.initialize();
+    startAutoSync(30000); // Sync every 30 seconds
+    
+    return () => {
+      stopAutoSync();
+    };
+  }, []);
+
   // Load data when current chat room changes
   useEffect(() => {
     if (currentChatRoom) {
-      fetchMessages(currentChatRoom.id);
       fetchChatMembers(currentChatRoom.id);
     } else {
-      setMessages([]);
       setChatMembers([]);
     }
   }, [currentChatRoom]);
 
   // Load chat rooms on mount
   useEffect(() => {
-    if (user) {
+    if (user && selectedCompany) {
       fetchChatRooms();
     }
-  }, [user]);
+  }, [user, selectedCompany]);
 
   const value = {
     messages,
