@@ -13,7 +13,7 @@ import {
     View,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
-import { useChat } from '../../context/ChatContext';
+import { useChatActions } from '../../features/chat/store/useChatActions';
 import { useCompany } from '../../context/CompanyContext';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -21,19 +21,27 @@ export default function ChatScreen() {
   const { colors } = useTheme();
   const { user } = useAuth();
   const { selectedCompany, selectedTeam, selectedDepartment } = useCompany();
+  
+  // Zustand store with user context
   const {
     messages,
     chatRooms,
     currentChatRoom,
     chatMembers,
+    loading,
+    error,
+    fetchChatRooms,
+    fetchMessages,
+    fetchChatMembers,
     sendMessage,
     joinChatRoom,
     leaveChatRoom,
     setCurrentChatRoom,
-    fetchChatRooms,
     createChatRoom,
-    loading
-  } = useChat();
+    subscribeToRoom,
+    unsubscribeFromRoom,
+    resetMessages,
+  } = useChatActions();
   
   const [newMessage, setNewMessage] = useState('');
   const [showRoomSelector, setShowRoomSelector] = useState(false);
@@ -49,15 +57,39 @@ export default function ChatScreen() {
     }
   }, [messages]);
 
+  // Load chat rooms when user is available
+  useEffect(() => {
+    if (user?.id) {
+      fetchChatRooms();
+    }
+  }, [user?.id, fetchChatRooms]);
+
+  // Handle current chat room changes
+  useEffect(() => {
+    if (currentChatRoom) {
+      fetchMessages(currentChatRoom.id);
+      fetchChatMembers(currentChatRoom.id);
+      subscribeToRoom(currentChatRoom.id);
+    } else {
+      resetMessages();
+      unsubscribeFromRoom();
+    }
+
+    // Cleanup subscription on unmount
+    return () => {
+      unsubscribeFromRoom();
+    };
+  }, [currentChatRoom, fetchMessages, fetchChatMembers, subscribeToRoom, unsubscribeFromRoom, resetMessages]);
+
   // Create default chat rooms when company/team is selected
   useEffect(() => {
-    if (selectedCompany && selectedTeam && selectedDepartment && chatRooms.length === 0) {
+    if (selectedCompany && selectedTeam && selectedDepartment && chatRooms.length === 0 && user?.id) {
       createDefaultChatRooms();
     }
-  }, [selectedCompany, selectedTeam, selectedDepartment]);
+  }, [selectedCompany, selectedTeam, selectedDepartment, chatRooms.length, user?.id]);
 
   const createDefaultChatRooms = async () => {
-    if (!selectedCompany || !selectedTeam || !selectedDepartment) return;
+    if (!selectedCompany || !selectedTeam || !selectedDepartment || !user?.id) return;
 
     try {
       // Create team chat room
@@ -70,7 +102,7 @@ export default function ChatScreen() {
         department: selectedDepartment,
         is_private: false,
         auto_join_team: true
-      });
+              });
 
       // Create department chat room
       await createChatRoom({
@@ -134,6 +166,13 @@ export default function ChatScreen() {
       ]
     );
   };
+
+  // Show error if there's one
+  useEffect(() => {
+    if (error) {
+      Alert.alert('Fel', error);
+    }
+  }, [error]);
 
   const renderMessage = ({ item }: { item: any }) => {
     const isOwnMessage = item.sender_id === user?.id;

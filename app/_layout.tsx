@@ -3,7 +3,6 @@ import { Stack } from 'expo-router';
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { AuthProvider, useAuth } from '../context/AuthContext';
-import { ChatProvider } from '../context/ChatContext';
 import { CompanyProvider } from '../context/CompanyContext';
 import { LanguageProvider } from '../context/LanguageContext';
 import { ShiftProvider } from '../context/ShiftContext';
@@ -33,12 +32,10 @@ function MainLayout() {
   return (
     <CompanyProvider>
       <ShiftProvider>
-        <ChatProvider>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-        </ChatProvider>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="+not-found" />
+        </Stack>
       </ShiftProvider>
     </CompanyProvider>
   );
