@@ -9,6 +9,8 @@ import { LanguageProvider } from '../context/LanguageContext';
 import { ShiftProvider } from '../context/ShiftContext';
 import { ThemeProvider } from '../context/ThemeContext'
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
+import { initSentry } from '@/lib/sentry';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 function MainLayout() {
   const { user, loading } = useAuth();
@@ -51,6 +53,11 @@ export default function RootLayout() {
     Inter_700Bold,
   });
 
+  // Initialize Sentry when the app starts
+  useEffect(() => {
+    initSentry();
+  }, []);
+
   if (!fontsLoaded) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -60,12 +67,14 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider>
-      <LanguageProvider>
-        <AuthProvider>
-          <MainLayout />
-        </AuthProvider>
-      </LanguageProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <MainLayout />
+          </AuthProvider>
+        </LanguageProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
