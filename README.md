@@ -1,276 +1,183 @@
-# 🚀 Skiftappen - Team Chat App
+# Supabase CLI
 
-A modern React Native mobile application for team communication with real-time chat, authentication, and multi-language support.
+[![Coverage Status](https://coveralls.io/repos/github/supabase/cli/badge.svg?branch=main)](https://coveralls.io/github/supabase/cli?branch=main) [![Bitbucket Pipelines](https://img.shields.io/bitbucket/pipelines/supabase-cli/setup-cli/master?style=flat-square&label=Bitbucket%20Canary)](https://bitbucket.org/supabase-cli/setup-cli/pipelines) [![Gitlab Pipeline Status](https://img.shields.io/gitlab/pipeline-status/sweatybridge%2Fsetup-cli?label=Gitlab%20Canary)
+](https://gitlab.com/sweatybridge/setup-cli/-/pipelines)
 
-## 📱 Features
+[Supabase](https://supabase.io) is an open source Firebase alternative. We're building the features of Firebase using enterprise-grade open source tools.
 
-### 🔐 Authentication
-- **Supabase Authentication** with email/password
-- **Google OAuth** integration
-- **Password reset** functionality
-- **Secure session management**
+This repository contains all the functionality for Supabase CLI.
 
-### 💬 Real-time Chat
-- **Team-based chat** system
-- **Real-time messages** with Supabase
-- **Online status** indicators
-- **Team member management**
-- **Message history**
+- [x] Running Supabase locally
+- [x] Managing database migrations
+- [x] Creating and deploying Supabase Functions
+- [x] Generating types directly from your database schema
+- [x] Making authenticated HTTP requests to [Management API](https://supabase.com/docs/reference/api/introduction)
 
-### 🌍 Internationalization
-- **Swedish** (default)
-- **English** support
-- **Dynamic language switching**
-- **Localized UI elements**
+## Getting started
 
-### 🎨 Theme System
-- **Light mode**
-- **Dark mode**
-- **System theme** (follows device settings)
-- **Dynamic color schemes**
+### Install the CLI
 
-### 📱 Mobile Features
-- **Push notifications** for new messages
-- **Offline support**
-- **Responsive design**
-- **Native performance**
+Available via [NPM](https://www.npmjs.com) as dev dependency. To install:
 
-### 🚀 Production Ready
-- **EAS Build** configuration
-- **App Store** deployment ready
-- **Google Play Store** deployment ready
-- **Environment configuration**
-
-## 🛠️ Tech Stack
-
-- **React Native** - Mobile app framework
-- **Expo** - Development platform
-- **TypeScript** - Type safety
-- **Supabase** - Backend as a Service
-  - Authentication
-  - Real-time database
-  - Row Level Security (RLS)
-- **Expo Router** - File-based navigation
-- **React Context** - State management
-
-## 📋 Prerequisites
-
-- Node.js (v18 or higher)
-- npm or yarn
-- Expo CLI
-- iOS Simulator (for iOS development)
-- Android Studio (for Android development)
-
-## 🚀 Quick Start
-
-### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/skiftappen.git
-cd skiftappen
+npm i supabase --save-dev
 ```
 
-### 2. Install dependencies
+To install the beta release channel:
+
 ```bash
-npm install
+npm i supabase@beta --save-dev
 ```
 
-### 3. Set up environment variables
-Create a `.env` file in the root directory:
-```env
-EXPO_PUBLIC_SUPABASE_URL=https://fsefeherdbtsddqimjco.supabase.co
-EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzZWZlaGVyZGJ0c2RkcWltamNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3ODUwNDcsImV4cCI6MjA2ODM2MTA0N30.YEltOJVQU6Ox5YrkZJGzbMiojyQClkFwG-mBPilIAfk
+When installing with yarn 4, you need to disable experimental fetch with the following nodejs config.
+
+```
+NODE_OPTIONS=--no-experimental-fetch yarn add supabase
 ```
 
-### 4. Set up Supabase
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
-2. Create a new project or use existing
-3. Run the SQL commands from `DATABASE_SETUP.md`
-4. Configure Google OAuth (optional)
+> **Note**
+For Bun versions below v1.0.17, you must add `supabase` as a [trusted dependency](https://bun.sh/guides/install/trusted) before running `bun add -D supabase`.
 
-### 5. Start development server
+<details>
+  <summary><b>macOS</b></summary>
+
+  Available via [Homebrew](https://brew.sh). To install:
+
+  ```sh
+  brew install supabase/tap/supabase
+  ```
+
+  To install the beta release channel:
+  
+  ```sh
+  brew install supabase/tap/supabase-beta
+  brew link --overwrite supabase-beta
+  ```
+  
+  To upgrade:
+
+  ```sh
+  brew upgrade supabase
+  ```
+</details>
+
+<details>
+  <summary><b>Windows</b></summary>
+
+  Available via [Scoop](https://scoop.sh). To install:
+
+  ```powershell
+  scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
+  scoop install supabase
+  ```
+
+  To upgrade:
+
+  ```powershell
+  scoop update supabase
+  ```
+</details>
+
+<details>
+  <summary><b>Linux</b></summary>
+
+  Available via [Homebrew](https://brew.sh) and Linux packages.
+
+  #### via Homebrew
+
+  To install:
+
+  ```sh
+  brew install supabase/tap/supabase
+  ```
+
+  To upgrade:
+
+  ```sh
+  brew upgrade supabase
+  ```
+
+  #### via Linux packages
+
+  Linux packages are provided in [Releases](https://github.com/supabase/cli/releases). To install, download the `.apk`/`.deb`/`.rpm`/`.pkg.tar.zst` file depending on your package manager and run the respective commands.
+
+  ```sh
+  sudo apk add --allow-untrusted <...>.apk
+  ```
+
+  ```sh
+  sudo dpkg -i <...>.deb
+  ```
+
+  ```sh
+  sudo rpm -i <...>.rpm
+  ```
+
+  ```sh
+  sudo pacman -U <...>.pkg.tar.zst
+  ```
+</details>
+
+<details>
+  <summary><b>Other Platforms</b></summary>
+
+  You can also install the CLI via [go modules](https://go.dev/ref/mod#go-install) without the help of package managers.
+
+  ```sh
+  go install github.com/supabase/cli@latest
+  ```
+
+  Add a symlink to the binary in `$PATH` for easier access:
+
+  ```sh
+  ln -s "$(go env GOPATH)/bin/cli" /usr/bin/supabase
+  ```
+
+  This works on other non-standard Linux distros.
+</details>
+
+<details>
+  <summary><b>Community Maintained Packages</b></summary>
+
+  Available via [pkgx](https://pkgx.sh/). Package script [here](https://github.com/pkgxdev/pantry/blob/main/projects/supabase.com/cli/package.yml).
+  To install in your working directory:
+
+  ```bash
+  pkgx install supabase
+  ```
+
+  Available via [Nixpkgs](https://nixos.org/). Package script [here](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/supabase-cli/default.nix).
+</details>
+
+### Run the CLI
+
 ```bash
-npx expo start
+supabase bootstrap
 ```
 
-### 6. Test on device
-- Install **Expo Go** app on your phone
-- Scan the QR code from terminal
-- Test all features
+Or using npx:
 
-## 🗄️ Database Setup
-
-### 1. Run SQL commands
-Copy and paste the SQL commands from `DATABASE_SETUP.md` into your Supabase SQL Editor.
-
-### 2. Enable real-time
-In Supabase Dashboard:
-- Go to **Database** → **Replication**
-- Enable real-time for all tables
-
-### 3. Test data
-Add some test companies and teams to test the chat functionality.
-
-## 📱 App Structure
-
-```
-skiftappen/
-├── app/                    # Expo Router pages
-│   ├── (tabs)/            # Tab navigation
-│   │   ├── index.tsx      # Home screen
-│   │   ├── chat.tsx       # Chat screen
-│   │   ├── profile.tsx    # Profile screen
-│   │   └── settings.tsx   # Settings screen
-│   ├── auth/              # Authentication
-│   │   ├── login.tsx      # Login screen
-│   │   └── forgot-password.tsx
-│   └── _layout.tsx        # Root layout
-├── context/               # React Context providers
-│   ├── AuthContext.tsx    # Authentication state
-│   ├── ChatContext.tsx    # Chat functionality
-│   ├── LanguageContext.tsx # Internationalization
-│   └── ThemeContext.tsx   # Theme management
-├── lib/                   # Utilities
-│   ├── supabase.ts        # Supabase client
-│   ├── i18n.ts           # Translations
-│   └── notifications.ts   # Push notifications
-└── components/            # Reusable components
-```
-
-## 🌍 Internationalization
-
-The app supports Swedish and English. To add more languages:
-
-1. Add translations to `lib/i18n.ts`
-2. Update the `Language` type
-3. Add language options to settings
-
-## 🎨 Theming
-
-The app supports three theme modes:
-- **Light** - Bright theme
-- **Dark** - Dark theme  
-- **System** - Follows device settings
-
-Colors are defined in `context/ThemeContext.tsx`.
-
-## 📱 Building for Production
-
-### 1. Install EAS CLI
 ```bash
-npm install -g @expo/eas-cli
+npx supabase bootstrap
 ```
 
-### 2. Login to Expo
-```bash
-eas login
+The bootstrap command will guide you through the process of setting up a Supabase project using one of the [starter](https://github.com/supabase-community/supabase-samples/blob/main/samples.json) templates.
+
+## Docs
+
+Command & config reference can be found [here](https://supabase.com/docs/reference/cli/about).
+
+## Breaking changes
+
+We follow semantic versioning for changes that directly impact CLI commands, flags, and configurations.
+
+However, due to dependencies on other service images, we cannot guarantee that schema migrations, seed.sql, and generated types will always work for the same CLI major version. If you need such guarantees, we encourage you to pin a specific version of CLI in package.json.
+
+## Developing
+
+To run from source:
+
+```sh
+# Go >= 1.22
+go run . help
 ```
-
-### 3. Configure build
-```bash
-eas build:configure
-```
-
-### 4. Build for platforms
-```bash
-# Android
-eas build --platform android --profile production
-
-# iOS
-eas build --platform ios --profile production
-```
-
-## 🚀 Deployment
-
-### Android (Google Play Store)
-1. Create Google Play Console account
-2. Upload AAB file from EAS build
-3. Fill in app information
-4. Submit for review
-
-### iOS (App Store)
-1. Create Apple Developer account
-2. Upload IPA file to App Store Connect
-3. Fill in app information
-4. Submit for review
-
-See `DEPLOYMENT_GUIDE.md` for detailed instructions.
-
-## 🔧 Configuration
-
-### Environment Variables
-- `EXPO_PUBLIC_SUPABASE_URL` - Supabase project URL
-- `EXPO_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
-
-### App Configuration
-- `app.json` - Expo configuration
-- `eas.json` - EAS build configuration
-
-## 📊 Features in Detail
-
-### Authentication
-- Email/password registration and login
-- Google OAuth integration
-- Password reset via email
-- Secure session management
-- Automatic login state persistence
-
-### Chat System
-- Real-time messaging with Supabase
-- Team-based chat rooms
-- Online status indicators
-- Message history
-- Team member management
-
-### User Interface
-- Modern, responsive design
-- Dark/light theme support
-- Multi-language interface
-- Intuitive navigation
-- Loading states and error handling
-
-### Performance
-- Optimized for mobile
-- Efficient real-time updates
-- Minimal network usage
-- Smooth animations
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-If you encounter any issues:
-
-1. Check the [Expo documentation](https://docs.expo.dev/)
-2. Check the [Supabase documentation](https://supabase.com/docs)
-3. Create an issue on GitHub
-4. Check the troubleshooting section in `DEPLOYMENT_GUIDE.md`
-
-## 🗺️ Roadmap
-
-- [ ] Voice messages
-- [ ] File sharing
-- [ ] Video calls
-- [ ] Advanced team management
-- [ ] Analytics dashboard
-- [ ] Custom themes
-- [ ] Offline message sync
-- [ ] Message reactions
-- [ ] User profiles with avatars
-
-## 📞 Contact
-
-For questions or support, please create an issue on GitHub or contact the development team.
-
----
-
-**Made with ❤️ using React Native, Expo, and Supabase**
