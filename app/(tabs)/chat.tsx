@@ -38,6 +38,7 @@ export default function ChatScreen() {
   const [newMessage, setNewMessage] = useState('');
   const [showRoomSelector, setShowRoomSelector] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
+  const [sendingMessage, setSendingMessage] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
   // Auto-scroll to bottom when new messages arrive
@@ -57,19 +58,19 @@ export default function ChatScreen() {
       await createChatRoom({
         company_id: selectedCompany.id,
         team_id: selectedTeam,
-        department_id: selectedDepartment,
+        department: selectedDepartment,
         name: `${selectedTeam} Team Chat`,
         description: `Chat för ${selectedTeam} teamet`,
-        is_default: true,
+        type: 'team',
       });
 
       // Create department chat room
       await createChatRoom({
         company_id: selectedCompany.id,
-        department_id: selectedDepartment,
+        department: selectedDepartment,
         name: `${selectedDepartment} Department`,
         description: `Chat för ${selectedDepartment} avdelningen`,
-        is_default: true,
+        type: 'department',
       });
     } catch (error) {
       console.error('Error creating default chat rooms:', error);
@@ -86,14 +87,25 @@ export default function ChatScreen() {
 
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || sendingMessage) return;
+    if (!currentChatRoom) {
+      Alert.alert('Fel', 'Inget chattrum valt');
+      return;
+    }
+    if (!user) {
+      Alert.alert('Fel', 'Du måste vara inloggad för att skicka meddelanden');
+      return;
+    }
     
+    setSendingMessage(true);
     try {
       await sendMessage(newMessage.trim());
       setNewMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
-      Alert.alert('Fel', 'Kunde inte skicka meddelandet');
+      Alert.alert('Fel', 'Kunde inte skicka meddelandet. Kontrollera din internetanslutning.');
+    } finally {
+      setSendingMessage(false);
     }
   };
 
@@ -512,6 +524,7 @@ export default function ChatScreen() {
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       {/* Header */}
       <View style={styles.header}>
@@ -565,9 +578,9 @@ export default function ChatScreen() {
           maxLength={500}
         />
         <TouchableOpacity
-          style={[styles.sendButton, !newMessage.trim() && styles.sendButtonDisabled]}
+          style={[styles.sendButton, (!newMessage.trim() || sendingMessage) && styles.sendButtonDisabled]}
           onPress={handleSendMessage}
-          disabled={!newMessage.trim()}
+          disabled={!newMessage.trim() || sendingMessage}
         >
           <Send size={20} color="white" />
         </TouchableOpacity>

@@ -123,8 +123,12 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (error) throw error;
 
-      const rooms = data?.map(item => item.chat_rooms).filter(Boolean) as ChatRoom[];
-      setChatRooms(rooms || []);
+      const rooms = data?.map(item => item.chat_rooms).filter(Boolean) as any[] || [];
+      setChatRooms(rooms.map(room => ({
+        ...room,
+        companies: room.companies || null,
+        teams: room.teams || null
+      })));
     } catch (error) {
       console.error('Error fetching chat rooms:', error);
     } finally {
@@ -292,9 +296,26 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
           table: 'messages',
           filter: `chat_room_id=eq.${currentChatRoom.id}`,
         },
-        (payload) => {
-          const newMessage = payload.new as ChatMessage;
-          setMessages(prev => [...prev, newMessage]);
+        async (payload) => {
+          const messageId = payload.new.id;
+          // Fetch the complete message with sender info
+          const { data, error } = await supabase
+            .from('messages')
+            .select(`
+              *,
+              sender:employees!sender_id (
+                first_name,
+                last_name,
+                email,
+                avatar_url
+              )
+            `)
+            .eq('id', messageId)
+            .single();
+          
+          if (!error && data) {
+            setMessages(prev => [...prev, data]);
+          }
         }
       )
       .on(
