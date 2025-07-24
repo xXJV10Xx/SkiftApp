@@ -1,7 +1,7 @@
 // 📋 Skiftscheman - Komplett Datastruktur
 // Beräknad från 2025-01-18 med 5 års intervall (2020-2030)
 
-export const START_DATE = new Date('2025-01-18');
+export const START_DATE = new Date('2023-01-01');
 
 // 🏭 Företag och deras skifttyper
 export const COMPANIES = {
@@ -45,6 +45,21 @@ export const COMPANIES = {
       '3': '#1A936F',
       '4': '#C6426E',
       '5': '#6F1E51'
+    }
+  },
+
+  SSAB_OXELOSUND: {
+    id: 'ssab_oxelosund',
+    name: 'SSAB Oxelösund',
+    description: 'Stål och järn - Oxelösund',
+    shifts: ['SSAB_OXELOSUND_3SKIFT'],
+    teams: ['31', '32', '33', '34', '35'],
+    colors: {
+      '31': '#FF6B35',
+      '32': '#004E89',
+      '33': '#1A936F',
+      '34': '#C6426E',
+      '35': '#6F1E51'
     }
   },
 
@@ -168,6 +183,21 @@ export const SHIFT_TYPES = {
     }
   },
 
+  // SSAB Oxelösund 3-skift
+  SSAB_OXELOSUND_3SKIFT: {
+    id: 'ssab_oxelosund_3skift',
+    name: 'SSAB Oxelösund 3-skift',
+    description: 'Kontinuerligt 3-skiftssystem för SSAB Oxelösund - 7 arbetsdagar (F,F,E,E,N,N,N) + 4 lediga',
+    pattern: ['F', 'F', 'E', 'E', 'N', 'N', 'N', 'L', 'L', 'L', 'L'],
+    cycle: 11,
+    times: {
+      'F': { start: '06:00', end: '14:00', name: 'Förmiddag' },
+      'E': { start: '14:00', end: '22:00', name: 'Eftermiddag' },
+      'N': { start: '22:00', end: '06:00', name: 'Natt' },
+      'L': { start: '', end: '', name: 'Ledig' }
+    }
+  },
+
   // BOLIDEN 3-skift
   BOLIDEN_3SKIFT: {
     id: 'boliden_3skift',
@@ -272,7 +302,16 @@ export function getTeamOffset(team, shiftType) {
   const teamIndex = company.teams.indexOf(team);
   if (teamIndex === -1) return 0;
   
-  // Beräkna offset baserat på antal team och cykellängd
+  // Speciell hantering för SSAB Oxelösund
+  if (shiftType.id === 'ssab_oxelosund_3skift') {
+    // Korrigerade offsets för startdatum 2023-01-01
+    // Lag 31: E idag, Lag 32: sista F idag, Lag 35: N idag
+    const teamOffsets = [5, 3, 0, 2, 8]; // Lag 31, 32, 33, 34, 35
+    
+    return teamOffsets[teamIndex] || 0;
+  }
+  
+  // Standard beräkning för andra skifttyper
   const offsetPerTeam = Math.floor(shiftType.cycle / company.teams.length);
   return teamIndex * offsetPerTeam;
 }

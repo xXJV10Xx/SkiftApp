@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Company } from '@/data/companies';
-import { calculateShiftForDate, formatDate, generateMonthSchedule } from '@/data/ShiftSchedules';
-import { Calendar, ChevronLeft, ChevronRight, Clock } from 'lucide-react-native';
+import { calculateShiftForDate, formatDate, generateMonthSchedule, SHIFT_TYPES } from '@/data/ShiftSchedules';
+import { Calendar, ChevronLeft, ChevronRight, Clock, Users } from 'lucide-react-native';
 import React, { useState } from 'react';
 
 interface ShiftCalendarProps {
@@ -18,12 +18,23 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [showAllTeams, setShowAllTeams] = useState(false);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
+  // Hämta skifttyp
+  const shiftType = SHIFT_TYPES[shiftTypeId as keyof typeof SHIFT_TYPES];
+
   // Generera schema för aktuell månad
   const monthSchedule = generateMonthSchedule(year, month, { id: shiftTypeId }, team);
+
+  // Generera schema för alla lag om showAllTeams är sant
+  const allTeamsSchedule = showAllTeams ? 
+    company.teams.reduce((acc, teamName) => {
+      acc[teamName] = generateMonthSchedule(year, month, { id: shiftTypeId }, teamName);
+      return acc;
+    }, {} as Record<string, any[]>) : {};
 
   const goToPreviousMonth = () => {
     setCurrentDate(new Date(year, month - 1, 1));
@@ -37,11 +48,18 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
     setCurrentDate(new Date());
   };
 
-  const getShiftColor = (shiftCode: string) => {
+  const getShiftColor = (shiftCode: string, teamName?: string) => {
     if (shiftCode === 'L') return '#E8E8E8'; // Ledig = grå
     
-    const teamColor = company.colors[team];
-    if (teamColor) return teamColor;
+    // Om vi visar alla lag, använd lagspecifika färger
+    if (showAllTeams && teamName) {
+      const teamColor = company.colors[teamName];
+      if (teamColor) return teamColor;
+    } else if (!showAllTeams) {
+      // Använd lagfärg för enskilt lag
+      const teamColor = company.colors[team];
+      if (teamColor) return teamColor;
+    }
     
     // Standardfärger för skift
     const shiftColors: Record<string, string> = {
@@ -69,8 +87,6 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
     return shiftNames[shiftCode] || shiftCode;
   };
 
-
-
   const monthNames = [
     'Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni',
     'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'
@@ -85,6 +101,7 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
             Skiftschema - {monthNames[month]} {year}
+            {!showAllTeams && ` (${team})`}
           </CardTitle>
           <div className="flex items-center gap-2">
             <Button
@@ -108,10 +125,44 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
+            <Button
+              variant={showAllTeams ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowAllTeams(!showAllTeams)}
+            >
+              <Users className="h-4 w-4 mr-1" />
+              {showAllTeams ? 'Visa ' + team : 'Alla lag'}
+            </Button>
           </div>
         </div>
       </CardHeader>
       <CardContent>
+        {/* Lagförklaring för alla lag */}
+        {showAllTeams && (
+          <div className="mb-6 p-4 bg-muted/30 rounded-lg">
+            <h4 className="font-medium mb-3 flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Lagförklaring - {company.name}
+            </h4>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              {company.teams.map((teamName) => (
+                <div key={teamName} className="flex items-center gap-2">
+                  <div
+                    className="w-4 h-4 rounded-full border"
+                    style={{ backgroundColor: company.colors[teamName] }}
+                  />
+                  <span className="text-sm font-medium">
+                    Lag {teamName}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-3 text-xs text-muted-foreground">
+              Grå = Ledig. Varje lag arbetar 7 dagar i sträck (F,F,E,E,N,N,N) följt av 4 lediga dagar.
+            </div>
+          </div>
+        )}
+
         {/* Kalendergrid */}
         <div className="grid grid-cols-7 gap-1">
           {/* Veckodagar */}
@@ -133,23 +184,48 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
               <div className="text-sm font-medium mb-1">
                 {day.day}
               </div>
-              {day.shift.code !== 'L' && (
-                <div
-                  className="text-xs p-1 rounded text-white font-medium"
-                  style={{ backgroundColor: getShiftColor(day.shift.code) }}
-                >
-                  {getShiftName(day.shift.code)}
+              
+              {showAllTeams ? (
+                // Visa alla lag
+                <div className="space-y-1">
+                  {company.teams.map((teamName) => {
+                    const teamDay = allTeamsSchedule[teamName]?.find(d => d.day === day.day);
+                    if (!teamDay) return null;
+                    
+                    return (
+                      <div
+                        key={teamName}
+                        className="text-xs p-1 rounded text-white font-medium flex items-center justify-between"
+                        style={{ backgroundColor: getShiftColor(teamDay.shift.code, teamName) }}
+                      >
+                        <span>{teamName}</span>
+                        <span>{teamDay.shift.code}</span>
+                      </div>
+                    );
+                  })}
                 </div>
-              )}
-              {day.shift.code === 'L' && (
-                <div className="text-xs text-muted-foreground">
-                  Ledig
-                </div>
-              )}
-              {day.shift.time.start && day.shift.time.end && (
-                <div className="text-xs text-muted-foreground mt-1">
-                  {day.shift.time.start}-{day.shift.time.end}
-                </div>
+              ) : (
+                // Visa endast valt lag
+                <>
+                  {day.shift.code !== 'L' && (
+                    <div
+                      className="text-xs p-1 rounded text-white font-medium"
+                      style={{ backgroundColor: getShiftColor(day.shift.code) }}
+                    >
+                      {getShiftName(day.shift.code)}
+                    </div>
+                  )}
+                  {day.shift.code === 'L' && (
+                    <div className="text-xs text-muted-foreground">
+                      Ledig
+                    </div>
+                  )}
+                  {day.shift.time.start && day.shift.time.end && (
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {day.shift.time.start}-{day.shift.time.end}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           ))}
@@ -161,50 +237,84 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
             <h3 className="font-semibold mb-2">
               {formatDate(selectedDate)}
             </h3>
-            {(() => {
-              const shift = calculateShiftForDate(selectedDate, { id: shiftTypeId }, team);
-              return (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-4 h-4 rounded-full"
-                      style={{ backgroundColor: getShiftColor(shift.code) }}
-                    />
-                    <span className="font-medium">
-                      {getShiftName(shift.code)}
-                    </span>
-                  </div>
-                  {shift.time.start && shift.time.end && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      {shift.time.start} - {shift.time.end}
+            {showAllTeams ? (
+              // Visa alla lag för vald dag
+              <div className="space-y-3">
+                {company.teams.map((teamName) => {
+                  const shift = calculateShiftForDate(selectedDate, { id: shiftTypeId }, teamName);
+                  return (
+                    <div key={teamName} className="flex items-center gap-3">
+                      <div
+                        className="w-4 h-4 rounded-full"
+                        style={{ backgroundColor: getShiftColor(shift.code, teamName) }}
+                      />
+                      <span className="font-medium w-12">
+                        Lag {teamName}:
+                      </span>
+                      <span className="font-medium">
+                        {getShiftName(shift.code)}
+                      </span>
+                      {shift.time.start && shift.time.end && (
+                        <span className="text-sm text-muted-foreground">
+                          {shift.time.start} - {shift.time.end}
+                        </span>
+                      )}
                     </div>
-                  )}
-                  <div className="text-sm text-muted-foreground">
-                    Cykeldag {shift.cycleDay} av {shift.totalCycleDays}
+                  );
+                })}
+              </div>
+            ) : (
+              // Visa endast valt lag
+              (() => {
+                const shift = calculateShiftForDate(selectedDate, { id: shiftTypeId }, team);
+                return (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-4 h-4 rounded-full"
+                        style={{ backgroundColor: getShiftColor(shift.code) }}
+                      />
+                      <span className="font-medium">
+                        {getShiftName(shift.code)}
+                      </span>
+                    </div>
+                    {shift.time.start && shift.time.end && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Clock className="h-4 w-4" />
+                        {shift.time.start} - {shift.time.end}
+                      </div>
+                    )}
+                    <div className="text-sm text-muted-foreground">
+                      Cykeldag {shift.cycleDay} av {shift.totalCycleDays}
+                    </div>
                   </div>
-                </div>
-              );
-            })()}
+                );
+              })()
+            )}
           </div>
         )}
 
         {/* Färgförklaring */}
         <div className="mt-6 pt-4 border-t">
-          <h4 className="font-medium mb-3">Färgförklaring</h4>
+          <h4 className="font-medium mb-3">Skiftförklaring</h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {['M', 'A', 'N', 'F', 'E', 'D', 'L'].map((shiftCode) => (
+            {shiftType && Object.entries(shiftType.times).map(([shiftCode, shiftInfo]) => (
               <div key={shiftCode} className="flex items-center gap-2">
                 <div
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: getShiftColor(shiftCode) }}
                 />
                 <span className="text-sm">
-                  {getShiftName(shiftCode)}
+                  {shiftInfo.name} {shiftInfo.start && shiftInfo.end ? `(${shiftInfo.start}-${shiftInfo.end})` : ''}
                 </span>
               </div>
             ))}
           </div>
+          {company.id === 'ssab_oxelosund' && (
+            <div className="mt-3 text-xs text-muted-foreground">
+              Arbetsmönster: 7 dagar (2 Förmiddagar + 2 Eftermiddagar + 3 Nätter) följt av 4 lediga dagar
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

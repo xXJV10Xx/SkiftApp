@@ -1,7 +1,7 @@
 // 📋 Skiftscheman - Komplett Datastruktur för alla svenska industriföretag
 // Beräknad från 2024-01-01 med 10 års intervall (2020-2030)
 
-export const START_DATE = new Date('2024-01-01');
+export const START_DATE = new Date('2023-01-01');
 
 // 🔄 Skifttyper och mönster
 export interface ShiftType {
@@ -79,6 +79,21 @@ export const SHIFT_TYPES: Record<string, ShiftType> = {
     times: {
       'M': { start: '06:00', end: '14:00', name: 'Morgon' },
       'A': { start: '14:00', end: '22:00', name: 'Kväll' },
+      'N': { start: '22:00', end: '06:00', name: 'Natt' },
+      'L': { start: '', end: '', name: 'Ledig' }
+    }
+  },
+
+  // SSAB Oxelösund skift
+  SSAB_OXELOSUND_3SKIFT: {
+    id: 'ssab_oxelosund_3skift',
+    name: 'SSAB Oxelösund 3-skift',
+    description: 'Kontinuerligt 3-skiftssystem för SSAB Oxelösund - 7 arbetsdagar (F,F,E,E,N,N,N) + 4 lediga',
+    pattern: ['F', 'F', 'E', 'E', 'N', 'N', 'N', 'L', 'L', 'L', 'L'],
+    cycle: 11,
+    times: {
+      'F': { start: '06:00', end: '14:00', name: 'Förmiddag' },
+      'E': { start: '14:00', end: '22:00', name: 'Eftermiddag' },
       'N': { start: '22:00', end: '06:00', name: 'Natt' },
       'L': { start: '', end: '', name: 'Ledig' }
     }
@@ -188,7 +203,16 @@ export function getTeamOffset(team: string, shiftType: ShiftType) {
   const teamIndex = companyData.teams.indexOf(team);
   if (teamIndex === -1) return 0;
   
-  // Beräkna offset baserat på antal team och cykellängd
+  // Speciell hantering för SSAB Oxelösund
+  if (shiftType.id === 'ssab_oxelosund_3skift') {
+    // Korrigerade offsets för startdatum 2023-01-01
+    // Lag 31: E idag, Lag 32: sista F idag, Lag 35: N idag
+    const teamOffsets = [5, 3, 0, 2, 8]; // Lag 31, 32, 33, 34, 35
+    
+    return teamOffsets[teamIndex] || 0;
+  }
+  
+  // Standard beräkning för andra skifttyper
   const offsetPerTeam = Math.floor(shiftType.cycle / companyData.teams.length);
   return teamIndex * offsetPerTeam;
 }
