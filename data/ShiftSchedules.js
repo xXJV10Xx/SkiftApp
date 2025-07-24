@@ -48,6 +48,21 @@ export const COMPANIES = {
     }
   },
 
+  SSAB_OXELOSUND: {
+    id: 'ssab_oxelosund',
+    name: 'SSAB Oxelösund',
+    description: 'Stål och järn - Oxelösund',
+    shifts: ['SSAB_OXELOSUND_3SKIFT'],
+    teams: ['31', '32', '33', '34', '35'],
+    colors: {
+      '31': '#FF6B35',
+      '32': '#004E89',
+      '33': '#1A936F',
+      '34': '#C6426E',
+      '35': '#6F1E51'
+    }
+  },
+
   BOLIDEN: {
     id: 'boliden',
     name: 'Boliden',
@@ -163,6 +178,21 @@ export const SHIFT_TYPES = {
     times: {
       'M': { start: '06:00', end: '14:00', name: 'Morgon' },
       'A': { start: '14:00', end: '22:00', name: 'Kväll' },
+      'N': { start: '22:00', end: '06:00', name: 'Natt' },
+      'L': { start: '', end: '', name: 'Ledig' }
+    }
+  },
+
+  // SSAB Oxelösund 3-skift
+  SSAB_OXELOSUND_3SKIFT: {
+    id: 'ssab_oxelosund_3skift',
+    name: 'SSAB Oxelösund 3-skift',
+    description: 'Kontinuerligt 3-skiftssystem för SSAB Oxelösund',
+    pattern: ['L', 'L', 'L', 'L', 'L', 'M', 'M', 'M', 'E', 'E', 'L', 'N', 'N', 'N'],
+    cycle: 14,
+    times: {
+      'M': { start: '06:00', end: '14:00', name: 'Morgon' },
+      'E': { start: '14:00', end: '22:00', name: 'Eftermiddag' },
       'N': { start: '22:00', end: '06:00', name: 'Natt' },
       'L': { start: '', end: '', name: 'Ledig' }
     }

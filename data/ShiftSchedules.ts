@@ -84,6 +84,21 @@ export const SHIFT_TYPES: Record<string, ShiftType> = {
     }
   },
 
+  // SSAB Oxelösund skift
+  SSAB_OXELOSUND_3SKIFT: {
+    id: 'ssab_oxelosund_3skift',
+    name: 'SSAB Oxelösund 3-skift',
+    description: 'Kontinuerligt 3-skiftssystem för SSAB Oxelösund',
+    pattern: ['L', 'L', 'L', 'L', 'L', 'M', 'M', 'M', 'E', 'E', 'L', 'N', 'N', 'N'],
+    cycle: 14,
+    times: {
+      'M': { start: '06:00', end: '14:00', name: 'Morgon' },
+      'E': { start: '14:00', end: '22:00', name: 'Eftermiddag' },
+      'N': { start: '22:00', end: '06:00', name: 'Natt' },
+      'L': { start: '', end: '', name: 'Ledig' }
+    }
+  },
+
   // BOLIDEN skift
   BOLIDEN_3SKIFT: {
     id: 'boliden_3skift',
