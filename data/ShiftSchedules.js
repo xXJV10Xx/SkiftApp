@@ -187,11 +187,11 @@ export const SHIFT_TYPES = {
   SSAB_OXELOSUND_3SKIFT: {
     id: 'ssab_oxelosund_3skift',
     name: 'SSAB Oxelösund 3-skift',
-    description: 'Kontinuerligt 3-skiftssystem för SSAB Oxelösund',
-    pattern: ['L', 'L', 'L', 'L', 'L', 'M', 'M', 'M', 'E', 'E', 'L', 'N', 'N', 'N'],
-    cycle: 14,
+    description: 'Kontinuerligt 3-skiftssystem för SSAB Oxelösund - 7 arbetsdagar (F,F,E,E,N,N,N) + 4 lediga',
+    pattern: ['F', 'F', 'E', 'E', 'N', 'N', 'N', 'L', 'L', 'L', 'L'],
+    cycle: 11,
     times: {
-      'M': { start: '06:00', end: '14:00', name: 'Morgon' },
+      'F': { start: '06:00', end: '14:00', name: 'Förmiddag' },
       'E': { start: '14:00', end: '22:00', name: 'Eftermiddag' },
       'N': { start: '22:00', end: '06:00', name: 'Natt' },
       'L': { start: '', end: '', name: 'Ledig' }
@@ -302,7 +302,16 @@ export function getTeamOffset(team, shiftType) {
   const teamIndex = company.teams.indexOf(team);
   if (teamIndex === -1) return 0;
   
-  // Beräkna offset baserat på antal team och cykellängd
+  // Speciell hantering för SSAB Oxelösund
+  if (shiftType.id === 'ssab_oxelosund_3skift') {
+    // Optimerade offsets för att sprida ut lagen över tid
+    // Lag 31: arbetar 21-27 juli, Lag 32: 17-23 juli, osv.
+    const teamOffsets = [7, 0, 0, 4, 3]; // Lag 31, 32, 33, 34, 35
+    
+    return teamOffsets[teamIndex] || 0;
+  }
+  
+  // Standard beräkning för andra skifttyper
   const offsetPerTeam = Math.floor(shiftType.cycle / company.teams.length);
   return teamIndex * offsetPerTeam;
 }
