@@ -16,89 +16,66 @@ export const TeamSelector: React.FC<TeamSelectorProps> = ({
   onTeamSelect
 }) => {
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Välj ditt skiftlag
-          </CardTitle>
-          <p className="text-muted-foreground">
-            {company.name} - {company.description}
-          </p>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {company.teams.map((team) => (
-              <Button
-                key={team}
-                variant={selectedTeam === team ? 'default' : 'outline'}
-                className="h-20 flex flex-col items-center justify-center gap-2"
-                onClick={() => onTeamSelect(team)}
-                style={{
-                  backgroundColor: selectedTeam === team ? company.colors[team] : undefined,
-                  borderColor: company.colors[team],
-                  color: selectedTeam === team ? 'white' : undefined
-                }}
-              >
-                <div
-                  className="w-6 h-6 rounded-full"
-                  style={{ backgroundColor: company.colors[team] }}
-                />
-                <span className="font-medium">Lag {team}</span>
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+    <Card className="shadow-industrial">
+      <CardHeader className="text-center">
+        <CardTitle className="flex items-center justify-center gap-2">
+          <Users size={20} color="#374151" />
+          Välj ditt skiftlag - {company.name}
+        </CardTitle>
+        <p className="text-muted-foreground">
+          Välj vilket lag du tillhör för att se ditt personliga schema
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Team grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {company.teams.map((team) => (
+            <Button
+              key={team}
+              variant={selectedTeam === team ? "default" : "outline"}
+              onClick={() => onTeamSelect(team)}
+              className="h-20 flex flex-col gap-2"
+            >
+              <div
+                className="w-8 h-8 rounded-full"
+                style={{ backgroundColor: company.colors[team] || '#6B7280' }}
+              />
+              <span className="font-medium">Lag {team}</span>
+            </Button>
+          ))}
+        </div>
 
-      {/* Skifttyper info */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Tillgängliga skifttyper</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {company.shifts.map((shiftType) => (
-              <div key={shiftType} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                <div className="w-3 h-3 rounded-full bg-primary" />
-                <div>
-                  <p className="font-medium">{shiftType.replace('_', ' ')}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {shiftType.includes('3SKIFT') && '3-skiftssystem'}
-                    {shiftType.includes('2SKIFT') && '2-skiftssystem'}
-                    {shiftType.includes('5SKIFT') && '5-skiftssystem'}
-                    {shiftType.includes('6SKIFT') && '6-skiftssystem'}
-                    {shiftType.includes('DAG') && 'Dagskift'}
-                    {shiftType.includes('KVALL') && 'Kvällsskift'}
-                    {shiftType.includes('HELG') && 'Helgskift'}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Färgkodning info */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Färgkodning</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {company.teams.map((team) => (
-              <div key={team} className="flex items-center gap-2">
+        {/* Alla lag option */}
+        <div className="border-t pt-4">
+          <Button
+            variant={selectedTeam === 'ALLA' ? "default" : "outline"}
+            onClick={() => onTeamSelect('ALLA')}
+            className="w-full h-16 flex items-center justify-center gap-3"
+          >
+            <div className="flex gap-1">
+              {company.teams.slice(0, 4).map((team, index) => (
                 <div
+                  key={team}
                   className="w-4 h-4 rounded-full"
-                  style={{ backgroundColor: company.colors[team] }}
+                  style={{ backgroundColor: company.colors[team] || '#6B7280' }}
                 />
-                <span className="text-sm">Lag {team}</span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+              ))}
+              {company.teams.length > 4 && (
+                <span className="text-xs">+{company.teams.length - 4}</span>
+              )}
+            </div>
+            <span className="font-medium">Visa alla lag</span>
+          </Button>
+        </div>
+
+        {/* Info text */}
+        <div className="text-center text-sm text-muted-foreground">
+          <p>
+            Osäker på vilket lag du tillhör? Kontakta din arbetsledare eller välj &quot;Visa alla lag&quot; 
+            för att se alla scheman.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
   );
 }; 

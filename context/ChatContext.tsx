@@ -123,7 +123,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (error) throw error;
 
-      const rooms = data?.map(item => item.chat_rooms).filter(Boolean) as ChatRoom[];
+      const rooms = data?.map(item => item.chat_rooms).filter(Boolean).flat() as unknown as ChatRoom[];
       setChatRooms(rooms || []);
     } catch (error) {
       console.error('Error fetching chat rooms:', error);

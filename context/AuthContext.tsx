@@ -1,4 +1,4 @@
-import { Session, User } from '@supabase/supabase-js';
+import { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
@@ -35,27 +35,33 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
 
       // Create employee profile if user signs up
-      if (session?.user && _event === 'SIGNED_UP') {
-        const { error } = await supabase
-          .from('employees')
-          .insert({
-            id: session.user.id,
-            email: session.user.email!,
-            first_name: session.user.user_metadata?.full_name?.split(' ')[0] || '',
-            last_name: session.user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
-            avatar_url: session.user.user_metadata?.avatar_url,
-            is_active: true,
-            profile_completed: false
-          });
+      if (session?.user && event === 'SIGNED_IN') {
+        // Check if this is a new user by looking at created_at timestamp
+        const isNewUser = session.user.created_at && 
+          new Date(session.user.created_at).getTime() > Date.now() - 10000; // Within last 10 seconds
+        
+        if (isNewUser) {
+          const { error } = await supabase
+            .from('employees')
+            .insert({
+              id: session.user.id,
+              email: session.user.email!,
+              first_name: session.user.user_metadata?.full_name?.split(' ')[0] || '',
+              last_name: session.user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
+              avatar_url: session.user.user_metadata?.avatar_url,
+              is_active: true,
+              profile_completed: false
+            });
 
-        if (error) {
-          console.error('Error creating employee profile:', error);
+          if (error) {
+            console.error('Error creating employee profile:', error);
+          }
         }
       }
     });
