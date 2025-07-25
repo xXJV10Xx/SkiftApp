@@ -61,6 +61,23 @@ export const COMPANIES: Record<string, Company> = {
     }
   },
 
+  SSAB_OXELOSUND: {
+    id: 'ssab_oxelosund',
+    name: 'SSAB Oxelösund',
+    description: 'Stål och järn - Oxelösund anläggning',
+    location: 'Oxelösund, Sverige',
+    shifts: ['SSAB_3SKIFT'],
+    teams: ['31', '32', '33', '34', '35'],
+    departments: ['Masugn', 'Stålverk', 'Varmvalsning', 'Kallvalsning', 'Underhåll', 'Råmaterial', 'Kvalitet'],
+    colors: {
+      '31': '#FF6B35',
+      '32': '#004E89',
+      '33': '#1A936F',
+      '34': '#C6426E',
+      '35': '#6F1E51'
+    }
+  },
+
   BOLIDEN: {
     id: 'boliden',
     name: 'Boliden',
