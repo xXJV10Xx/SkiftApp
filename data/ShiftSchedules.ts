@@ -1,6 +1,8 @@
 // 📋 Skiftscheman - Komplett Datastruktur för alla svenska industriföretag
 // Beräknad från 2024-01-01 med 10 års intervall (2020-2030)
 
+import { COMPANIES, Company } from './companies';
+
 export const START_DATE = new Date('2024-01-01');
 
 // 🔄 Skifttyper och mönster
@@ -179,7 +181,7 @@ export function calculateShiftForDate(date: Date, shiftType: ShiftType, team: st
 
 export function getTeamOffset(team: string, shiftType: ShiftType) {
   // Hitta företaget som använder denna skifttyp
-  const companyData = Object.values(require('./companies').COMPANIES).find((comp: any) => 
+  const companyData = Object.values(COMPANIES).find((comp: Company) => 
     comp.shifts.includes(shiftType.id)
   );
   
@@ -284,7 +286,7 @@ export function formatDate(date: Date) {
 export function getShiftColor(shiftCode: string, company: string, team: string) {
   if (shiftCode === 'L') return '#E8E8E8'; // Ledig = grå
   
-  const companyData = Object.values(require('./companies').COMPANIES).find((comp: any) => comp.id === company);
+  const companyData = Object.values(COMPANIES).find((comp: Company) => comp.id === company);
   if (companyData && companyData.colors[team]) {
     return companyData.colors[team];
   }

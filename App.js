@@ -1,10 +1,10 @@
 import { useContext } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import { AuthContext, AuthProvider } from './app/AuthProvider';
-import LoginScreen from './app/LoginScreen';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import LoginScreen from './app/auth/login';
 
 function MainApp() {
-  const { user, logout } = useContext(AuthContext);
+  const { user, signOut } = useAuth();
 
   if (!user) {
     return <LoginScreen />;
@@ -13,7 +13,7 @@ function MainApp() {
   return (
     <View style={styles.container}>
       <Text>Välkommen, {user.email}!</Text>
-      <Button title="Logga ut" onPress={logout} />
+      <Button title="Logga ut" onPress={signOut} />
     </View>
   );
 }
