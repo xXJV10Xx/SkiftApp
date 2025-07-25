@@ -1,10 +1,10 @@
 import { useContext } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
-import { AuthContext } from './app/AuthProvider';
-import LoginScreen from './app/LoginScreen'; // rätt sökväg till LoginScreen
+import { useAuth } from './context/AuthContext';
+import LoginScreen from './app/auth/login'; // rätt sökväg till LoginScreen
 
 export default function MainApp() {
-  const { user, logout } = useContext(AuthContext);
+  const { user, signOut } = useAuth();
 
   if (!user) {
     return <LoginScreen />;
@@ -13,7 +13,7 @@ export default function MainApp() {
   return (
     <View style={styles.container}>
       <Text>Välkommen, {user.email}!</Text>
-      <Button title="Logga ut" onPress={logout} />
+      <Button title="Logga ut" onPress={signOut} />
     </View>
   );
 }
