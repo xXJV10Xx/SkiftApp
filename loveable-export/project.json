@@ -1,0 +1,158 @@
+{
+  "projectName": "svenska-skiftappen",
+  "description": "Svenska skiftscheman och kalenderapp med Supabase backend",
+  "version": "1.0.0",
+  "type": "react-native-web",
+  "features": [
+    "Swedish shift schedules",
+    "Calendar integration",
+    "Holiday management",
+    "Company filtering",
+    "Real-time sync",
+    "Supabase backend"
+  ],
+  "timestamp": "2025-07-26T21:06:55.751Z",
+  "components": {
+    "src/components/ShiftCalendar.tsx": {
+      "type": "component",
+      "description": "Huvudkalenderkomponent för skiftscheman",
+      "dependencies": [
+        "react-native-calendars",
+        "date-fns"
+      ],
+      "props": {
+        "schedules": "ShiftSchedule[]",
+        "holidays": "SwedishHoliday[]",
+        "onDateSelect": "(date: string) => void",
+        "selectedCompany": "string",
+        "selectedLocation": "string"
+      }
+    },
+    "src/components/ShiftScheduleCard.tsx": {
+      "type": "component",
+      "description": "Kort för att visa skiftschema-information",
+      "dependencies": [
+        "@expo/vector-icons"
+      ],
+      "props": {
+        "schedule": "ShiftSchedule",
+        "onPress": "() => void",
+        "showDetails": "boolean"
+      }
+    },
+    "src/components/CompanyFilter.tsx": {
+      "type": "component",
+      "description": "Filter för företag, ort och avdelning",
+      "dependencies": [],
+      "props": {
+        "companies": "Company[]",
+        "selectedCompany": "string",
+        "selectedLocation": "string",
+        "selectedDepartment": "string",
+        "onCompanyChange": "(company: string) => void",
+        "onLocationChange": "(location: string) => void",
+        "onDepartmentChange": "(department: string) => void"
+      }
+    },
+    "src/components/HolidayIndicator.tsx": {
+      "type": "component",
+      "description": "Indikator för svenska helgdagar",
+      "dependencies": [
+        "@expo/vector-icons"
+      ],
+      "props": {
+        "holiday": "SwedishHoliday",
+        "size": "small | medium | large"
+      }
+    },
+    "src/screens/ShiftScheduleScreen.tsx": {
+      "type": "screen",
+      "description": "Huvudskärm för skiftscheman",
+      "dependencies": [
+        "react-native-calendars",
+        "date-fns"
+      ],
+      "features": [
+        "calendar",
+        "filtering",
+        "real-time-updates"
+      ]
+    },
+    "src/hooks/useShiftSchedules.ts": {
+      "type": "hook",
+      "description": "Hook för att hantera skiftschema-data",
+      "dependencies": [
+        "@supabase/supabase-js"
+      ],
+      "returns": {
+        "schedules": "ShiftSchedule[]",
+        "loading": "boolean",
+        "error": "string | null",
+        "refresh": "() => Promise<void>"
+      }
+    },
+    "src/hooks/useSwedishHolidays.ts": {
+      "type": "hook",
+      "description": "Hook för svenska helgdagar",
+      "dependencies": [
+        "@supabase/supabase-js"
+      ],
+      "returns": {
+        "holidays": "SwedishHoliday[]",
+        "getHolidaysForYear": "(year: number) => SwedishHoliday[]",
+        "isHoliday": "(date: string) => boolean"
+      }
+    },
+    "src/types/shift.ts": {
+      "type": "types",
+      "description": "TypeScript-typer för skiftscheman",
+      "exports": [
+        "ShiftSchedule",
+        "SwedishHoliday",
+        "Company",
+        "ShiftPattern",
+        "CalendarData"
+      ]
+    },
+    "src/utils/shiftCalculations.ts": {
+      "type": "utility",
+      "description": "Verktyg för skiftberäkningar",
+      "functions": [
+        "calculateShiftPattern",
+        "getWorkDaysInPeriod",
+        "isWorkDay",
+        "getNextShiftDate"
+      ]
+    },
+    "src/utils/swedishCalendar.ts": {
+      "type": "utility",
+      "description": "Svensk kalender och helgdagsberäkningar",
+      "functions": [
+        "calculateEaster",
+        "calculateMidsummer",
+        "calculateAllSaints",
+        "isLeapYear",
+        "getSwedishHolidays"
+      ]
+    }
+  },
+  "supabase": {
+    "url": "https://fsefeherdbtsddqimjco.supabase.co",
+    "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "tables": [
+      "swedish_holidays",
+      "swedish_companies",
+      "shift_patterns",
+      "shift_schedules",
+      "swedish_calendar",
+      "user_shift_schedules"
+    ]
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.52.0",
+    "react-native-calendars": "^1.1313.0",
+    "date-fns": "^2.30.0",
+    "@expo/vector-icons": "^14.1.0",
+    "react-native-reanimated": "^3.17.4"
+  }
+}
