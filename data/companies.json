@@ -1,0 +1,87 @@
+[
+  {
+    "name": "Volvo Group",
+    "locations": [
+      "Göteborg",
+      "Skövde",
+      "Umeå"
+    ],
+    "departments": [
+      "Produktion",
+      "Logistik",
+      "Underhåll"
+    ],
+    "shiftTypes": [
+      "3-3",
+      "2-2-2-4"
+    ]
+  },
+  {
+    "name": "SSAB",
+    "locations": [
+      "Luleå",
+      "Oxelösund",
+      "Borlänge"
+    ],
+    "departments": [
+      "Stålproduktion",
+      "Valsning",
+      "Underhåll"
+    ],
+    "shiftTypes": [
+      "4-4",
+      "5-5"
+    ]
+  },
+  {
+    "name": "Stora Enso",
+    "locations": [
+      "Falun",
+      "Skutskär",
+      "Hylte"
+    ],
+    "departments": [
+      "Pappersmassa",
+      "Papper",
+      "Energi"
+    ],
+    "shiftTypes": [
+      "7-7",
+      "6-2"
+    ]
+  },
+  {
+    "name": "Region Stockholm",
+    "locations": [
+      "Stockholm",
+      "Huddinge",
+      "Solna"
+    ],
+    "departments": [
+      "Akutsjukvård",
+      "Intensivvård",
+      "Ambulans"
+    ],
+    "shiftTypes": [
+      "2-2",
+      "3-3"
+    ]
+  },
+  {
+    "name": "SCA",
+    "locations": [
+      "Sundsvall",
+      "Östrand",
+      "Munksund"
+    ],
+    "departments": [
+      "Massa",
+      "Papper",
+      "Hygienartiklar"
+    ],
+    "shiftTypes": [
+      "4-4",
+      "2-2-2-4"
+    ]
+  }
+]
