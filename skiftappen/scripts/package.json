@@ -1,0 +1,27 @@
+{
+  "name": "skiftappen-scraper",
+  "version": "1.0.0",
+  "description": "Web scraper for Skiftappen to collect shift data",
+  "main": "scraper.js",
+  "scripts": {
+    "start": "node scraper.js",
+    "dev": "nodemon scraper.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "puppeteer": "^21.5.2",
+    "cheerio": "^1.0.0-rc.12",
+    "axios": "^1.6.2",
+    "dotenv": "^16.3.1",
+    "@supabase/supabase-js": "^2.38.4",
+    "cron": "^3.1.6",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0"
+  },
+  "keywords": ["scraper", "puppeteer", "shifts", "automation"],
+  "author": "Skiftappen Team",
+  "license": "MIT"
+}
