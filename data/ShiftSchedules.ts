@@ -158,6 +158,46 @@ export const SHIFT_TYPES: Record<string, ShiftType> = {
       'D': { start: '07:00', end: '16:00', name: 'Dag' },
       'L': { start: '', end: '', name: 'Ledig' }
     }
+  },
+
+  // OUTOKUMPU skift
+  OUTOKUMPU_3SKIFT: {
+    id: 'outokumpu_3skift',
+    name: 'Outokumpu 3-skift',
+    description: 'Kontinuerligt 3-skiftssystem för rostfritt stål',
+    pattern: ['M', 'M', 'A', 'A', 'N', 'N', 'L', 'L'],
+    cycle: 8,
+    times: {
+      'M': { start: '06:00', end: '14:00', name: 'Morgon' },
+      'A': { start: '14:00', end: '22:00', name: 'Kväll' },
+      'N': { start: '22:00', end: '06:00', name: 'Natt' },
+      'L': { start: '', end: '', name: 'Ledig' }
+    }
+  },
+
+  OUTOKUMPU_2SKIFT: {
+    id: 'outokumpu_2skift',
+    name: 'Outokumpu 2-skift',
+    description: '2-skiftssystem för underhåll och kvalitet',
+    pattern: ['M', 'M', 'M', 'M', 'M', 'L', 'L', 'A', 'A', 'A', 'A', 'A', 'L', 'L'],
+    cycle: 14,
+    times: {
+      'M': { start: '06:00', end: '14:00', name: 'Morgon' },
+      'A': { start: '14:00', end: '22:00', name: 'Kväll' },
+      'L': { start: '', end: '', name: 'Ledig' }
+    }
+  },
+
+  OUTOKUMPU_DAG: {
+    id: 'outokumpu_dag',
+    name: 'Outokumpu Dag',
+    description: 'Dagskift för administration och planering',
+    pattern: ['D', 'D', 'D', 'D', 'D', 'L', 'L'],
+    cycle: 7,
+    times: {
+      'D': { start: '07:00', end: '16:00', name: 'Dag' },
+      'L': { start: '', end: '', name: 'Ledig' }
+    }
   }
 };
 

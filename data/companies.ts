@@ -205,6 +205,22 @@ export const COMPANIES: Record<string, Company> = {
       'Gamma': '#FF6347',
       'Delta': '#FFD700'
     }
+  },
+
+  OUTOKUMPU: {
+    id: 'outokumpu',
+    name: 'Outokumpu',
+    description: 'Rostfritt stål',
+    location: 'Avesta, Sverige',
+    shifts: ['OUTOKUMPU_3SKIFT', 'OUTOKUMPU_2SKIFT', 'OUTOKUMPU_DAG'],
+    teams: ['A', 'B', 'C', 'D'],
+    departments: ['Smältverk', 'Valsning', 'Glödgning', 'Kvalitet', 'Underhåll'],
+    colors: {
+      'A': '#C0392B',  // Rostfritt röd
+      'B': '#2C3E50',  // Stål grå
+      'C': '#E67E22',  // Koppar orange
+      'D': '#27AE60'   // Nickel grön
+    }
   }
 };
 
