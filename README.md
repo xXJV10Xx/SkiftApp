@@ -1,276 +1,221 @@
-# 🚀 Skiftappen - Team Chat App
+# 🔄 Skiftschema.se Scraper
 
-A modern React Native mobile application for team communication with real-time chat, authentication, and multi-language support.
+Automatisk scraper för att klona alla skiftscheman från skiftschema.se och ladda upp till Supabase.
 
-## 📱 Features
+## 📋 Översikt
 
-### 🔐 Authentication
-- **Supabase Authentication** with email/password
-- **Google OAuth** integration
-- **Password reset** functionality
-- **Secure session management**
+Detta projekt automatiserar processen att:
+1. 🕸️ Skrapa alla företag och lag från skiftschema.se
+2. 🗄️ Generera SQL-schema för databas
+3. 📅 Extrahera skiftdata från varje lags kalender
+4. ☁️ Ladda upp data till Supabase
 
-### 💬 Real-time Chat
-- **Team-based chat** system
-- **Real-time messages** with Supabase
-- **Online status** indicators
-- **Team member management**
-- **Message history**
+## 🚀 Snabbstart
 
-### 🌍 Internationalization
-- **Swedish** (default)
-- **English** support
-- **Dynamic language switching**
-- **Localized UI elements**
+### 1. Installation
 
-### 🎨 Theme System
-- **Light mode**
-- **Dark mode**
-- **System theme** (follows device settings)
-- **Dynamic color schemes**
-
-### 📱 Mobile Features
-- **Push notifications** for new messages
-- **Offline support**
-- **Responsive design**
-- **Native performance**
-
-### 🚀 Production Ready
-- **EAS Build** configuration
-- **App Store** deployment ready
-- **Google Play Store** deployment ready
-- **Environment configuration**
-
-## 🛠️ Tech Stack
-
-- **React Native** - Mobile app framework
-- **Expo** - Development platform
-- **TypeScript** - Type safety
-- **Supabase** - Backend as a Service
-  - Authentication
-  - Real-time database
-  - Row Level Security (RLS)
-- **Expo Router** - File-based navigation
-- **React Context** - State management
-
-## 📋 Prerequisites
-
-- Node.js (v18 or higher)
-- npm or yarn
-- Expo CLI
-- iOS Simulator (for iOS development)
-- Android Studio (for Android development)
-
-## 🚀 Quick Start
-
-### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/skiftappen.git
-cd skiftappen
-```
+# Klona projektet
+git clone <repository-url>
+cd skiftschema-scraper
 
-### 2. Install dependencies
-```bash
+# Installera dependencies
 npm install
 ```
 
-### 3. Set up environment variables
-Create a `.env` file in the root directory:
+### 2. Konfigurera Supabase
+
+1. Skapa ett nytt projekt på [Supabase](https://supabase.com)
+2. Kopiera din projekt-URL och API-nyckel
+3. Uppdatera `.env`-filen:
+
 ```env
-EXPO_PUBLIC_SUPABASE_URL=https://fsefeherdbtsddqimjco.supabase.co
-EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzZWZlaGVyZGJ0c2RkcWltamNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3ODUwNDcsImV4cCI6MjA2ODM2MTA0N30.YEltOJVQU6Ox5YrkZJGzbMiojyQClkFwG-mBPilIAfk
+SUPABASE_URL=https://your-project-id.supabase.co
+SUPABASE_KEY=your-supabase-anon-key
 ```
 
-### 4. Set up Supabase
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
-2. Create a new project or use existing
-3. Run the SQL commands from `DATABASE_SETUP.md`
-4. Configure Google OAuth (optional)
+### 3. Kör scrapern
 
-### 5. Start development server
 ```bash
-npx expo start
+# Kör komplett scraping och upload
+npm start
+
+# Eller kör steg för steg:
+npm run scrape-teams    # Skrapa alla lag från webbplatsen
+npm run scrape-upload   # Ladda upp skiftdata till Supabase
 ```
 
-### 6. Test on device
-- Install **Expo Go** app on your phone
-- Scan the QR code from terminal
-- Test all features
+## 📊 Data Structure
 
-## 🗄️ Database Setup
+### Companies (Företag)
+- ABB, SSAB, LKAB, Stora Enso, Barilla, etc.
 
-### 1. Run SQL commands
-Copy and paste the SQL commands from `DATABASE_SETUP.md` into your Supabase SQL Editor.
+### Departments (Avdelningar)
+- HVC, Borlänge, Kiruna, Nymölla, Filipstad, etc.
 
-### 2. Enable real-time
-In Supabase Dashboard:
-- Go to **Database** → **Replication**
-- Enable real-time for all tables
+### Teams (Lag)
+- A-skift, B-skift, Lag 1, Grupp 1, etc.
 
-### 3. Test data
-Add some test companies and teams to test the chat functionality.
+### Shifts (Skift)
+- **F** (Förmiddag): 06:00-14:00
+- **E** (Eftermiddag): 14:00-22:00  
+- **N** (Natt): 22:00-06:00
+- **L** (Ledigt): Ingen arbetstid
 
-## 📱 App Structure
+## 🗄️ Databas Schema
 
-```
-skiftappen/
-├── app/                    # Expo Router pages
-│   ├── (tabs)/            # Tab navigation
-│   │   ├── index.tsx      # Home screen
-│   │   ├── chat.tsx       # Chat screen
-│   │   ├── profile.tsx    # Profile screen
-│   │   └── settings.tsx   # Settings screen
-│   ├── auth/              # Authentication
-│   │   ├── login.tsx      # Login screen
-│   │   └── forgot-password.tsx
-│   └── _layout.tsx        # Root layout
-├── context/               # React Context providers
-│   ├── AuthContext.tsx    # Authentication state
-│   ├── ChatContext.tsx    # Chat functionality
-│   ├── LanguageContext.tsx # Internationalization
-│   └── ThemeContext.tsx   # Theme management
-├── lib/                   # Utilities
-│   ├── supabase.ts        # Supabase client
-│   ├── i18n.ts           # Translations
-│   └── notifications.ts   # Push notifications
-└── components/            # Reusable components
+Kör SQL-skriptet för att skapa tabellerna:
+
+```sql
+-- Se skiftschema-schema.sql för komplett schema
+CREATE TABLE companies (id, name, created_at);
+CREATE TABLE departments (id, company_id, name, created_at);
+CREATE TABLE teams (id, department_id, name, url, created_at);
+CREATE TABLE shifts (id, team_id, date, shift_type, start_time, end_time, raw_data, created_at, updated_at);
 ```
 
-## 🌍 Internationalization
+## 📁 Filstruktur
 
-The app supports Swedish and English. To add more languages:
+```
+skiftschema-scraper/
+├── scripts/
+│   └── scrape-upload-cursor.cjs    # Huvudsaklig scraper
+├── teams-array.js                  # Alla lag och URL:er
+├── skiftschema-schema.sql          # Databas schema
+├── scrape-skiftschema.js          # Initial scraper för lag
+├── package.json                    # Dependencies
+├── .env                           # Supabase konfiguration
+└── README.md                      # Denna fil
+```
 
-1. Add translations to `lib/i18n.ts`
-2. Update the `Language` type
-3. Add language options to settings
+## 🔧 Konfiguration
 
-## 🎨 Theming
+### Environment Variables (.env)
+```env
+# Supabase Configuration
+SUPABASE_URL=https://your-project-id.supabase.co
+SUPABASE_KEY=your-supabase-anon-key
 
-The app supports three theme modes:
-- **Light** - Bright theme
-- **Dark** - Dark theme  
-- **System** - Follows device settings
+# Scraper Configuration  
+HEADLESS_BROWSER=true
+BATCH_SIZE=3
+DELAY_BETWEEN_BATCHES=2000
+```
 
-Colors are defined in `context/ThemeContext.tsx`.
+### Teams Array (teams-array.js)
+Innehåller alla 75+ lag från 12 företag:
 
-## 📱 Building for Production
+```javascript
+const TEAMS = [
+  { id: 1, company: "ABB", department: "HVC", team: "Skift 1", url: "https://..." },
+  { id: 2, company: "ABB", department: "HVC", team: "Skift 2", url: "https://..." },
+  // ... 73 fler lag
+];
+```
 
-### 1. Install EAS CLI
+## ⚙️ Avancerad användning
+
+### Skrapa specifika lag
+
+```javascript
+const { scrapeTeamSchedule } = require('./scripts/scrape-upload-cursor.cjs');
+
+// Skrapa ett specifikt lag
+const team = { id: 1, company: "ABB", team: "Skift 1", url: "https://..." };
+const shifts = await scrapeTeamSchedule(team);
+console.table(shifts);
+```
+
+### Anpassad batch-storlek
+
+```javascript
+// I scripts/scrape-upload-cursor.cjs
+const BATCH_SIZE = 5; // Ändra från 3 till 5 lag per batch
+```
+
+## 📈 Statistik
+
+Scrapern hanterar:
+- **12 företag** (ABB, SSAB, LKAB, Stora Enso, etc.)
+- **15 avdelningar** (olika orter och fabriker)
+- **75 lag** (olika skift och grupper)
+- **~27,000 skiftposter** per år (365 dagar × 75 lag)
+
+## 🛠️ Felsökning
+
+### Vanliga problem
+
+**Puppeteer timeout:**
 ```bash
-npm install -g @expo/eas-cli
+# Öka timeout i scraper-filen
+await page.goto(team.url, { timeout: 60000 });
 ```
 
-### 2. Login to Expo
+**Supabase connection error:**
 ```bash
-eas login
+# Kontrollera .env-filen
+echo $SUPABASE_URL
+echo $SUPABASE_KEY
 ```
 
-### 3. Configure build
+**Ingen data extraherad:**
 ```bash
-eas build:configure
+# Kör i non-headless mode för debugging
+const browser = await puppeteer.launch({ headless: false });
 ```
 
-### 4. Build for platforms
+### Debug mode
+
+```javascript
+// I scripts/scrape-upload-cursor.cjs
+const browser = await puppeteer.launch({ 
+  headless: false,  // Visa webbläsaren
+  slowMo: 250      // Långsammare för debugging
+});
+```
+
+## 📅 Automatisering
+
+### Cron job (Linux/Mac)
 ```bash
-# Android
-eas build --platform android --profile production
-
-# iOS
-eas build --platform ios --profile production
+# Kör varje dag kl 06:00
+0 6 * * * cd /path/to/skiftschema-scraper && npm run scrape-upload
 ```
 
-## 🚀 Deployment
+### GitHub Actions
+```yaml
+name: Daily Scrape
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Varje dag 06:00 UTC
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm install
+      - run: npm run scrape-upload
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+```
 
-### Android (Google Play Store)
-1. Create Google Play Console account
-2. Upload AAB file from EAS build
-3. Fill in app information
-4. Submit for review
+## 🤝 Bidra
 
-### iOS (App Store)
-1. Create Apple Developer account
-2. Upload IPA file to App Store Connect
-3. Fill in app information
-4. Submit for review
+1. Forka projektet
+2. Skapa en feature branch (`git checkout -b feature/amazing-feature`)
+3. Commita dina ändringar (`git commit -m 'Add amazing feature'`)
+4. Pusha till branchen (`git push origin feature/amazing-feature`)
+5. Öppna en Pull Request
 
-See `DEPLOYMENT_GUIDE.md` for detailed instructions.
+## 📄 Licens
 
-## 🔧 Configuration
+MIT License - se LICENSE-filen för detaljer.
 
-### Environment Variables
-- `EXPO_PUBLIC_SUPABASE_URL` - Supabase project URL
-- `EXPO_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
+## ⚖️ Ansvarsskyldighet
 
-### App Configuration
-- `app.json` - Expo configuration
-- `eas.json` - EAS build configuration
-
-## 📊 Features in Detail
-
-### Authentication
-- Email/password registration and login
-- Google OAuth integration
-- Password reset via email
-- Secure session management
-- Automatic login state persistence
-
-### Chat System
-- Real-time messaging with Supabase
-- Team-based chat rooms
-- Online status indicators
-- Message history
-- Team member management
-
-### User Interface
-- Modern, responsive design
-- Dark/light theme support
-- Multi-language interface
-- Intuitive navigation
-- Loading states and error handling
-
-### Performance
-- Optimized for mobile
-- Efficient real-time updates
-- Minimal network usage
-- Smooth animations
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-If you encounter any issues:
-
-1. Check the [Expo documentation](https://docs.expo.dev/)
-2. Check the [Supabase documentation](https://supabase.com/docs)
-3. Create an issue on GitHub
-4. Check the troubleshooting section in `DEPLOYMENT_GUIDE.md`
-
-## 🗺️ Roadmap
-
-- [ ] Voice messages
-- [ ] File sharing
-- [ ] Video calls
-- [ ] Advanced team management
-- [ ] Analytics dashboard
-- [ ] Custom themes
-- [ ] Offline message sync
-- [ ] Message reactions
-- [ ] User profiles with avatars
-
-## 📞 Contact
-
-For questions or support, please create an issue on GitHub or contact the development team.
+Denna scraper är endast för utbildningssyfte. Respektera skiftschema.se:s terms of service och använd inte scrapern för kommersiella ändamål utan tillstånd.
 
 ---
 
-**Made with ❤️ using React Native, Expo, and Supabase**
+**Made with ❤️ by Cursor Agent**
