@@ -1,10 +1,22 @@
-const puppeteer = require('puppeteer');
+const puppeteerCore = require('puppeteer-core');
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 (async () => {
-  const browser = await puppeteer.launch({ headless: 'new' });
+  const browser = await puppeteerCore.launch({
+    executablePath: '/usr/bin/google-chrome-stable',
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-accelerated-2d-canvas',
+      '--no-first-run',
+      '--no-zygote',
+      '--disable-gpu'
+    ]
+  });
   const page = await browser.newPage();
   await page.goto('https://skiftschema.se');
 
