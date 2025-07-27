@@ -18,6 +18,9 @@ export type Database = {
           name: string;
           slug: string;
           logo_url: string | null;
+          schedule_url: string | null;
+          teams_config: string[] | null;
+          departments_config: string[] | null;
           created_at: string;
           updated_at: string;
         };
@@ -26,6 +29,9 @@ export type Database = {
           name: string;
           slug: string;
           logo_url?: string | null;
+          schedule_url?: string | null;
+          teams_config?: string[] | null;
+          departments_config?: string[] | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -34,6 +40,9 @@ export type Database = {
           name?: string;
           slug?: string;
           logo_url?: string | null;
+          schedule_url?: string | null;
+          teams_config?: string[] | null;
+          departments_config?: string[] | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -98,6 +107,8 @@ export type Database = {
           name: string;
           description: string | null;
           color: string;
+          department: string | null;
+          shift_pattern: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -107,6 +118,8 @@ export type Database = {
           name: string;
           description?: string | null;
           color?: string;
+          department?: string | null;
+          shift_pattern?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -116,8 +129,142 @@ export type Database = {
           name?: string;
           description?: string | null;
           color?: string;
+          department?: string | null;
+          shift_pattern?: string | null;
           created_at?: string;
           updated_at?: string;
+        };
+      };
+      schedules: {
+        Row: {
+          id: string;
+          company_id: string;
+          team_name: string;
+          department: string | null;
+          date: string;
+          shift_type: string;
+          start_time: string | null;
+          end_time: string | null;
+          location: string | null;
+          notes: string | null;
+          status: string;
+          scraped_at: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          company_id: string;
+          team_name: string;
+          department?: string | null;
+          date: string;
+          shift_type: string;
+          start_time?: string | null;
+          end_time?: string | null;
+          location?: string | null;
+          notes?: string | null;
+          status?: string;
+          scraped_at?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          company_id?: string;
+          team_name?: string;
+          department?: string | null;
+          date?: string;
+          shift_type?: string;
+          start_time?: string | null;
+          end_time?: string | null;
+          location?: string | null;
+          notes?: string | null;
+          status?: string;
+          scraped_at?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      schedule_sources: {
+        Row: {
+          id: string;
+          company_id: string;
+          name: string;
+          url: string;
+          selector_config: any | null;
+          is_active: boolean;
+          last_scraped: string | null;
+          scrape_frequency_minutes: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          company_id: string;
+          name: string;
+          url: string;
+          selector_config?: any | null;
+          is_active?: boolean;
+          last_scraped?: string | null;
+          scrape_frequency_minutes?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          company_id?: string;
+          name?: string;
+          url?: string;
+          selector_config?: any | null;
+          is_active?: boolean;
+          last_scraped?: string | null;
+          scrape_frequency_minutes?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      scrape_logs: {
+        Row: {
+          id: string;
+          company_id: string;
+          source_id: string | null;
+          status: 'success' | 'error' | 'partial';
+          records_processed: number;
+          records_inserted: number;
+          records_updated: number;
+          records_failed: number;
+          error_message: string | null;
+          execution_time_ms: number | null;
+          scraped_data: any | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          company_id: string;
+          source_id?: string | null;
+          status: 'success' | 'error' | 'partial';
+          records_processed?: number;
+          records_inserted?: number;
+          records_updated?: number;
+          records_failed?: number;
+          error_message?: string | null;
+          execution_time_ms?: number | null;
+          scraped_data?: any | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          company_id?: string;
+          source_id?: string | null;
+          status?: 'success' | 'error' | 'partial';
+          records_processed?: number;
+          records_inserted?: number;
+          records_updated?: number;
+          records_failed?: number;
+          error_message?: string | null;
+          execution_time_ms?: number | null;
+          scraped_data?: any | null;
+          created_at?: string;
         };
       };
       shifts: {
@@ -294,6 +441,63 @@ export type Database = {
           emoji?: string;
           created_at?: string;
         };
+      };
+    };
+    Views: {
+      current_schedules: {
+        Row: {
+          id: string;
+          company_id: string;
+          team_name: string;
+          department: string | null;
+          date: string;
+          shift_type: string;
+          start_time: string | null;
+          end_time: string | null;
+          location: string | null;
+          notes: string | null;
+          status: string;
+          scraped_at: string;
+          created_at: string;
+          updated_at: string;
+          company_name: string;
+          logo_url: string | null;
+        };
+      };
+      scraping_stats: {
+        Row: {
+          company_id: string;
+          company_name: string;
+          total_scrapes: number;
+          successful_scrapes: number;
+          failed_scrapes: number;
+          avg_execution_time_ms: number;
+          total_records_processed: number;
+          total_records_inserted: number;
+          last_scrape_time: string;
+        };
+      };
+    };
+    Functions: {
+      cleanup_old_schedules: {
+        Args: { days_to_keep?: number };
+        Returns: number;
+      };
+      get_team_schedule: {
+        Args: {
+          p_company_id: string;
+          p_team_name: string;
+          p_start_date: string;
+          p_end_date: string;
+        };
+        Returns: {
+          date: string;
+          shift_type: string;
+          start_time: string | null;
+          end_time: string | null;
+          location: string | null;
+          notes: string | null;
+        }[];
       };
     };
   };

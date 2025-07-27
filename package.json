@@ -9,7 +9,12 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "scrape:multi": "node scripts/multi-company-scraper.cjs",
+    "scrape:single": "node scripts/scrape-upload.cjs",
+    "scrape:test": "node scripts/test-scraping.js",
+    "scrape:health": "node scripts/health-check.js",
+    "deploy:setup": "node scripts/deploy-to-loveable.js"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.1",

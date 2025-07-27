@@ -1,0 +1,37 @@
+{
+  "name": "skiftappen-enhanced-scraping",
+  "version": "2.0.0",
+  "description": "Enhanced multi-company schedule scraping with comprehensive logging",
+  "features": [
+    "Multi-company support (Volvo, SCA, SSAB, Boliden, Barilla, etc.)",
+    "Department and team-specific scraping",
+    "Comprehensive error handling and logging",
+    "Database schema with schedules, scrape_logs, and schedule_sources tables",
+    "Real-time progress tracking",
+    "Automatic screenshot capture on errors",
+    "Performance monitoring and statistics"
+  ],
+  "environment": {
+    "required": [
+      "SUPABASE_URL",
+      "SUPABASE_KEY",
+      "PUPPETEER_EXECUTABLE_PATH"
+    ],
+    "optional": [
+      "SCRAPE_FREQUENCY_MINUTES",
+      "MAX_CONCURRENT_COMPANIES",
+      "ENABLE_SCREENSHOTS"
+    ]
+  },
+  "database": {
+    "newTables": [
+      "schedules",
+      "schedule_sources",
+      "scrape_logs"
+    ],
+    "enhancedTables": [
+      "companies (added: slug, schedule_url, teams_config, departments_config)",
+      "teams (added: department, shift_pattern)"
+    ]
+  }
+}
