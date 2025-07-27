@@ -5,7 +5,7 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY
 
 (async () => {
   const browser = await puppeteerCore.launch({
-    executablePath: '/usr/bin/google-chrome-stable',
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome-stable',
     headless: true,
     args: [
       '--no-sandbox',
