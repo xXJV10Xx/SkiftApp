@@ -8,9 +8,13 @@ import { LanguageProvider } from '../context/LanguageContext';
 import { ShiftProvider } from '../context/ShiftContext';
 import { ThemeProvider } from '../context/ThemeContext'
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
 
 function MainLayout() {
   const { user, loading } = useAuth();
+  
+  // Initialize online status tracking
+  useOnlineStatus();
 
   if (loading) {
     return (

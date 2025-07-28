@@ -1,4 +1,4 @@
-import { MessageSquare, Send, Users } from 'lucide-react-native';
+import { MessageSquare, Plus, Send, Settings, Users } from 'lucide-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Alert,
@@ -12,6 +12,8 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { ChatSettingsModal } from '../../components/ChatSettingsModal';
+import { CreateChatModal } from '../../components/CreateChatModal';
 import { useAuth } from '../../context/AuthContext';
 import { useChat } from '../../context/ChatContext';
 import { useCompany } from '../../context/CompanyContext';
@@ -38,6 +40,8 @@ export default function ChatScreen() {
   const [newMessage, setNewMessage] = useState('');
   const [showRoomSelector, setShowRoomSelector] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
   // Auto-scroll to bottom when new messages arrive
@@ -359,6 +363,14 @@ export default function ChatScreen() {
       fontWeight: 'bold',
       color: colors.text,
     },
+    headerActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    headerButton: {
+      padding: 4,
+    },
     roomSelector: {
       backgroundColor: colors.card,
       margin: 16,
@@ -451,9 +463,20 @@ export default function ChatScreen() {
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Chat</Text>
-          <TouchableOpacity onPress={() => setShowRoomSelector(true)}>
-            <MessageSquare size={24} color={colors.primary} />
-          </TouchableOpacity>
+          <View style={styles.headerActions}>
+            <TouchableOpacity 
+              style={styles.headerButton}
+              onPress={() => setShowCreateModal(true)}
+            >
+              <Plus size={24} color={colors.primary} />
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.headerButton}
+              onPress={() => setShowRoomSelector(true)}
+            >
+              <MessageSquare size={24} color={colors.primary} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {showRoomSelector && (
@@ -467,10 +490,15 @@ export default function ChatScreen() {
                   onPress={() => handleJoinRoom(room)}
                 >
                   <View style={styles.roomItemInfo}>
-                    <Text style={styles.roomItemName}>{room.name}</Text>
+                    <Text style={styles.roomItemName}>
+                      {room.type === 'private' ? '🔒 ' : '👥 '}{room.name}
+                    </Text>
                     {room.description && (
                       <Text style={styles.roomItemDescription}>{room.description}</Text>
                     )}
+                    <Text style={[styles.roomItemDescription, { fontSize: 11, marginTop: 2 }]}>
+                      {room.type === 'private' ? 'Privat chatt' : 'Teamchatt'}
+                    </Text>
                   </View>
                 </TouchableOpacity>
               ))}
@@ -527,9 +555,20 @@ export default function ChatScreen() {
           </View>
         </View>
         <View style={styles.headerRight}>
-          <TouchableOpacity onPress={() => setShowMembers(!showMembers)}>
+          <TouchableOpacity 
+            style={styles.headerButton}
+            onPress={() => setShowMembers(!showMembers)}
+          >
             <Users size={24} color={colors.primary} />
           </TouchableOpacity>
+          {currentChatRoom?.type === 'private' && (
+            <TouchableOpacity 
+              style={styles.headerButton}
+              onPress={() => setShowSettingsModal(true)}
+            >
+              <Settings size={24} color={colors.primary} />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
@@ -572,6 +611,19 @@ export default function ChatScreen() {
           <Send size={20} color="white" />
         </TouchableOpacity>
       </View>
+
+      {/* Modals */}
+      <CreateChatModal
+        visible={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        companyId={selectedCompany?.id}
+      />
+      
+      <ChatSettingsModal
+        visible={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+        chatRoom={currentChatRoom}
+      />
     </KeyboardAvoidingView>
   );
 }

@@ -195,6 +195,28 @@ CREATE POLICY "Users can insert their own profile" ON profiles
   FOR INSERT WITH CHECK (auth.uid() = id);
 ```
 
+### 7. Schedules Table (for Scraping)
+```sql
+CREATE TABLE schedules (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  date TEXT NOT NULL,
+  shift TEXT,
+  team TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE schedules ENABLE ROW LEVEL SECURITY;
+
+-- Create policies
+CREATE POLICY "Schedules are viewable by authenticated users" ON schedules
+  FOR SELECT USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Schedules can be managed by service role" ON schedules
+  FOR ALL USING (auth.role() = 'service_role');
+```
+
 ## 🧪 Testdata
 
 För att testa chatfunktionen, lägg till lite testdata:

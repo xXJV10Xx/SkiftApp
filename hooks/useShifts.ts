@@ -1,13 +1,7 @@
 // /hooks/useShifts.ts
 
 import { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
-
-// Ersätt med dina faktiska Supabase uppgifter
-const supabaseUrl = 'https://fsefeherdbtsddqimjco.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzZWZlaGVyZGJ0c2RkcWltamNvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mjc4NTA0NywiZXhwIjoyMDY4MzYxMDQ3fQ.IN-OF4_M7KhNwfAtrOcjS2SfVIbw_80lpgyzlngc_Lg';
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { supabase } from '../lib/supabase';
 
 export interface Shift {
   id: string;
@@ -23,18 +17,49 @@ export function useShifts() {
 
   useEffect(() => {
     const fetchShifts = async () => {
-      const { data, error } = await supabase.from('shifts').select('*');
-      if (error) {
-        console.error('Error fetching shifts:', error);
-        setError(error.message);
-      } else {
-        setShifts(data);
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const { data, error } = await supabase.from('shifts').select('*');
+        
+        if (error) {
+          console.error('Error fetching shifts:', error);
+          setError(error.message);
+        } else {
+          setShifts(data || []);
+        }
+      } catch (err) {
+        console.error('Unexpected error fetching shifts:', err);
+        setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchShifts();
   }, []);
 
-  return { shifts, loading, error };
+  const refetch = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const { data, error } = await supabase.from('shifts').select('*');
+      
+      if (error) {
+        console.error('Error refetching shifts:', error);
+        setError(error.message);
+      } else {
+        setShifts(data || []);
+      }
+    } catch (err) {
+      console.error('Unexpected error refetching shifts:', err);
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { shifts, loading, error, refetch };
 }

@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Building2, Calendar, MessageSquare, Settings, User } from 'lucide-react-native';
+import { Building2, Calendar, MessageSquare, Settings, User, Users } from 'lucide-react-native';
 import { useTheme } from '../../context/ThemeContext';
 
 export default function TabLayout() {
@@ -33,6 +33,15 @@ export default function TabLayout() {
           title: 'Schema',
           tabBarIcon: ({ color, size }) => (
             <Calendar size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="team"
+        options={{
+          title: 'Team',
+          tabBarIcon: ({ color, size }) => (
+            <Users size={size} color={color} />
           ),
         }}
       />
