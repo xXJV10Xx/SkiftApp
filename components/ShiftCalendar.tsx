@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Company } from '@/data/companies';
 import { calculateShiftForDate, formatDate, generateMonthSchedule } from '@/data/ShiftSchedules';
+import { SWEDISH_MONTHS, SWEDISH_WEEKDAYS_SHORT } from '@/data/SwedishCalendar';
 import { Calendar, ChevronLeft, ChevronRight, Clock } from 'lucide-react-native';
 import React, { useState } from 'react';
 
@@ -71,12 +72,9 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
 
 
 
-  const monthNames = [
-    'Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni',
-    'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'
-  ];
-
-  const dayNames = ['Sön', 'Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör'];
+  // Använd svenska namn från SwedishCalendar
+  const monthNames = SWEDISH_MONTHS;
+  const dayNames = SWEDISH_WEEKDAYS_SHORT;
 
   return (
     <Card>
@@ -122,17 +120,31 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
           ))}
           
           {/* Kalenderdagar */}
-          {monthSchedule.map((day) => (
+          {monthSchedule.map((day, index) => (
             <div
-              key={day.day}
+              key={`${day.day}-${index}`}
               className={`p-2 min-h-[80px] border rounded-lg cursor-pointer transition-all ${
                 day.isToday ? 'ring-2 ring-primary' : ''
-              } ${day.isWeekend ? 'bg-muted/30' : ''}`}
+              } ${day.isWeekend ? 'bg-muted/30' : ''} ${
+                day.isHoliday ? 'bg-red-50 border-red-200' : ''
+              }`}
               onClick={() => setSelectedDate(day.date)}
             >
-              <div className="text-sm font-medium mb-1">
-                {day.day}
+              <div className="text-sm font-medium mb-1 flex justify-between items-center">
+                <span>{day.day}</span>
+                {day.isDST && (
+                  <span className="text-xs text-blue-500" title="Sommartid">
+                    {day.timezone}
+                  </span>
+                )}
               </div>
+              
+              {day.isHoliday && (
+                <div className="text-xs text-red-600 font-medium mb-1">
+                  {day.holiday}
+                </div>
+              )}
+              
               {day.shift.code !== 'L' && (
                 <div
                   className="text-xs p-1 rounded text-white font-medium"
@@ -151,6 +163,10 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
                   {day.shift.time.start}-{day.shift.time.end}
                 </div>
               )}
+              
+              <div className="text-xs text-muted-foreground mt-1">
+                V{day.weekNumber}
+              </div>
             </div>
           ))}
         </div>

@@ -183,19 +183,49 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Send message
   const sendMessage = async (content: string, messageType = 'text') => {
-    if (!user || !currentChatRoom) return;
+    if (!user || !currentChatRoom) {
+      throw new Error('Användare eller chattrum saknas');
+    }
+
+    if (!content.trim()) {
+      throw new Error('Meddelandet kan inte vara tomt');
+    }
 
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('messages')
         .insert({
           chat_room_id: currentChatRoom.id,
           sender_id: user.id,
-          content,
+          content: content.trim(),
           message_type: messageType
-        });
+        })
+        .select(`
+          *,
+          sender:employees!sender_id (
+            first_name,
+            last_name,
+            email,
+            avatar_url
+          )
+        `)
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+
+      // Lägg till meddelandet lokalt om real-time inte fungerar
+      if (data) {
+        setMessages(prev => {
+          // Kontrollera om meddelandet redan finns
+          if (prev.some(msg => msg.id === data.id)) {
+            return prev;
+          }
+          return [...prev, data];
+        });
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       throw error;
@@ -292,9 +322,31 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
           table: 'messages',
           filter: `chat_room_id=eq.${currentChatRoom.id}`,
         },
-        (payload) => {
+        async (payload) => {
           const newMessage = payload.new as ChatMessage;
-          setMessages(prev => [...prev, newMessage]);
+          
+          // Hämta sender information
+          try {
+            const { data: senderData } = await supabase
+              .from('employees')
+              .select('first_name, last_name, email, avatar_url')
+              .eq('id', newMessage.sender_id)
+              .single();
+            
+            if (senderData) {
+              newMessage.sender = senderData;
+            }
+          } catch (error) {
+            console.error('Error fetching sender data:', error);
+          }
+          
+          setMessages(prev => {
+            // Kontrollera om meddelandet redan finns
+            if (prev.some(msg => msg.id === newMessage.id)) {
+              return prev;
+            }
+            return [...prev, newMessage];
+          });
         }
       )
       .on(
@@ -314,7 +366,9 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
           );
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Real-time subscription status:', status);
+      });
 
     setChannel(messageChannel);
 
