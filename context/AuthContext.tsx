@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setLoading(false);
 
       // Create employee profile if user signs up
-      if (session?.user && _event === 'SIGNED_UP') {
+      if (session?.user && _event === 'SIGNED_UP' as any) {
         const { error } = await supabase
           .from('employees')
           .insert({

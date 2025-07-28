@@ -138,21 +138,29 @@ export const CompanyProvider = ({ children }: { children: React.ReactNode }) => 
 
         // Sync teams for this company
         for (const teamName of company.teams) {
-          const { error: teamError } = await supabase
+          // Check if team already exists
+          const { data: existingTeam } = await supabase
             .from('teams')
-            .upsert({
-              company_id: company.id,
-              name: teamName,
-              description: `${teamName} team för ${company.name}`,
-              color: company.colors[teamName] || '#6B7280',
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            }, {
-              onConflict: 'company_id,name'
-            });
+            .select('id')
+            .eq('company_id', company.id)
+            .eq('name', teamName)
+            .single();
 
-          if (teamError) {
-            console.error(`Error syncing team ${teamName} for ${company.name}:`, teamError);
+          if (!existingTeam) {
+            const { error: teamError } = await supabase
+              .from('teams')
+              .insert({
+                company_id: company.id,
+                name: teamName,
+                description: `${teamName} team för ${company.name}`,
+                color: company.colors[teamName] || '#6B7280',
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              });
+
+            if (teamError) {
+              console.error(`Error syncing team ${teamName} for ${company.name}:`, teamError);
+            }
           }
         }
       }

@@ -20,7 +20,7 @@ export const TeamSelector: React.FC<TeamSelectorProps> = ({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
+            <Users size={20} />
             Välj ditt skiftlag
           </CardTitle>
           <p className="text-muted-foreground">
@@ -29,6 +29,39 @@ export const TeamSelector: React.FC<TeamSelectorProps> = ({
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {/* ALLA option */}
+            <Button
+              key="ALLA"
+              variant={selectedTeam === 'ALLA' ? 'default' : 'outline'}
+              className="h-20 flex flex-col items-center justify-center gap-2"
+              onClick={() => onTeamSelect('ALLA')}
+              style={{
+                backgroundColor: selectedTeam === 'ALLA' ? '#6366f1' : undefined,
+                borderColor: '#6366f1',
+                color: selectedTeam === 'ALLA' ? 'white' : undefined
+              }}
+            >
+              <div className="flex -space-x-1">
+                {company.teams.slice(0, 3).map((team, index) => (
+                  <div
+                    key={team}
+                    className="w-4 h-4 rounded-full border border-white"
+                    style={{ 
+                      backgroundColor: company.colors[team],
+                      zIndex: company.teams.length - index
+                    }}
+                  />
+                ))}
+                {company.teams.length > 3 && (
+                  <div className="w-4 h-4 rounded-full bg-gray-400 border border-white flex items-center justify-center">
+                    <span className="text-xs text-white font-bold">+</span>
+                  </div>
+                )}
+              </div>
+              <span className="font-medium">Alla lag</span>
+            </Button>
+
+            {/* Individual teams */}
             {company.teams.map((team) => (
               <Button
                 key={team}
