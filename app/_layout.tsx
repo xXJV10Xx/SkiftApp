@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from '../context/AuthContext';
 import { ChatProvider } from '../context/ChatContext';
 import { CompanyProvider } from '../context/CompanyContext';
 import { LanguageProvider } from '../context/LanguageContext';
+import { RealTimeScheduleProvider } from '../context/RealTimeScheduleContext';
 import { ShiftProvider } from '../context/ShiftContext';
 import { ThemeProvider } from '../context/ThemeContext'
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
@@ -32,12 +33,14 @@ function MainLayout() {
   return (
     <CompanyProvider>
       <ShiftProvider>
-        <ChatProvider>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-        </ChatProvider>
+        <RealTimeScheduleProvider>
+          <ChatProvider>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          </ChatProvider>
+        </RealTimeScheduleProvider>
       </ShiftProvider>
     </CompanyProvider>
   );
