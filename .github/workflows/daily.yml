@@ -8,20 +8,58 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Installera Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
-      - name: Installera beroenden
-        run: npm install
+      - name: Install Chrome dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libnss3-dev \
+            libgconf-2-4 \
+            libxss1 \
+            libasound2 \
+            libxtst6 \
+            libxrandr2 \
+            libasound2 \
+            libpangocairo-1.0-0 \
+            libatk1.0-0 \
+            libcairo-gobject2 \
+            libgtk-3-0 \
+            libgdk-pixbuf2.0-0
 
-      - name: Kör scraping
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify Puppeteer installation
+        run: |
+          if [ ! -f "/usr/bin/google-chrome-stable" ]; then
+            echo "Chrome not found, installing..."
+            wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+            sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+            sudo apt-get update
+            sudo apt-get install -y google-chrome-stable
+          fi
+          google-chrome-stable --version
+
+      - name: Run scraping script
         run: node scripts/scrape-upload.cjs
         env:
-          SUPABASE_URL: https://fsefeherdbtsddqimjco.supabase.co
-          SUPABASE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzZWZlaGVyZGJ0c2RkcWltamNvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mjc4NTA0NywiZXhwIjoyMDY4MzYxMDQ3fQ.IN-OF4_M7KhNwfAtrOcjS2SfVIbw_80lpgyzlngc_Lg
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          PUPPETEER_EXECUTABLE_PATH: /usr/bin/google-chrome-stable
+        timeout-minutes: 10
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Scraping job failed at $(date)"
+          echo "Please check the logs and fix any issues."
