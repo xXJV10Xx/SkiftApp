@@ -124,7 +124,15 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       if (error) throw error;
 
       const rooms = data?.map(item => item.chat_rooms).filter(Boolean) as ChatRoom[];
-      setChatRooms(rooms || []);
+      
+      // Sort rooms: private chats first, then team chats
+      const sortedRooms = rooms.sort((a, b) => {
+        if (a.type === 'private' && b.type !== 'private') return -1;
+        if (a.type !== 'private' && b.type === 'private') return 1;
+        return a.name.localeCompare(b.name);
+      });
+      
+      setChatRooms(sortedRooms || []);
     } catch (error) {
       console.error('Error fetching chat rooms:', error);
     } finally {

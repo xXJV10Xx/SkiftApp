@@ -14,6 +14,7 @@
     "test-scraper": "node scripts/test-scraper.cjs",
     "test-chat": "node scripts/test-chat.cjs",
     "fix-chat": "node scripts/fix-chat-database.cjs",
+    "test-interest": "node scripts/test-interest.cjs",
     "setup-db": "node scripts/setup-database.cjs"
   },
   "dependencies": {

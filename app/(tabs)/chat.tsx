@@ -467,10 +467,15 @@ export default function ChatScreen() {
                   onPress={() => handleJoinRoom(room)}
                 >
                   <View style={styles.roomItemInfo}>
-                    <Text style={styles.roomItemName}>{room.name}</Text>
+                    <Text style={styles.roomItemName}>
+                      {room.type === 'private' ? '🔒 ' : '👥 '}{room.name}
+                    </Text>
                     {room.description && (
                       <Text style={styles.roomItemDescription}>{room.description}</Text>
                     )}
+                    <Text style={[styles.roomItemDescription, { fontSize: 11, marginTop: 2 }]}>
+                      {room.type === 'private' ? 'Privat chatt' : 'Teamchatt'}
+                    </Text>
                   </View>
                 </TouchableOpacity>
               ))}
