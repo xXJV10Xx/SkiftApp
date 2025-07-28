@@ -4,6 +4,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import { useCompany } from '../../context/CompanyContext';
 import { useShift } from '../../context/ShiftContext';
 import { useTheme } from '../../context/ThemeContext';
+import { SWEDISH_MONTHS, SWEDISH_WEEKDAYS_SHORT } from '../../data/SwedishCalendar';
 
 export default function ScheduleScreen() {
   const { colors } = useTheme();
@@ -68,12 +69,9 @@ export default function ScheduleScreen() {
     return timeStr.substring(0, 5); // Remove seconds
   };
 
-  const monthNames = [
-    'Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni',
-    'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'
-  ];
-
-  const dayNames = ['Sön', 'Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör'];
+  // Använd svenska namn från SwedishCalendar
+  const monthNames = SWEDISH_MONTHS;
+  const dayNames = SWEDISH_WEEKDAYS_SHORT;
 
   const styles = StyleSheet.create({
     container: {
@@ -333,7 +331,21 @@ export default function ScheduleScreen() {
                 >
                   {day && (
                     <>
-                      <Text style={styles.dayNumber}>{day.day}</Text>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Text style={styles.dayNumber}>{day.day}</Text>
+                        {day.isDST && (
+                          <Text style={[styles.shiftTime, { color: colors.primary }]}>
+                            {day.timezone}
+                          </Text>
+                        )}
+                      </View>
+                      
+                      {day.isHoliday && (
+                        <Text style={[styles.shiftTime, { color: 'red', fontSize: 8 }]}>
+                          {day.holiday}
+                        </Text>
+                      )}
+                      
                       {day.shift.code !== 'L' && (
                         <View
                           style={[
@@ -351,6 +363,10 @@ export default function ScheduleScreen() {
                           {formatTime(day.shift.time.start)}-{formatTime(day.shift.time.end)}
                         </Text>
                       )}
+                      
+                      <Text style={[styles.shiftTime, { fontSize: 8 }]}>
+                        V{day.weekNumber}
+                      </Text>
                     </>
                   )}
                 </View>

@@ -1,7 +1,20 @@
 // 📋 Skiftscheman - Komplett Datastruktur för alla svenska industriföretag
 // Beräknad från 2024-01-01 med 10 års intervall (2020-2030)
+// Nu med korrekt svensk kalenderhantering
 
-export const START_DATE = new Date('2024-01-01');
+import { 
+  generateSwedishMonth, 
+  getSwedishDateInfo, 
+  formatSwedishDate,
+  createSwedishDate,
+  isSwedishHoliday,
+  SWEDISH_WEEKDAYS_SHORT,
+  SWEDISH_MONTHS,
+  type SwedishMonthDay,
+  type SwedishDateInfo
+} from './SwedishCalendar';
+
+export const START_DATE = createSwedishDate(2024, 0, 1); // 1 januari 2024
 
 // 🔄 Skifttyper och mönster
 export interface ShiftType {
@@ -194,20 +207,29 @@ export function getTeamOffset(team: string, shiftType: ShiftType) {
 }
 
 export function generateMonthSchedule(year: number, month: number, shiftType: ShiftType, team: string) {
+  const swedishDays = generateSwedishMonth(year, month);
   const schedule = [];
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
   
-  for (let day = 1; day <= daysInMonth; day++) {
-    const date = new Date(year, month, day);
-    const shift = calculateShiftForDate(date, shiftType, team);
-    
-    schedule.push({
-      date: date,
-      day: day,
-      shift: shift,
-      isToday: isToday(date),
-      isWeekend: date.getDay() === 0 || date.getDay() === 6
-    });
+  for (const swedishDay of swedishDays) {
+    if (swedishDay.isCurrentMonth) {
+      const shift = calculateShiftForDate(swedishDay.date, shiftType, team);
+      const holiday = isSwedishHoliday(swedishDay.date);
+      
+      schedule.push({
+        date: swedishDay.date,
+        day: swedishDay.day,
+        shift: shift,
+        isToday: swedishDay.dateInfo.isToday,
+        isWeekend: swedishDay.dateInfo.isWeekend,
+        weekday: swedishDay.dateInfo.weekday,
+        weekdayName: swedishDay.dateInfo.weekdayName,
+        weekNumber: swedishDay.dateInfo.weekNumber,
+        isDST: swedishDay.dateInfo.isDST,
+        timezone: swedishDay.dateInfo.timezone,
+        holiday: holiday ? holiday.name : null,
+        isHoliday: !!holiday
+      });
+    }
   }
   
   return schedule;
@@ -265,20 +287,12 @@ export function getNextShift(shiftType: ShiftType, team: string, currentDate = n
 
 // 🛠️ Hjälpfunktioner
 export function isToday(date: Date) {
-  const today = new Date();
-  return date.getDate() === today.getDate() &&
-         date.getMonth() === today.getMonth() &&
-         date.getFullYear() === today.getFullYear();
+  const swedishInfo = getSwedishDateInfo(date);
+  return swedishInfo.isToday;
 }
 
 export function formatDate(date: Date) {
-  const options: Intl.DateTimeFormatOptions = { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  };
-  return date.toLocaleDateString('sv-SE', options);
+  return formatSwedishDate(date, 'full');
 }
 
 export function getShiftColor(shiftCode: string, company: string, team: string) {
