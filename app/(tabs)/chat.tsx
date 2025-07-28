@@ -1,4 +1,4 @@
-import { MessageSquare, Send, Users } from 'lucide-react-native';
+import { MessageSquare, Send, Users, Settings } from 'lucide-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Alert,
@@ -16,6 +16,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useChat } from '../../context/ChatContext';
 import { useCompany } from '../../context/CompanyContext';
 import { useTheme } from '../../context/ThemeContext';
+import { testChatFunctionality, logChatStatus } from '../../utils/chatDebug';
 
 export default function ChatScreen() {
   const { colors } = useTheme();
@@ -38,6 +39,7 @@ export default function ChatScreen() {
   const [newMessage, setNewMessage] = useState('');
   const [showRoomSelector, setShowRoomSelector] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
+  const [sendingMessage, setSendingMessage] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
   // Auto-scroll to bottom when new messages arrive
@@ -86,14 +88,28 @@ export default function ChatScreen() {
 
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || sendingMessage) return;
+    if (!currentChatRoom) {
+      Alert.alert('Fel', 'Inget chattrum valt');
+      return;
+    }
+    if (!user) {
+      Alert.alert('Fel', 'Du måste vara inloggad för att skicka meddelanden');
+      return;
+    }
+    
+    const messageContent = newMessage.trim();
+    setNewMessage(''); // Rensa meddelandet direkt för bättre UX
+    setSendingMessage(true);
     
     try {
-      await sendMessage(newMessage.trim());
-      setNewMessage('');
+      await sendMessage(messageContent);
     } catch (error) {
       console.error('Error sending message:', error);
-      Alert.alert('Fel', 'Kunde inte skicka meddelandet');
+      setNewMessage(messageContent); // Återställ meddelandet om det misslyckades
+      Alert.alert('Fel', 'Kunde inte skicka meddelandet. Försök igen.');
+    } finally {
+      setSendingMessage(false);
     }
   };
 
@@ -126,6 +142,44 @@ export default function ChatScreen() {
             } catch (error) {
               console.error('Error leaving chat room:', error);
               Alert.alert('Fel', 'Kunde inte lämna chatten');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleDebugChat = async () => {
+    if (!user) {
+      Alert.alert('Fel', 'Ingen användare inloggad');
+      return;
+    }
+
+    Alert.alert(
+      'Chat Debug',
+      'Vill du köra en diagnostik av chat-funktionaliteten?',
+      [
+        { text: 'Avbryt', style: 'cancel' },
+        {
+          text: 'Kör diagnostik',
+          onPress: async () => {
+            try {
+              const results = await testChatFunctionality(user.id);
+              
+              let message = `🔧 Chat Diagnostik Resultat:\n\n`;
+              message += `🔗 Anslutning: ${results.isConnected ? '✅ OK' : '❌ Fel'}\n`;
+              message += `👤 Användare: ${results.user ? '✅ Inloggad' : '❌ Inte inloggad'}\n`;
+              message += `💬 Chattrum: ${results.chatRooms.length} tillgängliga\n`;
+              message += `📡 Real-time: ${results.realtimeStatus}\n`;
+              
+              if (results.lastError) {
+                message += `\n❌ Senaste fel: ${results.lastError}`;
+              }
+
+              Alert.alert('Debug Resultat', message);
+              logChatStatus();
+            } catch (error) {
+              Alert.alert('Debug Fel', `Kunde inte köra diagnostik: ${error}`);
             }
           },
         },
@@ -530,6 +584,9 @@ export default function ChatScreen() {
           <TouchableOpacity onPress={() => setShowMembers(!showMembers)}>
             <Users size={24} color={colors.primary} />
           </TouchableOpacity>
+          <TouchableOpacity onPress={handleDebugChat}>
+            <Settings size={24} color={colors.textSecondary} />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -559,15 +616,22 @@ export default function ChatScreen() {
           style={styles.textInput}
           value={newMessage}
           onChangeText={setNewMessage}
+          onSubmitEditing={handleSendMessage}
           placeholder="Skriv ett meddelande..."
           placeholderTextColor={colors.textSecondary}
           multiline
           maxLength={500}
+          returnKeyType="send"
+          blurOnSubmit={false}
+          enablesReturnKeyAutomatically={true}
         />
         <TouchableOpacity
-          style={[styles.sendButton, !newMessage.trim() && styles.sendButtonDisabled]}
+          style={[
+            styles.sendButton, 
+            (!newMessage.trim() || sendingMessage) && styles.sendButtonDisabled
+          ]}
           onPress={handleSendMessage}
-          disabled={!newMessage.trim()}
+          disabled={!newMessage.trim() || sendingMessage}
         >
           <Send size={20} color="white" />
         </TouchableOpacity>
