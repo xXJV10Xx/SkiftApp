@@ -42,20 +42,27 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       // Create employee profile if user signs up
       if (session?.user && _event === 'SIGNED_UP') {
-        const { error } = await supabase
-          .from('employees')
-          .insert({
-            id: session.user.id,
-            email: session.user.email!,
-            first_name: session.user.user_metadata?.full_name?.split(' ')[0] || '',
-            last_name: session.user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
-            avatar_url: session.user.user_metadata?.avatar_url,
-            is_active: true,
-            profile_completed: false
-          });
+        try {
+          const { error } = await supabase
+            .from('employees')
+            .insert({
+              id: session.user.id,
+              email: session.user.email!,
+              first_name: session.user.user_metadata?.full_name?.split(' ')[0] || 'User',
+              last_name: session.user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || 'Name',
+              avatar_url: session.user.user_metadata?.avatar_url,
+              is_active: true,
+              department: 'General',
+              position: 'Employee'
+            });
 
-        if (error) {
-          console.error('Error creating employee profile:', error);
+          if (error) {
+            console.error('Error creating employee profile:', error);
+          } else {
+            console.log('Employee profile created successfully');
+          }
+        } catch (err) {
+          console.error('Unexpected error creating employee profile:', err);
         }
       }
     });

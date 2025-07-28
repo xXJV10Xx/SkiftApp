@@ -12,6 +12,8 @@
     "lint": "expo lint",
     "scrape": "node scripts/scrape-upload.cjs",
     "test-scraper": "node scripts/test-scraper.cjs",
+    "test-chat": "node scripts/test-chat.cjs",
+    "fix-chat": "node scripts/fix-chat-database.cjs",
     "setup-db": "node scripts/setup-database.cjs"
   },
   "dependencies": {
