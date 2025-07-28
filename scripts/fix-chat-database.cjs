@@ -159,6 +159,54 @@ const createChatRoomMembersTable = async () => {
   }
 };
 
+const createOnlineStatusTable = async () => {
+  console.log('🏗️  Creating online_status table...');
+  
+  const sql = `
+    -- Drop existing table if it exists
+    DROP TABLE IF EXISTS online_status CASCADE;
+    
+    -- Create online_status table
+    CREATE TABLE online_status (
+      id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+      user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+      is_online BOOLEAN DEFAULT false,
+      last_seen TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+      updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+      UNIQUE(user_id)
+    );
+
+    -- Enable RLS
+    ALTER TABLE online_status ENABLE ROW LEVEL SECURITY;
+
+    -- Create policies
+    CREATE POLICY "Users can view online status of company members" ON online_status
+      FOR SELECT USING (
+        user_id IN (
+          SELECT id FROM employees 
+          WHERE company_id = (
+            SELECT company_id FROM employees 
+            WHERE id = auth.uid()
+          )
+        )
+      );
+
+    CREATE POLICY "Users can update their own online status" ON online_status
+      FOR ALL USING (user_id = auth.uid());
+  `;
+  
+  try {
+    console.log('📋 SQL for online_status table:');
+    console.log('=====================================');
+    console.log(sql);
+    console.log('=====================================');
+    return true;
+  } catch (err) {
+    console.error('❌ Error creating online_status table:', err.message);
+    return false;
+  }
+};
+
 const createTestData = async () => {
   console.log('🏗️  Creating test data...');
   
@@ -215,6 +263,7 @@ const enableRealtimeForTables = async () => {
     ALTER PUBLICATION supabase_realtime ADD TABLE chat_room_members;
     ALTER PUBLICATION supabase_realtime ADD TABLE messages;
     ALTER PUBLICATION supabase_realtime ADD TABLE employees;
+    ALTER PUBLICATION supabase_realtime ADD TABLE online_status;
   `;
   
   try {
@@ -248,11 +297,15 @@ const main = async () => {
   await createChatRoomMembersTable();
   console.log('');
   
-  // Step 4: Create test data
+  // Step 4: Create online_status table
+  await createOnlineStatusTable();
+  console.log('');
+  
+  // Step 5: Create test data
   await createTestData();
   console.log('');
   
-  // Step 5: Enable realtime
+  // Step 6: Enable realtime
   await enableRealtimeForTables();
   console.log('');
   
@@ -262,7 +315,8 @@ const main = async () => {
   console.log('2. Paste into Supabase SQL Editor');
   console.log('3. Run each block one by one');
   console.log('4. Test with: npm run test-chat');
-  console.log('5. Start the app and test chat functionality');
+  console.log('5. Test private chat creation: npm run test-interest');
+  console.log('6. Start the app and test all chat functionality');
   console.log('');
   console.log('💡 After running the SQL, the chat should work!');
 };
