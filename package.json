@@ -9,7 +9,13 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "scrape:multi": "node scripts/multi-company-scraper.cjs",
+    "scrape:single": "node scripts/scrape-upload.cjs",
+    "scrape:test": "node scripts/test-scraping.js",
+    "scrape:health": "node scripts/health-check.js",
+    "deploy:setup": "node scripts/loveable-deployment.js",
+    "deploy:check": "node scripts/health-check.js && echo \"✅ System ready for deployment\""
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.1",
@@ -49,7 +55,8 @@
     "react-native-screens": "~4.11.1",
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "@react-native-async-storage/async-storage": "latest"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -58,5 +65,17 @@
     "eslint-config-expo": "~9.2.0",
     "typescript": "~5.8.3"
   },
-  "private": true
+  "private": true,
+  "enhancedDeployment": {
+    "projectName": "Enhanced Schedule & Chat System",
+    "version": "2.0.0",
+    "timestamp": "2025-07-28T00:51:40.280Z",
+    "features": [
+      "Multi-company schedule scraping",
+      "Real-time schedule viewing (5000+ users)",
+      "Scalable chat system (5000+ users)",
+      "Performance optimizations",
+      "Comprehensive monitoring"
+    ]
+  }
 }
