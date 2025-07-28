@@ -1,7 +1,9 @@
-import { Building2, Mail, MapPin, Phone, User, Users } from 'lucide-react-native';
+import { Building2, Camera, Mail, MapPin, Phone, User, Users } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
+    ActionSheetIOS,
     Alert,
+    Platform,
     ScrollView,
     StyleSheet,
     Text,
@@ -9,9 +11,12 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { Image } from 'expo-image';
 import { useAuth } from '../../context/AuthContext';
 import { useCompany } from '../../context/CompanyContext';
 import { useTheme } from '../../context/ThemeContext';
+import { uploadImage, deleteImage } from '../../lib/imageUpload';
 
 export default function ProfileScreen() {
   const { colors } = useTheme();
@@ -30,6 +35,17 @@ export default function ProfileScreen() {
   const [lastName, setLastName] = useState(employee?.last_name || '');
   const [phone, setPhone] = useState(employee?.phone || '');
   const [position, setPosition] = useState(employee?.position || '');
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  // Update local state when employee data changes
+  React.useEffect(() => {
+    if (employee) {
+      setFirstName(employee.first_name || '');
+      setLastName(employee.last_name || '');
+      setPhone(employee.phone || '');
+      setPosition(employee.position || '');
+    }
+  }, [employee]);
 
   const handleSave = async () => {
     try {
@@ -44,6 +60,102 @@ export default function ProfileScreen() {
       Alert.alert('Framgång', 'Profilen har uppdaterats');
     } catch (error) {
       Alert.alert('Fel', 'Kunde inte uppdatera profilen');
+    }
+  };
+
+  const handleImagePicker = () => {
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['Avbryt', 'Ta foto', 'Välj från bibliotek'],
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 1) {
+            openCamera();
+          } else if (buttonIndex === 2) {
+            openImageLibrary();
+          }
+        }
+      );
+    } else {
+      Alert.alert(
+        'Välj profilbild',
+        'Hur vill du lägga till en profilbild?',
+        [
+          { text: 'Avbryt', style: 'cancel' },
+          { text: 'Ta foto', onPress: openCamera },
+          { text: 'Välj från bibliotek', onPress: openImageLibrary },
+        ]
+      );
+    }
+  };
+
+  const openCamera = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Fel', 'Kameratillstånd krävs för att ta foton');
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      await uploadProfileImage(result.assets[0].uri);
+    }
+  };
+
+  const openImageLibrary = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Fel', 'Bibliotekstillstånd krävs för att välja bilder');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      await uploadProfileImage(result.assets[0].uri);
+    }
+  };
+
+  const uploadProfileImage = async (uri: string) => {
+    try {
+      setUploadingImage(true);
+
+      // Delete old avatar if it exists
+      if (employee?.avatar_url) {
+        await deleteImage(employee.avatar_url);
+      }
+
+      // Upload new image
+      const uploadResult = await uploadImage(uri, 'avatars');
+      
+      if (uploadResult.success && uploadResult.url) {
+        // Update employee profile with new avatar URL
+        await updateEmployeeProfile({
+          avatar_url: uploadResult.url
+        });
+        
+        Alert.alert('Framgång', 'Profilbilden har uppdaterats');
+      } else {
+        Alert.alert('Fel', uploadResult.error || 'Kunde inte ladda upp bilden');
+      }
+    } catch (error) {
+      console.error('Error uploading profile image:', error);
+      Alert.alert('Fel', 'Kunde inte ladda upp profilbilden');
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -85,6 +197,41 @@ export default function ProfileScreen() {
       justifyContent: 'center',
       alignItems: 'center',
       marginBottom: 16,
+      position: 'relative',
+    },
+    avatarImage: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+    },
+    cameraButton: {
+      position: 'absolute',
+      bottom: -5,
+      right: -5,
+      backgroundColor: colors.primary,
+      borderRadius: 15,
+      width: 30,
+      height: 30,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 2,
+      borderColor: colors.card,
+    },
+    uploadingOverlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      borderRadius: 40,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    uploadingText: {
+      color: 'white',
+      fontSize: 10,
+      marginTop: 4,
     },
     name: {
       fontSize: 24,
@@ -217,9 +364,32 @@ export default function ProfileScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.avatarContainer}>
-          <User size={40} color="white" />
-        </View>
+        <TouchableOpacity 
+          style={styles.avatarContainer}
+          onPress={handleImagePicker}
+          disabled={uploadingImage}
+        >
+          {employee?.avatar_url ? (
+            <Image 
+              source={{ uri: employee.avatar_url }} 
+              style={styles.avatarImage}
+              contentFit="cover"
+            />
+          ) : (
+            <User size={40} color="white" />
+          )}
+          
+          {uploadingImage && (
+            <View style={styles.uploadingOverlay}>
+              <Text style={styles.uploadingText}>Laddar...</Text>
+            </View>
+          )}
+          
+          <View style={styles.cameraButton}>
+            <Camera size={16} color="white" />
+          </View>
+        </TouchableOpacity>
+        
         <Text style={styles.name}>
           {employee?.first_name} {employee?.last_name}
         </Text>
@@ -368,7 +538,14 @@ export default function ProfileScreen() {
           </TouchableOpacity>
           <TouchableOpacity 
             style={styles.cancelButton} 
-            onPress={() => setEditing(false)}
+            onPress={() => {
+              setEditing(false);
+              // Reset form values to original employee data
+              setFirstName(employee?.first_name || '');
+              setLastName(employee?.last_name || '');
+              setPhone(employee?.phone || '');
+              setPosition(employee?.position || '');
+            }}
           >
             <Text style={styles.cancelButtonText}>Avbryt</Text>
           </TouchableOpacity>
