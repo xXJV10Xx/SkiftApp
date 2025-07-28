@@ -17,37 +17,48 @@ import { useAuth } from '../../context/AuthContext';
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   const { resetPassword } = useAuth();
 
+  const handleBackToLogin = () => {
+    router.back();
+  };
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleResetPassword = async () => {
-    if (!email) {
+    if (!email.trim()) {
       Alert.alert('Fel', 'Vänligen ange din e-postadress');
+      return;
+    }
+
+    if (!validateEmail(email.trim())) {
+      Alert.alert('Fel', 'Vänligen ange en giltig e-postadress');
       return;
     }
 
     setLoading(true);
     try {
-      const { error } = await resetPassword(email);
+      const { error } = await resetPassword(email.trim());
       if (error) {
         Alert.alert('Fel', error.message);
       } else {
-        setSent(true);
+        setEmailSent(true);
         Alert.alert(
-          'E-post skickad',
-          'Vi har skickat en länk för att återställa ditt lösenord till din e-postadress.'
+          'E-post skickat',
+          'Vi har skickat instruktioner för lösenordsåterställning till din e-postadress. Kontrollera din inkorg och följ instruktionerna.'
         );
       }
     } catch (error) {
-      Alert.alert('Fel', 'Ett oväntat fel uppstod');
+      console.error('Error resetting password:', error);
+      Alert.alert('Fel', 'Ett oväntat fel uppstod. Försök igen senare.');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleBackToLogin = () => {
-    router.back();
   };
 
   return (
@@ -55,45 +66,70 @@ export default function ForgotPasswordScreen() {
       style={styles.container} 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <View style={styles.header}>
+      <View style={styles.content}>
         <TouchableOpacity onPress={handleBackToLogin} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#007AFF" />
         </TouchableOpacity>
-        <Text style={styles.title}>Glömt lösenord</Text>
-        <Text style={styles.subtitle}>
-          Ange din e-postadress så skickar vi en länk för att återställa ditt lösenord
-        </Text>
-      </View>
 
-      <View style={styles.form}>
-        <View style={styles.inputContainer}>
-          <Ionicons name="mail-outline" size={20} color="#666" style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder="E-postadress"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
+        <View style={styles.header}>
+          <Text style={styles.title}>Glömt lösenord?</Text>
+          <Text style={styles.subtitle}>
+            {emailSent 
+              ? 'Kontrollera din e-post för instruktioner om lösenordsåterställning.'
+              : 'Ange din e-postadress så skickar vi instruktioner för att återställa ditt lösenord.'
+            }
+          </Text>
         </View>
 
-        <TouchableOpacity
-          style={[styles.button, loading && styles.buttonDisabled]}
-          onPress={handleResetPassword}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Skicka återställningslänk</Text>
-          )}
-        </TouchableOpacity>
+        {!emailSent && (
+          <View style={styles.form}>
+            <View style={styles.inputContainer}>
+              <Ionicons name="mail-outline" size={20} color="#666" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="E-postadress"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                editable={!loading}
+              />
+            </View>
 
-        <TouchableOpacity onPress={handleBackToLogin} style={styles.backToLogin}>
-          <Text style={styles.backToLoginText}>Tillbaka till inloggning</Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, loading && styles.buttonDisabled]}
+              onPress={handleResetPassword}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.buttonText}>Skicka återställningslänk</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <View style={styles.footer}>
+          <TouchableOpacity onPress={handleBackToLogin} style={styles.backToLogin}>
+            <Text style={styles.backToLoginText}>
+              {emailSent ? 'Tillbaka till inloggning' : 'Kom ihåg lösenordet? Logga in'}
+            </Text>
+          </TouchableOpacity>
+          
+          {emailSent && (
+            <TouchableOpacity 
+              onPress={() => {
+                setEmailSent(false);
+                setEmail('');
+              }} 
+              style={styles.tryAgainButton}
+            >
+              <Text style={styles.tryAgainText}>Försök med annan e-post</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
@@ -104,12 +140,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  header: {
+  content: {
+    flex: 1,
     padding: 20,
-    paddingTop: 60,
+    justifyContent: 'center',
   },
   backButton: {
-    marginBottom: 20,
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    zIndex: 1,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 40,
   },
   title: {
     fontSize: 28,
@@ -120,11 +164,12 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     color: '#666',
-    lineHeight: 24,
+    textAlign: 'center',
+    lineHeight: 22,
   },
   form: {
-    padding: 20,
-    flex: 1,
+    width: '100%',
+    marginBottom: 40,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -132,7 +177,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e1e1e1',
     borderRadius: 12,
-    marginBottom: 24,
+    marginBottom: 20,
     backgroundColor: '#f9f9f9',
   },
   inputIcon: {
@@ -149,7 +194,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 24,
   },
   buttonDisabled: {
     opacity: 0.6,
@@ -159,12 +203,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  backToLogin: {
+  footer: {
     alignItems: 'center',
+  },
+  backToLogin: {
+    marginBottom: 16,
   },
   backToLoginText: {
     color: '#007AFF',
     fontSize: 16,
-    fontWeight: '600',
+    textAlign: 'center',
+  },
+  tryAgainButton: {
+    paddingVertical: 8,
+  },
+  tryAgainText: {
+    color: '#666',
+    fontSize: 14,
+    textAlign: 'center',
   },
 }); 

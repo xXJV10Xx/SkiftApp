@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Alert,
     ScrollView,
@@ -7,8 +7,10 @@ import {
     Text,
     TouchableOpacity,
     View,
+    ActivityIndicator,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
+import { useCompany } from '../../context/CompanyContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTheme } from '../../context/ThemeContext';
 import { registerForPushNotificationsAsync } from '../../lib/notifications';
@@ -17,22 +19,59 @@ export default function SettingsScreen() {
   const { language, setLanguage, t } = useLanguage();
   const { theme, setTheme, isDark, colors } = useTheme();
   const { signOut } = useAuth();
+  const { syncCompaniesToSupabase, loading: companyLoading } = useCompany();
+  const [syncingNotifications, setSyncingNotifications] = useState(false);
 
   const handleLanguageChange = (newLanguage: 'sv' | 'en') => {
     setLanguage(newLanguage);
+    Alert.alert('Språk ändrat', `Språket har ändrats till ${newLanguage === 'sv' ? 'svenska' : 'engelska'}`);
   };
 
   const handleThemeChange = (newTheme: 'light' | 'dark' | 'system') => {
     setTheme(newTheme);
+    const themeNames = {
+      light: 'ljust',
+      dark: 'mörkt',
+      system: 'system'
+    };
+    Alert.alert('Tema ändrat', `Temat har ändrats till ${themeNames[newTheme]}`);
   };
 
   const handlePushNotifications = async () => {
+    if (syncingNotifications) return;
+    
+    setSyncingNotifications(true);
     try {
       await registerForPushNotificationsAsync();
       Alert.alert(t('success'), 'Push-notifikationer aktiverade!');
     } catch (error) {
+      console.error('Error enabling push notifications:', error);
       Alert.alert(t('error'), 'Kunde inte aktivera push-notifikationer');
+    } finally {
+      setSyncingNotifications(false);
     }
+  };
+
+  const handleSyncCompanies = async () => {
+    if (companyLoading) return;
+    
+    Alert.alert(
+      'Synkronisera företagsdata',
+      'Detta kommer att synkronisera all företags- och lagdata till databasen. Fortsätt?',
+      [
+        { text: 'Avbryt', style: 'cancel' },
+        {
+          text: 'Synkronisera',
+          onPress: async () => {
+            try {
+              await syncCompaniesToSupabase();
+            } catch (error) {
+              console.error('Error syncing companies:', error);
+            }
+          }
+        }
+      ]
+    );
   };
 
   const handleSignOut = () => {
@@ -62,6 +101,7 @@ export default function SettingsScreen() {
             <TouchableOpacity
               style={[
                 styles.option,
+                { borderColor: colors.border },
                 language === 'sv' && { backgroundColor: colors.primary }
               ]}
               onPress={() => handleLanguageChange('sv')}
@@ -76,6 +116,7 @@ export default function SettingsScreen() {
             <TouchableOpacity
               style={[
                 styles.option,
+                { borderColor: colors.border },
                 language === 'en' && { backgroundColor: colors.primary }
               ]}
               onPress={() => handleLanguageChange('en')}
@@ -99,6 +140,7 @@ export default function SettingsScreen() {
             <TouchableOpacity
               style={[
                 styles.option,
+                { borderColor: colors.border },
                 theme === 'light' && { backgroundColor: colors.primary }
               ]}
               onPress={() => handleThemeChange('light')}
@@ -113,6 +155,7 @@ export default function SettingsScreen() {
             <TouchableOpacity
               style={[
                 styles.option,
+                { borderColor: colors.border },
                 theme === 'dark' && { backgroundColor: colors.primary }
               ]}
               onPress={() => handleThemeChange('dark')}
@@ -127,6 +170,7 @@ export default function SettingsScreen() {
             <TouchableOpacity
               style={[
                 styles.option,
+                { borderColor: colors.border },
                 theme === 'system' && { backgroundColor: colors.primary }
               ]}
               onPress={() => handleThemeChange('system')}
@@ -147,11 +191,47 @@ export default function SettingsScreen() {
             Notifikationer / Notifications
           </Text>
           <TouchableOpacity
-            style={[styles.button, { backgroundColor: colors.primary }]}
+            style={[
+              styles.button, 
+              { backgroundColor: colors.primary },
+              syncingNotifications && styles.buttonDisabled
+            ]}
             onPress={handlePushNotifications}
+            disabled={syncingNotifications}
           >
-            <Ionicons name="notifications" size={20} color="#FFFFFF" />
-            <Text style={styles.buttonText}>Aktivera Push-notifikationer</Text>
+            {syncingNotifications ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Ionicons name="notifications" size={20} color="#FFFFFF" />
+            )}
+            <Text style={styles.buttonText}>
+              {syncingNotifications ? 'Aktiverar...' : 'Aktivera Push-notifikationer'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Data Management */}
+        <View style={styles.settingGroup}>
+          <Text style={[styles.settingTitle, { color: colors.text }]}>
+            Datahantering
+          </Text>
+          <TouchableOpacity
+            style={[
+              styles.button, 
+              { backgroundColor: colors.secondary },
+              companyLoading && styles.buttonDisabled
+            ]}
+            onPress={handleSyncCompanies}
+            disabled={companyLoading}
+          >
+            {companyLoading ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Ionicons name="sync" size={20} color="#FFFFFF" />
+            )}
+            <Text style={styles.buttonText}>
+              {companyLoading ? 'Synkroniserar...' : 'Synkronisera företagsdata'}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -201,7 +281,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#C6C6C8',
   },
   optionText: {
     fontSize: 16,
@@ -210,10 +289,14 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
     borderRadius: 8,
     gap: 10,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
   },
   buttonText: {
     color: '#FFFFFF',

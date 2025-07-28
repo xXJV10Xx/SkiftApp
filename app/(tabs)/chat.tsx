@@ -1,4 +1,4 @@
-import { MessageSquare, Send, Users } from 'lucide-react-native';
+import { MessageSquare, Send, Users, AlertCircle, RefreshCw } from 'lucide-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Alert,
@@ -11,6 +11,7 @@ import {
     TextInput,
     TouchableOpacity,
     View,
+    ActivityIndicator,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import { useChat } from '../../context/ChatContext';
@@ -32,12 +33,15 @@ export default function ChatScreen() {
     setCurrentChatRoom,
     fetchChatRooms,
     createChatRoom,
-    loading
+    loading,
+    error,
+    clearError
   } = useChat();
   
   const [newMessage, setNewMessage] = useState('');
   const [showRoomSelector, setShowRoomSelector] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
+  const [sendingMessage, setSendingMessage] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
   // Auto-scroll to bottom when new messages arrive
@@ -83,17 +87,21 @@ export default function ChatScreen() {
     }
   }, [selectedCompany, selectedTeam, selectedDepartment, chatRooms.length, createDefaultChatRooms]);
 
-
-
   const handleSendMessage = async () => {
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || sendingMessage) return;
+    
+    const messageToSend = newMessage.trim();
+    setNewMessage(''); // Clear input immediately for better UX
+    setSendingMessage(true);
     
     try {
-      await sendMessage(newMessage.trim());
-      setNewMessage('');
+      await sendMessage(messageToSend);
     } catch (error) {
       console.error('Error sending message:', error);
+      setNewMessage(messageToSend); // Restore message if failed
       Alert.alert('Fel', 'Kunde inte skicka meddelandet');
+    } finally {
+      setSendingMessage(false);
     }
   };
 
@@ -131,6 +139,15 @@ export default function ChatScreen() {
         },
       ]
     );
+  };
+
+  const handleRefreshRooms = async () => {
+    try {
+      await fetchChatRooms();
+    } catch (error) {
+      console.error('Error refreshing chat rooms:', error);
+      Alert.alert('Fel', 'Kunde inte uppdatera chattrum');
+    }
   };
 
   const renderMessage = ({ item }: { item: any }) => {
@@ -187,6 +204,20 @@ export default function ChatScreen() {
     </View>
   );
 
+  const renderError = () => {
+    if (!error) return null;
+
+    return (
+      <View style={styles.errorContainer}>
+        <AlertCircle size={16} color="white" />
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity onPress={clearError} style={styles.errorCloseButton}>
+          <Text style={styles.errorCloseText}>×</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -222,6 +253,40 @@ export default function ChatScreen() {
       flexDirection: 'row',
       alignItems: 'center',
       gap: 12,
+    },
+    errorContainer: {
+      backgroundColor: colors.error,
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 12,
+      marginHorizontal: 16,
+      marginTop: 8,
+      borderRadius: 8,
+      gap: 8,
+    },
+    errorText: {
+      color: 'white',
+      flex: 1,
+      fontSize: 14,
+    },
+    errorCloseButton: {
+      padding: 4,
+    },
+    errorCloseText: {
+      color: 'white',
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 32,
+    },
+    loadingText: {
+      color: colors.textSecondary,
+      marginTop: 16,
+      fontSize: 16,
     },
     membersPanel: {
       backgroundColor: colors.card,
@@ -366,11 +431,21 @@ export default function ChatScreen() {
       padding: 16,
       maxHeight: 400,
     },
+    roomSelectorHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 16,
+    },
     roomSelectorTitle: {
       fontSize: 18,
       fontWeight: 'bold',
       color: colors.text,
-      marginBottom: 16,
+    },
+    refreshButton: {
+      backgroundColor: colors.secondary,
+      borderRadius: 16,
+      padding: 8,
     },
     roomList: {
       maxHeight: 300,
@@ -446,6 +521,17 @@ export default function ChatScreen() {
     },
   });
 
+  if (loading && chatRooms.length === 0) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loadingText}>Laddar chattrum...</Text>
+        </View>
+      </View>
+    );
+  }
+
   if (!currentChatRoom) {
     return (
       <View style={styles.container}>
@@ -456,9 +542,16 @@ export default function ChatScreen() {
           </TouchableOpacity>
         </View>
 
+        {renderError()}
+
         {showRoomSelector && (
           <View style={styles.roomSelector}>
-            <Text style={styles.roomSelectorTitle}>Välj chattrum</Text>
+            <View style={styles.roomSelectorHeader}>
+              <Text style={styles.roomSelectorTitle}>Välj chattrum</Text>
+              <TouchableOpacity onPress={handleRefreshRooms} style={styles.refreshButton}>
+                <RefreshCw size={16} color="white" />
+              </TouchableOpacity>
+            </View>
             <ScrollView style={styles.roomList}>
               {chatRooms.map((room) => (
                 <TouchableOpacity
@@ -533,6 +626,8 @@ export default function ChatScreen() {
         </View>
       </View>
 
+      {renderError()}
+
       {/* Members Panel */}
       {showMembers && (
         <View style={styles.membersPanel}>
@@ -563,13 +658,18 @@ export default function ChatScreen() {
           placeholderTextColor={colors.textSecondary}
           multiline
           maxLength={500}
+          editable={!sendingMessage}
         />
         <TouchableOpacity
-          style={[styles.sendButton, !newMessage.trim() && styles.sendButtonDisabled]}
+          style={[styles.sendButton, (!newMessage.trim() || sendingMessage) && styles.sendButtonDisabled]}
           onPress={handleSendMessage}
-          disabled={!newMessage.trim()}
+          disabled={!newMessage.trim() || sendingMessage}
         >
-          <Send size={20} color="white" />
+          {sendingMessage ? (
+            <ActivityIndicator size="small" color="white" />
+          ) : (
+            <Send size={20} color="white" />
+          )}
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
