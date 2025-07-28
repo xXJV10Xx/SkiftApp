@@ -1,4 +1,4 @@
-import { Building2, Mail, MapPin, Phone, User, Users } from 'lucide-react-native';
+import { Building2, Mail, MapPin, Phone, RefreshCw, User, Users } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
     Alert,
@@ -22,7 +22,9 @@ export default function ProfileScreen() {
     selectedDepartment, 
     employee,
     updateEmployeeProfile,
-    loading
+    refreshEmployee,
+    loading,
+    error
   } = useCompany();
   
   const [editing, setEditing] = useState(false);
@@ -31,19 +33,43 @@ export default function ProfileScreen() {
   const [phone, setPhone] = useState(employee?.phone || '');
   const [position, setPosition] = useState(employee?.position || '');
 
+  // Update local state when employee data changes
+  React.useEffect(() => {
+    if (employee) {
+      setFirstName(employee.first_name || '');
+      setLastName(employee.last_name || '');
+      setPhone(employee.phone || '');
+      setPosition(employee.position || '');
+    }
+  }, [employee]);
+
   const handleSave = async () => {
+    if (!firstName.trim() || !lastName.trim()) {
+      Alert.alert('Fel', 'Förnamn och efternamn är obligatoriska');
+      return;
+    }
+
     try {
       await updateEmployeeProfile({
-        first_name: firstName,
-        last_name: lastName,
-        phone: phone,
-        position: position
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        phone: phone.trim(),
+        position: position.trim()
       });
       
       setEditing(false);
       Alert.alert('Framgång', 'Profilen har uppdaterats');
     } catch (error) {
       Alert.alert('Fel', 'Kunde inte uppdatera profilen');
+    }
+  };
+
+  const handleRefresh = async () => {
+    try {
+      await refreshEmployee();
+      Alert.alert('Uppdaterat', 'Profildata har uppdaterats');
+    } catch (error) {
+      Alert.alert('Fel', 'Kunde inte uppdatera profildata');
     }
   };
 
@@ -77,6 +103,18 @@ export default function ProfileScreen() {
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
     },
+    headerActions: {
+      position: 'absolute',
+      top: 20,
+      right: 20,
+      flexDirection: 'row',
+      gap: 12,
+    },
+    refreshButton: {
+      backgroundColor: colors.secondary,
+      borderRadius: 20,
+      padding: 8,
+    },
     avatarContainer: {
       width: 80,
       height: 80,
@@ -95,6 +133,17 @@ export default function ProfileScreen() {
     email: {
       fontSize: 16,
       color: colors.textSecondary,
+    },
+    errorContainer: {
+      backgroundColor: colors.error,
+      padding: 12,
+      margin: 20,
+      borderRadius: 8,
+    },
+    errorText: {
+      color: 'white',
+      fontSize: 14,
+      textAlign: 'center',
     },
     section: {
       backgroundColor: colors.card,
@@ -217,6 +266,16 @@ export default function ProfileScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
+        <View style={styles.headerActions}>
+          <TouchableOpacity 
+            style={styles.refreshButton} 
+            onPress={handleRefresh}
+            disabled={loading}
+          >
+            <RefreshCw size={16} color="white" />
+          </TouchableOpacity>
+        </View>
+        
         <View style={styles.avatarContainer}>
           <User size={40} color="white" />
         </View>
@@ -225,6 +284,12 @@ export default function ProfileScreen() {
         </Text>
         <Text style={styles.email}>{user?.email}</Text>
       </View>
+
+      {error && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      )}
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Personlig information</Text>

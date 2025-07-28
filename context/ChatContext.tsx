@@ -1,5 +1,6 @@
 import { RealtimeChannel } from '@supabase/supabase-js';
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthContext';
 
@@ -67,12 +68,14 @@ interface ChatContextType {
   currentChatRoom: ChatRoom | null;
   chatMembers: ChatMember[];
   loading: boolean;
+  error: string | null;
   sendMessage: (content: string, messageType?: string) => Promise<void>;
   joinChatRoom: (roomId: string) => Promise<void>;
   leaveChatRoom: (roomId: string) => Promise<void>;
   setCurrentChatRoom: (room: ChatRoom | null) => void;
   fetchChatRooms: () => Promise<void>;
   createChatRoom: (roomData: any) => Promise<void>;
+  clearError: () => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -84,7 +87,10 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentChatRoom, setCurrentChatRoom] = useState<ChatRoom | null>(null);
   const [chatMembers, setChatMembers] = useState<ChatMember[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [channel, setChannel] = useState<RealtimeChannel | null>(null);
+
+  const clearError = () => setError(null);
 
   // Fetch chat rooms user is member of
   const fetchChatRooms = async () => {
@@ -92,6 +98,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       setLoading(true);
+      setError(null);
       
       const { data, error } = await supabase
         .from('chat_room_members')
@@ -121,12 +128,17 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         `)
         .eq('employee_id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching chat rooms:', error);
+        setError('Kunde inte hämta chattrum');
+        return;
+      }
 
       const rooms = data?.map(item => item.chat_rooms).filter(Boolean) as ChatRoom[];
       setChatRooms(rooms || []);
     } catch (error) {
       console.error('Error fetching chat rooms:', error);
+      setError('Ett oväntat fel uppstod vid hämtning av chattrum');
     } finally {
       setLoading(false);
     }
@@ -135,6 +147,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   // Fetch messages for current chat room
   const fetchMessages = async (roomId: string) => {
     try {
+      setError(null);
+      
       const { data, error } = await supabase
         .from('messages')
         .select(`
@@ -149,16 +163,24 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         .eq('chat_room_id', roomId)
         .order('created_at', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching messages:', error);
+        setError('Kunde inte hämta meddelanden');
+        return;
+      }
+
       setMessages(data || []);
     } catch (error) {
       console.error('Error fetching messages:', error);
+      setError('Ett oväntat fel uppstod vid hämtning av meddelanden');
     }
   };
 
   // Fetch chat room members
   const fetchChatMembers = async (roomId: string) => {
     try {
+      setError(null);
+      
       const { data, error } = await supabase
         .from('chat_room_members')
         .select(`
@@ -174,39 +196,65 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         `)
         .eq('chat_room_id', roomId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching chat members:', error);
+        setError('Kunde inte hämta chattmedlemmar');
+        return;
+      }
+
       setChatMembers(data || []);
     } catch (error) {
       console.error('Error fetching chat members:', error);
+      setError('Ett oväntat fel uppstod vid hämtning av chattmedlemmar');
     }
   };
 
   // Send message
   const sendMessage = async (content: string, messageType = 'text') => {
-    if (!user || !currentChatRoom) return;
+    if (!user || !currentChatRoom) {
+      throw new Error('Ingen användare eller chattrum valt');
+    }
+
+    if (!content.trim()) {
+      throw new Error('Meddelandet får inte vara tomt');
+    }
 
     try {
+      setError(null);
+      
       const { error } = await supabase
         .from('messages')
         .insert({
           chat_room_id: currentChatRoom.id,
           sender_id: user.id,
-          content,
+          content: content.trim(),
           message_type: messageType
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error sending message:', error);
+        throw new Error('Kunde inte skicka meddelandet');
+      }
     } catch (error) {
       console.error('Error sending message:', error);
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Ett oväntat fel uppstod vid skickande av meddelande');
+      }
       throw error;
     }
   };
 
   // Join chat room
   const joinChatRoom = async (roomId: string) => {
-    if (!user) return;
+    if (!user) {
+      throw new Error('Ingen användare inloggad');
+    }
 
     try {
+      setError(null);
+      
       const { error } = await supabase
         .from('chat_room_members')
         .insert({
@@ -215,26 +263,42 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
           role: 'member'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error joining chat room:', error);
+        throw new Error('Kunde inte gå med i chattrummet');
+      }
+
       await fetchChatRooms();
     } catch (error) {
       console.error('Error joining chat room:', error);
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Ett oväntat fel uppstod vid anslutning till chattrum');
+      }
       throw error;
     }
   };
 
   // Leave chat room
   const leaveChatRoom = async (roomId: string) => {
-    if (!user) return;
+    if (!user) {
+      throw new Error('Ingen användare inloggad');
+    }
 
     try {
+      setError(null);
+      
       const { error } = await supabase
         .from('chat_room_members')
         .delete()
         .eq('chat_room_id', roomId)
         .eq('employee_id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error leaving chat room:', error);
+        throw new Error('Kunde inte lämna chattrummet');
+      }
       
       if (currentChatRoom?.id === roomId) {
         setCurrentChatRoom(null);
@@ -243,15 +307,24 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       await fetchChatRooms();
     } catch (error) {
       console.error('Error leaving chat room:', error);
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Ett oväntat fel uppstod vid utträde från chattrum');
+      }
       throw error;
     }
   };
 
   // Create chat room
   const createChatRoom = async (roomData: any) => {
-    if (!user) return;
+    if (!user) {
+      throw new Error('Ingen användare inloggad');
+    }
 
     try {
+      setError(null);
+      
       const { data, error } = await supabase
         .from('chat_rooms')
         .insert({
@@ -261,12 +334,20 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error creating chat room:', error);
+        throw new Error('Kunde inte skapa chattrummet');
+      }
 
       // Auto-join creator to the room
       await joinChatRoom(data.id);
     } catch (error) {
       console.error('Error creating chat room:', error);
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Ett oväntat fel uppstod vid skapande av chattrum');
+      }
       throw error;
     }
   };
@@ -281,46 +362,56 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    // Subscribe to new messages
-    const messageChannel = supabase
-      .channel(`chat:${currentChatRoom.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `chat_room_id=eq.${currentChatRoom.id}`,
-        },
-        (payload) => {
-          const newMessage = payload.new as ChatMessage;
-          setMessages(prev => [...prev, newMessage]);
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'messages',
-          filter: `chat_room_id=eq.${currentChatRoom.id}`,
-        },
-        (payload) => {
-          const updatedMessage = payload.new as ChatMessage;
-          setMessages(prev => 
-            prev.map(msg => 
-              msg.id === updatedMessage.id ? updatedMessage : msg
-            )
-          );
-        }
-      )
-      .subscribe();
+    try {
+      // Subscribe to new messages
+      const messageChannel = supabase
+        .channel(`chat:${currentChatRoom.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'messages',
+            filter: `chat_room_id=eq.${currentChatRoom.id}`,
+          },
+          (payload) => {
+            const newMessage = payload.new as ChatMessage;
+            setMessages(prev => [...prev, newMessage]);
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'messages',
+            filter: `chat_room_id=eq.${currentChatRoom.id}`,
+          },
+          (payload) => {
+            const updatedMessage = payload.new as ChatMessage;
+            setMessages(prev => 
+              prev.map(msg => 
+                msg.id === updatedMessage.id ? updatedMessage : msg
+              )
+            );
+          }
+        )
+        .subscribe((status) => {
+          if (status === 'SUBSCRIPTION_ERROR') {
+            console.error('Subscription error for chat room:', currentChatRoom.id);
+            setError('Realtidsuppdateringar kunde inte aktiveras');
+          }
+        });
 
-    setChannel(messageChannel);
+      setChannel(messageChannel);
 
-    return () => {
-      messageChannel.unsubscribe();
-    };
+      return () => {
+        messageChannel.unsubscribe();
+      };
+    } catch (error) {
+      console.error('Error setting up real-time subscription:', error);
+      setError('Kunde inte aktivera realtidsuppdateringar');
+    }
   }, [currentChatRoom]);
 
   // Load data when current chat room changes
@@ -338,6 +429,17 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (user) {
       fetchChatRooms();
+    } else {
+      // Reset state when user logs out
+      setChatRooms([]);
+      setCurrentChatRoom(null);
+      setMessages([]);
+      setChatMembers([]);
+      setError(null);
+      if (channel) {
+        channel.unsubscribe();
+        setChannel(null);
+      }
     }
   }, [user]);
 
@@ -347,12 +449,14 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     currentChatRoom,
     chatMembers,
     loading,
+    error,
     sendMessage,
     joinChatRoom,
     leaveChatRoom,
     setCurrentChatRoom,
     fetchChatRooms,
-    createChatRoom
+    createChatRoom,
+    clearError
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
