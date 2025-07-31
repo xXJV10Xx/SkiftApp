@@ -70,7 +70,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={onClose}
               className="lg:hidden"
             >
-              <X className="h-4 w-4" />
+              <X size={16} />
             </Button>
           </div>
 
@@ -121,7 +121,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           className="w-10 h-10 rounded-lg flex items-center justify-center"
                           style={{ backgroundColor: section.color }}
                         >
-                          <Icon className="h-5 w-5 text-white" />
+                          <Icon size={20} color="white" />
                         </div>
                         <div className="flex-1">
                           <h3 className="font-medium">{section.title}</h3>
@@ -150,7 +150,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       {(() => {
                         const section = sections.find(s => s.id === activeSection);
                         const Icon = section?.icon || Settings;
-                        return <Icon className="h-8 w-8 text-muted-foreground" />;
+                        return <Icon size={32} color="rgb(107 114 126)" />;
                       })()}
                     </div>
                     <p className="text-muted-foreground">

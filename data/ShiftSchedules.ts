@@ -181,9 +181,9 @@ export function getTeamOffset(team: string, shiftType: ShiftType) {
   // Hitta företaget som använder denna skifttyp
   const companyData = Object.values(require('./companies').COMPANIES).find((comp: any) => 
     comp.shifts.includes(shiftType.id)
-  );
+  ) as any;
   
-  if (!companyData) return 0;
+  if (!companyData || !companyData.teams) return 0;
   
   const teamIndex = companyData.teams.indexOf(team);
   if (teamIndex === -1) return 0;
@@ -196,7 +196,22 @@ export function getTeamOffset(team: string, shiftType: ShiftType) {
 export function generateMonthSchedule(year: number, month: number, shiftType: ShiftType, team: string) {
   const schedule = [];
   const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDayOfMonth = new Date(year, month, 1);
+  const startDayOfWeek = firstDayOfMonth.getDay(); // 0 = Sunday, 1 = Monday, etc.
   
+  // Add empty cells for proper day-of-week alignment
+  for (let i = 0; i < startDayOfWeek; i++) {
+    schedule.push({
+      date: null,
+      day: null,
+      shift: { code: '', time: { start: '', end: '', name: '' }, cycleDay: 0, totalCycleDays: 0 },
+      isToday: false,
+      isWeekend: false,
+      isEmpty: true
+    });
+  }
+  
+  // Add actual days of the month
   for (let day = 1; day <= daysInMonth; day++) {
     const date = new Date(year, month, day);
     const shift = calculateShiftForDate(date, shiftType, team);
@@ -206,7 +221,8 @@ export function generateMonthSchedule(year: number, month: number, shiftType: Sh
       day: day,
       shift: shift,
       isToday: isToday(date),
-      isWeekend: date.getDay() === 0 || date.getDay() === 6
+      isWeekend: date.getDay() === 0 || date.getDay() === 6,
+      isEmpty: false
     });
   }
   
@@ -284,8 +300,8 @@ export function formatDate(date: Date) {
 export function getShiftColor(shiftCode: string, company: string, team: string) {
   if (shiftCode === 'L') return '#E8E8E8'; // Ledig = grå
   
-  const companyData = Object.values(require('./companies').COMPANIES).find((comp: any) => comp.id === company);
-  if (companyData && companyData.colors[team]) {
+  const companyData = Object.values(require('./companies').COMPANIES).find((comp: any) => comp.id === company) as any;
+  if (companyData && companyData.colors && companyData.colors[team]) {
     return companyData.colors[team];
   }
   

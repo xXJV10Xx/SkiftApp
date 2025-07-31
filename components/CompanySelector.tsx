@@ -29,7 +29,7 @@ export const CompanySelector: React.FC<CompanySelectorProps> = ({
   return (
     <div className="space-y-4">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search size={16} color="rgb(107 114 126)" />
         <Input
           placeholder="Sök företag..."
           value={searchTerm}
@@ -51,11 +51,11 @@ export const CompanySelector: React.FC<CompanySelectorProps> = ({
           >
             <CardContent className="p-4">
               <div className="flex items-start gap-3">
-                <div 
+                                <div
                   className="w-12 h-12 rounded-lg flex items-center justify-center"
                   style={{ backgroundColor: company.colors[company.teams[0]] || '#6B7280' }}
                 >
-                  <Building2 className="h-6 w-6 text-white" />
+                  <Building2 size={24} color="white" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-foreground truncate">
@@ -91,7 +91,7 @@ export const CompanySelector: React.FC<CompanySelectorProps> = ({
 
       {filteredCompanies.length === 0 && (
         <div className="text-center py-8">
-          <Building2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+          <Building2 size={48} color="rgb(107 114 126)" />
           <p className="text-muted-foreground">
             Inga företag matchar din sökning
           </p>
