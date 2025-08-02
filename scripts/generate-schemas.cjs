@@ -1,6 +1,7 @@
-const fetch = require('node-fetch');
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const cheerio = require('cheerio');
 const fs = require('fs');
+
 (async () => {
   const res = await fetch('https://www.skiftschema.se/');
   const html = await res.text();
