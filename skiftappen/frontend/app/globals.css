@@ -1,0 +1,216 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Globala stilar för Skiftappen */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply text-gray-900 bg-gray-50;
+  }
+  
+  /* Fokus stilar för tillgänglighet */
+  *:focus {
+    @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+  }
+  
+  /* Smooth transitions för interaktiva element */
+  button, a, input, select, textarea {
+    @apply transition-colors duration-200;
+  }
+}
+
+@layer components {
+  /* Kalender komponenter */
+  .calendar-day {
+    @apply min-h-24 p-2 border rounded transition-colors hover:bg-gray-50;
+  }
+  
+  .calendar-day.today {
+    @apply ring-2 ring-blue-500;
+  }
+  
+  .calendar-day.other-month {
+    @apply bg-gray-50 text-gray-400;
+  }
+  
+  .calendar-day.current-month {
+    @apply bg-white text-gray-900;
+  }
+  
+  /* Skift komponenter */
+  .shift-badge {
+    @apply text-xs p-1 rounded text-white font-medium truncate;
+  }
+  
+  .team-filter-button {
+    @apply px-3 py-1 rounded-full text-sm font-medium transition-all;
+  }
+  
+  .team-filter-button.active {
+    @apply text-white shadow-md;
+  }
+  
+  .team-filter-button.inactive {
+    @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
+  }
+  
+  /* Navigation komponenter */
+  .nav-button {
+    @apply p-2 hover:bg-gray-100 rounded-full transition-colors;
+  }
+  
+  .view-toggle-button {
+    @apply p-2 rounded-lg transition-colors;
+  }
+  
+  .view-toggle-button.active {
+    @apply bg-blue-600 text-white;
+  }
+  
+  .view-toggle-button.inactive {
+    @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
+  }
+  
+  /* Loading och error states */
+  .loading-spinner {
+    @apply animate-spin rounded-full border-b-2 border-blue-600;
+  }
+  
+  .error-message {
+    @apply bg-red-50 border border-red-200 rounded-md p-4 text-red-800;
+  }
+  
+  .success-message {
+    @apply bg-green-50 border border-green-200 rounded-md p-4 text-green-800;
+  }
+  
+  /* Card komponenter */
+  .card {
+    @apply bg-white rounded-lg shadow-lg p-6;
+  }
+  
+  .card-header {
+    @apply border-b border-gray-200 pb-4 mb-4;
+  }
+  
+  /* Form komponenter */
+  .form-input {
+    @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500;
+  }
+  
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+  
+  .form-button {
+    @apply inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500;
+  }
+  
+  .form-button.secondary {
+    @apply bg-gray-600 hover:bg-gray-700 focus:ring-gray-500;
+  }
+  
+  /* Responsive utilities */
+  .container-responsive {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+@layer utilities {
+  /* Skuggor för olika djup */
+  .shadow-soft {
+    box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
+  }
+  
+  .shadow-medium {
+    box-shadow: 0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  /* Gradient bakgrunder */
+  .bg-gradient-soft {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .bg-gradient-warm {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+  
+  /* Text utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Scrollbar styling */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(156 163 175) rgb(243 244 246);
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: rgb(243 244 246);
+    border-radius: 3px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgb(156 163 175);
+    border-radius: 3px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgb(107 114 128);
+  }
+}
+
+/* Print stilar */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-break-inside-avoid {
+    break-inside: avoid;
+  }
+  
+  .print-break-before {
+    break-before: page;
+  }
+}
+
+/* Dark mode support (för framtida implementation) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #111827;
+    --bg-secondary: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --border-color: #374151;
+  }
+}
+
+/* Accessibility förbättringar */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Hög kontrast stöd */
+@media (prefers-contrast: high) {
+  .shift-badge {
+    @apply border-2 border-gray-900;
+  }
+  
+  .team-filter-button.active {
+    @apply border-2 border-gray-900;
+  }
+}

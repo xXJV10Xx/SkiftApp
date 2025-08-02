@@ -1,0 +1,188 @@
+name: Daglig Skiftdata Scraping
+
+on:
+  # Kör varje dag kl 06:00 UTC (07:00/08:00 svensk tid beroende på sommartid)
+  schedule:
+    - cron: '0 6 * * *'
+  
+  # Tillåt manuell körning
+  workflow_dispatch:
+    inputs:
+      force_full_scrape:
+        description: 'Tvinga fullständig scraping (annars endast uppdateringar)'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  scrape-shifts:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout kod
+        uses: actions/checkout@v4
+        
+      - name: Sätt upp Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'skiftappen/package-lock.json'
+          
+      - name: Installera beroenden
+        working-directory: ./skiftappen
+        run: npm ci
+        
+      - name: Kör skiftdata scraping
+        working-directory: ./skiftappen
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          FORCE_FULL_SCRAPE: ${{ github.event.inputs.force_full_scrape }}
+        run: |
+          echo "Startar scraping av skiftdata..."
+          node scripts/scrape-all.cjs
+          
+      - name: Kontrollera scraping resultat
+        working-directory: ./skiftappen
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          echo "Kontrollerar att data har uppdaterats..."
+          node -e "
+            const { createClient } = require('@supabase/supabase-js');
+            const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+            
+            async function checkData() {
+              try {
+                const { data: shifts, error } = await supabase
+                  .from('shifts')
+                  .select('count')
+                  .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+                
+                if (error) throw error;
+                
+                console.log('Nya skift senaste 24h:', shifts?.length || 0);
+                
+                const { data: companies } = await supabase
+                  .from('companies')
+                  .select('count');
+                  
+                console.log('Totalt antal företag:', companies?.length || 0);
+                
+              } catch (error) {
+                console.error('Fel vid kontroll:', error);
+                process.exit(1);
+              }
+            }
+            
+            checkData();
+          "
+          
+      - name: Skicka notifiering vid fel
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Skiftdata scraping misslyckades',
+              body: `
+                ## Scraping misslyckades
+                
+                **Datum:** ${new Date().toISOString()}
+                **Workflow:** ${context.workflow}
+                **Run ID:** ${context.runId}
+                
+                Kontrollera loggar för mer information:
+                ${context.payload.repository.html_url}/actions/runs/${context.runId}
+                
+                ### Möjliga orsaker:
+                - Källwebbplats är nere eller har ändrat struktur
+                - Supabase anslutningsproblem
+                - Rate limiting
+                - Miljövariabler saknas eller är felaktiga
+                
+                ### Åtgärder:
+                1. Kontrollera källwebbplatsens status
+                2. Verifiera Supabase anslutning
+                3. Kontrollera GitHub Secrets
+                4. Kör manuellt för att testa: \`npm run scrape\`
+              `,
+              labels: ['bug', 'scraping', 'automated']
+            });
+            
+            console.log('Issue skapad:', issue.data.html_url);
+
+  # Backup jobb som kör med lägre frekvens som säkerhet
+  backup-scrape:
+    runs-on: ubuntu-latest
+    # Kör endast om huvudjobbet misslyckades och det är en schemalagd körning
+    if: failure() && github.event_name == 'schedule'
+    needs: scrape-shifts
+    
+    steps:
+      - name: Vänta innan backup-försök
+        run: sleep 300  # Vänta 5 minuter
+        
+      - name: Checkout kod
+        uses: actions/checkout@v4
+        
+      - name: Sätt upp Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'skiftappen/package-lock.json'
+          
+      - name: Installera beroenden
+        working-directory: ./skiftappen
+        run: npm ci
+        
+      - name: Backup scraping försök
+        working-directory: ./skiftappen
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          echo "Backup scraping försök..."
+          timeout 1800 node scripts/scrape-all.cjs || echo "Backup scraping tog för lång tid eller misslyckades"
+
+  # Veckovis full sync för att säkerställa dataintegritet
+  weekly-full-sync:
+    runs-on: ubuntu-latest
+    # Kör varje söndag kl 02:00 UTC
+    if: github.event_name == 'schedule' && github.event.schedule == '0 2 * * 0'
+    
+    steps:
+      - name: Checkout kod
+        uses: actions/checkout@v4
+        
+      - name: Sätt upp Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'skiftappen/package-lock.json'
+          
+      - name: Installera beroenden
+        working-directory: ./skiftappen
+        run: npm ci
+        
+      - name: Full datasynkronisering
+        working-directory: ./skiftappen
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          FORCE_FULL_SCRAPE: 'true'
+        run: |
+          echo "Startar veckovis full synkronisering..."
+          node scripts/scrape-all.cjs
