@@ -32,6 +32,34 @@ För att koppla GitHub-repository till Supabase:
 ### Kör följande SQL i Supabase SQL Editor:
 
 ```sql
+-- 0. Users Table (for Stripe integration)
+CREATE TABLE IF NOT EXISTS users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT UNIQUE NOT NULL,
+  first_name TEXT,
+  last_name TEXT,
+  avatar_url TEXT,
+  calendar_export_paid BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Add calendar_export_paid column if users table already exists
+ALTER TABLE users ADD COLUMN IF NOT EXISTS calendar_export_paid BOOLEAN DEFAULT FALSE;
+
+-- Enable RLS for users table
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+
+-- RLS policies for users
+CREATE POLICY "Users can view own profile" ON users
+  FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "Users can update own profile" ON users
+  FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY "Users can insert own profile" ON users
+  FOR INSERT WITH CHECK (auth.uid() = id);
+
 -- 1. Companies Table
 CREATE TABLE IF NOT EXISTS companies (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,

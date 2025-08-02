@@ -2,56 +2,38 @@
 
 A modern React Native mobile application for team communication with real-time chat, authentication, and multi-language support.
 
-## 📱 Features
+## ⭐ Features
 
-### 🔐 Authentication
+- **Shift Management** - View and manage work shifts
+- **Team Communication** - Real-time chat with colleagues  
+- **Company Integration** - Multi-company support
+- **Calendar Integration** - Export shifts to Google & Apple Calendar (Premium)
+- **Stripe Payments** - Secure payment processing for premium features
 - **Supabase Authentication** with email/password
-- **Google OAuth** integration
-- **Password reset** functionality
-- **Secure session management**
+- **Real-time Updates** - Live synchronization across devices
 
-### 💬 Real-time Chat
-- **Team-based chat** system
-- **Real-time messages** with Supabase
-- **Online status** indicators
-- **Team member management**
-- **Message history**
+## 💳 Premium Features
 
-### 🌍 Internationalization
-- **Swedish** (default)
-- **English** support
-- **Dynamic language switching**
-- **Localized UI elements**
+### Calendar Export (99 SEK)
+- Export your shifts to Google Calendar
+- Apple Calendar integration
+- Automatic synchronization
+- Works across all devices
 
-### 🎨 Theme System
-- **Light mode**
-- **Dark mode**
-- **System theme** (follows device settings)
-- **Dynamic color schemes**
+To enable calendar export:
+1. Use the payment button in the app
+2. Complete payment via Stripe
+3. Calendar export will be automatically activated
 
-### 📱 Mobile Features
-- **Push notifications** for new messages
-- **Offline support**
-- **Responsive design**
-- **Native performance**
+## 🛠 Tech Stack
 
-### 🚀 Production Ready
-- **EAS Build** configuration
-- **App Store** deployment ready
-- **Google Play Store** deployment ready
-- **Environment configuration**
-
-## 🛠️ Tech Stack
-
-- **React Native** - Mobile app framework
-- **Expo** - Development platform
-- **TypeScript** - Type safety
+- **React Native** with Expo
+- **TypeScript** - Type-safe development
 - **Supabase** - Backend as a Service
-  - Authentication
-  - Real-time database
-  - Row Level Security (RLS)
-- **Expo Router** - File-based navigation
-- **React Context** - State management
+- **Stripe** - Payment processing
+- **Real-time messaging** with Supabase
+- **Push Notifications** with Expo
+- **Modern UI** with custom components
 
 ## 📋 Prerequisites
 
