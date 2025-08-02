@@ -1,8 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Company } from '@/data/companies';
-import { calculateShiftForDate, formatDate, generateMonthSchedule } from '@/data/ShiftSchedules';
-import { Calendar, ChevronLeft, ChevronRight, Clock } from 'lucide-react-native';
+import { calculateShiftForDate, formatDate, generateMonthSchedule, SHIFT_TYPES } from '@/data/ShiftSchedules';
+import { generateICSDownload, ShiftData } from '@/lib/calendarExport';
+import { Calendar, ChevronLeft, ChevronRight, Clock, Download } from 'lucide-react-native';
 import React, { useState } from 'react';
 
 interface ShiftCalendarProps {
@@ -35,6 +36,39 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
 
   const goToToday = () => {
     setCurrentDate(new Date());
+  };
+
+  // Convert month schedule to ShiftData format for export
+  const convertToShiftData = (): ShiftData[] => {
+    const shiftType = SHIFT_TYPES[shiftTypeId.toUpperCase()];
+    if (!shiftType) return [];
+
+    return monthSchedule.map(day => ({
+      date: day.date,
+      shiftCode: day.shift.code,
+      shiftName: day.shift.name,
+      startTime: shiftType.times[day.shift.code]?.start,
+      endTime: shiftType.times[day.shift.code]?.end,
+      team,
+      company: company.name
+    }));
+  };
+
+  // Handle ICS export
+  const handleExportToCalendar = () => {
+    const shiftData = convertToShiftData();
+    const downloadUrl = generateICSDownload(shiftData);
+    
+    // Create download link
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = `shifts-${company.name}-${team}-${year}-${String(month + 1).padStart(2, '0')}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Clean up the URL
+    URL.revokeObjectURL(downloadUrl);
   };
 
   const getShiftColor = (shiftCode: string) => {
@@ -87,6 +121,15 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
             Skiftschema - {monthNames[month]} {year}
           </CardTitle>
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportToCalendar}
+              className="flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Exportera
+            </Button>
             <Button
               variant="outline"
               size="sm"
