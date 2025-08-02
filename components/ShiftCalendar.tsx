@@ -2,7 +2,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Company } from '@/data/companies';
 import { calculateShiftForDate, formatDate, generateMonthSchedule } from '@/data/ShiftSchedules';
-import { Calendar, ChevronLeft, ChevronRight, Clock } from 'lucide-react-native';
+import { exportShiftsToICS, exportShiftsToGoogleCalendar } from '@/lib/calendarExport';
+import { Calendar, ChevronLeft, ChevronRight, Clock, Download, Share } from 'lucide-react-native';
 import React, { useState } from 'react';
 
 interface ShiftCalendarProps {
@@ -35,6 +36,26 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
 
   const goToToday = () => {
     setCurrentDate(new Date());
+  };
+
+  const handleExportToICS = () => {
+    try {
+      const icsContent = exportShiftsToICS(year, month, shiftTypeId, team, company.name);
+      alert(`✅ Kalender exporterad!\nFilen kan importeras i Apple Kalender, Outlook, Google Kalender m.fl.`);
+    } catch (error) {
+      console.error('Export to ICS failed:', error);
+      alert('❌ Export misslyckades. Försök igen.');
+    }
+  };
+
+  const handleExportToGoogle = async () => {
+    try {
+      // Note: This would require OAuth setup for Google Calendar
+      alert('🔧 Google Kalender export kräver OAuth-inställningar.\nAnvänd ICS-export för nu, eller konfigurera Google OAuth i .env-filen.');
+    } catch (error) {
+      console.error('Export to Google Calendar failed:', error);
+      alert('❌ Google Kalender export misslyckades.');
+    }
   };
 
   const getShiftColor = (shiftCode: string) => {
@@ -109,6 +130,26 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
+        </div>
+        <div className="flex items-center gap-2 mt-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportToICS}
+            className="flex items-center gap-2"
+          >
+            <Download className="h-4 w-4" />
+            Exportera (.ics)
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportToGoogle}
+            className="flex items-center gap-2"
+          >
+            <Share className="h-4 w-4" />
+            Google Kalender
+          </Button>
         </div>
       </CardHeader>
       <CardContent>
