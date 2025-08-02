@@ -1,0 +1,13 @@
+{
+  "name": "skift-scraper",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "scripts": {
+    "scrape": "node scripts/scrape-upload.cjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.52.0",
+    "cheerio": "^1.0.0-rc.12",
+    "node-fetch": "^2.6.7"
+  }
+}
