@@ -295,6 +295,35 @@ export type Database = {
           created_at?: string;
         };
       };
+      user_tokens: {
+        Row: {
+          id: string;
+          employee_id: string | null;
+          access_token: string;
+          refresh_token: string | null;
+          expires_at: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          employee_id?: string | null;
+          access_token: string;
+          refresh_token?: string | null;
+          expires_at: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          employee_id?: string | null;
+          access_token?: string;
+          refresh_token?: string | null;
+          expires_at?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
   };
 };
