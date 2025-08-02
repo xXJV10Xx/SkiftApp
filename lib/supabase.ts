@@ -295,6 +295,192 @@ export type Database = {
           created_at?: string;
         };
       };
+      // Payment-related tables
+      subscriptions: {
+        Row: {
+          id: string;
+          company_id: string | null;
+          stripe_subscription_id: string | null;
+          plan_name: string;
+          plan_price: number;
+          billing_period: string; // 'monthly' | 'yearly'
+          employee_limit: number;
+          status: string; // 'active' | 'canceled' | 'past_due' | 'unpaid'
+          current_period_start: string;
+          current_period_end: string;
+          cancel_at_period_end: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          company_id?: string | null;
+          stripe_subscription_id?: string | null;
+          plan_name: string;
+          plan_price: number;
+          billing_period: string;
+          employee_limit: number;
+          status?: string;
+          current_period_start: string;
+          current_period_end: string;
+          cancel_at_period_end?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          company_id?: string | null;
+          stripe_subscription_id?: string | null;
+          plan_name?: string;
+          plan_price?: number;
+          billing_period?: string;
+          employee_limit?: number;
+          status?: string;
+          current_period_start?: string;
+          current_period_end?: string;
+          cancel_at_period_end?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      payments: {
+        Row: {
+          id: string;
+          company_id: string | null;
+          subscription_id: string | null;
+          stripe_payment_intent_id: string | null;
+          amount: number;
+          currency: string;
+          status: string; // 'pending' | 'succeeded' | 'failed' | 'canceled'
+          payment_method: string; // 'card' | 'apple_pay' | 'google_pay'
+          description: string | null;
+          receipt_url: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          company_id?: string | null;
+          subscription_id?: string | null;
+          stripe_payment_intent_id?: string | null;
+          amount: number;
+          currency: string;
+          status?: string;
+          payment_method: string;
+          description?: string | null;
+          receipt_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          company_id?: string | null;
+          subscription_id?: string | null;
+          stripe_payment_intent_id?: string | null;
+          amount?: number;
+          currency?: string;
+          status?: string;
+          payment_method?: string;
+          description?: string | null;
+          receipt_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      payment_methods: {
+        Row: {
+          id: string;
+          company_id: string | null;
+          stripe_payment_method_id: string | null;
+          type: string; // 'card' | 'apple_pay' | 'google_pay'
+          card_brand: string | null; // 'visa' | 'mastercard' | 'amex' | etc
+          card_last4: string | null;
+          card_exp_month: number | null;
+          card_exp_year: number | null;
+          is_default: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          company_id?: string | null;
+          stripe_payment_method_id?: string | null;
+          type: string;
+          card_brand?: string | null;
+          card_last4?: string | null;
+          card_exp_month?: number | null;
+          card_exp_year?: number | null;
+          is_default?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          company_id?: string | null;
+          stripe_payment_method_id?: string | null;
+          type?: string;
+          card_brand?: string | null;
+          card_last4?: string | null;
+          card_exp_month?: number | null;
+          card_exp_year?: number | null;
+          is_default?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      invoices: {
+        Row: {
+          id: string;
+          company_id: string | null;
+          subscription_id: string | null;
+          stripe_invoice_id: string | null;
+          invoice_number: string;
+          amount_due: number;
+          amount_paid: number;
+          currency: string;
+          status: string; // 'draft' | 'open' | 'paid' | 'void' | 'uncollectible'
+          due_date: string | null;
+          paid_at: string | null;
+          invoice_pdf: string | null;
+          hosted_invoice_url: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          company_id?: string | null;
+          subscription_id?: string | null;
+          stripe_invoice_id?: string | null;
+          invoice_number: string;
+          amount_due: number;
+          amount_paid?: number;
+          currency: string;
+          status?: string;
+          due_date?: string | null;
+          paid_at?: string | null;
+          invoice_pdf?: string | null;
+          hosted_invoice_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          company_id?: string | null;
+          subscription_id?: string | null;
+          stripe_invoice_id?: string | null;
+          invoice_number?: string;
+          amount_due?: number;
+          amount_paid?: number;
+          currency?: string;
+          status?: string;
+          due_date?: string | null;
+          paid_at?: string | null;
+          invoice_pdf?: string | null;
+          hosted_invoice_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
   };
 };

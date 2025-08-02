@@ -17,7 +17,17 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.skiftappen.app",
-      "buildNumber": "1.0.0"
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "NSApplePayMerchantId": "merchant.com.skiftappen.app",
+        "NSContactsUsageDescription": "This app uses contacts to populate payment forms.",
+        "NSLocationWhenInUseUsageDescription": "This app uses location for payment verification."
+      },
+      "entitlements": {
+        "com.apple.developer.in-app-payments": [
+          "merchant.com.skiftappen.app"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -25,7 +35,26 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.skiftappen.app",
-      "versionCode": 1
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.WAKE_LOCK"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "skiftappen"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
@@ -38,12 +67,28 @@
           "icon": "./assets/images/icon.png",
           "color": "#ffffff"
         }
+      ],
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.skiftappen.app",
+          "enableGooglePay": true
+        }
+      ],
+      [
+        "expo-apple-authentication",
+        {
+          "appleTeamId": "YOUR_APPLE_TEAM_ID"
+        }
       ]
     ],
     "scheme": "skiftappen",
     "extra": {
       "router": {
         "origin": false
+      },
+      "eas": {
+        "projectId": "your-project-id"
       }
     }
   }
