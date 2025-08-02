@@ -1,4 +1,5 @@
 // scripts/scrape-upload.cjs
+require('dotenv').config();
 const puppeteer = require('puppeteer-core');
 const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
