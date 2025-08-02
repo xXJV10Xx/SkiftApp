@@ -53,11 +53,13 @@ export type Database = {
           phone: string | null;
           is_active: boolean;
           profile_completed: boolean;
+          has_paid_export: boolean;
+          export_paid_at: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
-          id: string;
+          id?: string;
           employee_id?: string | null;
           email: string;
           first_name: string;
@@ -70,6 +72,8 @@ export type Database = {
           phone?: string | null;
           is_active?: boolean;
           profile_completed?: boolean;
+          has_paid_export?: boolean;
+          export_paid_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -87,6 +91,8 @@ export type Database = {
           phone?: string | null;
           is_active?: boolean;
           profile_completed?: boolean;
+          has_paid_export?: boolean;
+          export_paid_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
