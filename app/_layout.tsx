@@ -6,6 +6,7 @@ import { ChatProvider } from '../context/ChatContext';
 import { CompanyProvider } from '../context/CompanyContext';
 import { LanguageProvider } from '../context/LanguageContext';
 import { ShiftProvider } from '../context/ShiftContext';
+import { SubscriptionProvider } from '../context/SubscriptionContext';
 import { ThemeProvider } from '../context/ThemeContext'
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 
@@ -30,16 +31,19 @@ function MainLayout() {
   }
 
   return (
-    <CompanyProvider>
-      <ShiftProvider>
-        <ChatProvider>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-        </ChatProvider>
-      </ShiftProvider>
-    </CompanyProvider>
+    <SubscriptionProvider>
+      <CompanyProvider>
+        <ShiftProvider>
+          <ChatProvider>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="subscription" />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          </ChatProvider>
+        </ShiftProvider>
+      </CompanyProvider>
+    </SubscriptionProvider>
   );
 }
 
