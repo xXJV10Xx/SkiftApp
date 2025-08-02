@@ -1,276 +1,239 @@
-# 🚀 Skiftappen - Team Chat App
+# ShiftChat - Chat-app för Skiftarbetare
 
-A modern React Native mobile application for team communication with real-time chat, authentication, and multi-language support.
+En modern chat-applikation speciellt utvecklad för skiftarbetare med funktioner för gruppchatt, formulärhantering och kalenderexport.
 
-## 📱 Features
+## 🚀 Funktioner
 
-### 🔐 Authentication
-- **Supabase Authentication** with email/password
-- **Google OAuth** integration
-- **Password reset** functionality
-- **Secure session management**
+### ✅ Grundfunktioner
+- **Gruppchatt** - Chatta med kollegor baserat på företag och avdelning
+- **Formulärhantering** - Skapa och hantera skiftöverlämningar, extra jobb och haverier
+- **Online-status** - Se vilka kollegor som är online
+- **Realtidsmeddelanden** - Få meddelanden direkt när de skickas
+- **Profilbilder** - Automatiskt genererade avatarer baserat på namn
 
-### 💬 Real-time Chat
-- **Team-based chat** system
-- **Real-time messages** with Supabase
-- **Online status** indicators
-- **Team member management**
-- **Message history**
+### 📱 Avancerade funktioner
+- **Intresserad-knapp** - Markera intresse för extra jobb
+- **Privat chatt** - Starta privata konversationer med intresserade kollegor
+- **Kalenderexport** - Exportera skift till Google/Apple Kalender (99 kr engångsbetalning)
+- **Betalningsintegration** - Stripe, Apple Pay, Google Pay
 
-### 🌍 Internationalization
-- **Swedish** (default)
-- **English** support
-- **Dynamic language switching**
-- **Localized UI elements**
+### 🔐 Autentisering
+- Google OAuth
+- Apple Sign In
+- Facebook Login
+- Automatisk profilskapande
 
-### 🎨 Theme System
-- **Light mode**
-- **Dark mode**
-- **System theme** (follows device settings)
-- **Dynamic color schemes**
+## 🛠️ Teknisk Stack
 
-### 📱 Mobile Features
-- **Push notifications** for new messages
-- **Offline support**
-- **Responsive design**
-- **Native performance**
+- **Frontend**: React 18 + TypeScript + Tailwind CSS
+- **Backend**: Supabase (PostgreSQL + Real-time + Auth)
+- **Betalningar**: Stripe
+- **Hosting**: Vite + Vercel/Netlify
+- **Icons**: Lucide React
 
-### 🚀 Production Ready
-- **EAS Build** configuration
-- **App Store** deployment ready
-- **Google Play Store** deployment ready
-- **Environment configuration**
+## 📋 Installation
 
-## 🛠️ Tech Stack
-
-- **React Native** - Mobile app framework
-- **Expo** - Development platform
-- **TypeScript** - Type safety
-- **Supabase** - Backend as a Service
-  - Authentication
-  - Real-time database
-  - Row Level Security (RLS)
-- **Expo Router** - File-based navigation
-- **React Context** - State management
-
-## 📋 Prerequisites
-
-- Node.js (v18 or higher)
-- npm or yarn
-- Expo CLI
-- iOS Simulator (for iOS development)
-- Android Studio (for Android development)
-
-## 🚀 Quick Start
-
-### 1. Clone the repository
+### 1. Klona projektet
 ```bash
-git clone https://github.com/yourusername/skiftappen.git
-cd skiftappen
+git clone https://github.com/ditt-användarnamn/shiftchat-app.git
+cd shiftchat-app
 ```
 
-### 2. Install dependencies
+### 2. Installera dependencies
 ```bash
 npm install
 ```
 
-### 3. Set up environment variables
-Create a `.env` file in the root directory:
+### 3. Konfigurera miljövariabler
+Skapa en `.env` fil i projektets rot:
+
 ```env
-EXPO_PUBLIC_SUPABASE_URL=https://fsefeherdbtsddqimjco.supabase.co
-EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzZWZlaGVyZGJ0c2RkcWltamNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3ODUwNDcsImV4cCI6MjA2ODM2MTA0N30.YEltOJVQU6Ox5YrkZJGzbMiojyQClkFwG-mBPilIAfk
+# Supabase
+REACT_APP_SUPABASE_URL=din_supabase_url
+REACT_APP_SUPABASE_ANON_KEY=din_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=din_service_role_key
+
+# Stripe
+REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_...
+
+# OAuth (konfigureras i Supabase Dashboard)
+# Google, Apple, Facebook credentials läggs till i Supabase Auth Settings
 ```
 
-### 4. Set up Supabase
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
-2. Create a new project or use existing
-3. Run the SQL commands from `DATABASE_SETUP.md`
-4. Configure Google OAuth (optional)
-
-### 5. Start development server
+### 4. Sätt upp Supabase-databasen
 ```bash
-npx expo start
+# Kör SQL-scriptet i Supabase SQL Editor
+cat schema.sql | pbcopy
+# Klistra in i Supabase Dashboard > SQL Editor > New Query
 ```
 
-### 6. Test on device
-- Install **Expo Go** app on your phone
-- Scan the QR code from terminal
-- Test all features
+### 5. Konfigurera OAuth-providers
 
-## 🗄️ Database Setup
+#### Google OAuth
+1. Gå till [Google Cloud Console](https://console.cloud.google.com/)
+2. Skapa ett nytt projekt eller välj befintligt
+3. Aktivera Google+ API
+4. Skapa OAuth 2.0 credentials
+5. Lägg till authorized redirect URI: `https://din-supabase-url.supabase.co/auth/v1/callback`
+6. Lägg till credentials i Supabase Dashboard > Authentication > Settings > Auth Providers
 
-### 1. Run SQL commands
-Copy and paste the SQL commands from `DATABASE_SETUP.md` into your Supabase SQL Editor.
+#### Apple Sign In
+1. Gå till [Apple Developer Console](https://developer.apple.com/)
+2. Skapa en App ID med Sign In with Apple capability
+3. Skapa en Service ID
+4. Konfigurera Return URLs: `https://din-supabase-url.supabase.co/auth/v1/callback`
+5. Lägg till credentials i Supabase
 
-### 2. Enable real-time
-In Supabase Dashboard:
-- Go to **Database** → **Replication**
-- Enable real-time for all tables
+#### Facebook Login
+1. Gå till [Facebook Developers](https://developers.facebook.com/)
+2. Skapa en ny app
+3. Lägg till Facebook Login product
+4. Konfigurera Valid OAuth Redirect URIs
+5. Lägg till credentials i Supabase
 
-### 3. Test data
-Add some test companies and teams to test the chat functionality.
-
-## 📱 App Structure
-
-```
-skiftappen/
-├── app/                    # Expo Router pages
-│   ├── (tabs)/            # Tab navigation
-│   │   ├── index.tsx      # Home screen
-│   │   ├── chat.tsx       # Chat screen
-│   │   ├── profile.tsx    # Profile screen
-│   │   └── settings.tsx   # Settings screen
-│   ├── auth/              # Authentication
-│   │   ├── login.tsx      # Login screen
-│   │   └── forgot-password.tsx
-│   └── _layout.tsx        # Root layout
-├── context/               # React Context providers
-│   ├── AuthContext.tsx    # Authentication state
-│   ├── ChatContext.tsx    # Chat functionality
-│   ├── LanguageContext.tsx # Internationalization
-│   └── ThemeContext.tsx   # Theme management
-├── lib/                   # Utilities
-│   ├── supabase.ts        # Supabase client
-│   ├── i18n.ts           # Translations
-│   └── notifications.ts   # Push notifications
-└── components/            # Reusable components
-```
-
-## 🌍 Internationalization
-
-The app supports Swedish and English. To add more languages:
-
-1. Add translations to `lib/i18n.ts`
-2. Update the `Language` type
-3. Add language options to settings
-
-## 🎨 Theming
-
-The app supports three theme modes:
-- **Light** - Bright theme
-- **Dark** - Dark theme  
-- **System** - Follows device settings
-
-Colors are defined in `context/ThemeContext.tsx`.
-
-## 📱 Building for Production
-
-### 1. Install EAS CLI
+### 6. Starta utvecklingsservern
 ```bash
-npm install -g @expo/eas-cli
+npm run dev
 ```
 
-### 2. Login to Expo
-```bash
-eas login
-```
+Appen kommer att vara tillgänglig på `http://localhost:5173`
 
-### 3. Configure build
-```bash
-eas build:configure
-```
+## 🗄️ Databasstruktur
 
-### 4. Build for platforms
-```bash
-# Android
-eas build --platform android --profile production
+### Huvudtabeller
+- `companies` - Företagsinformation
+- `departments` - Avdelningar per företag
+- `teams` - Team per avdelning
+- `users` - Användardata med företags-/avdelningstillhörighet
+- `groups` - Chattgrupper
+- `group_members` - Gruppmedlemskap
+- `messages` - Chattmeddelanden
+- `shift_forms` - Formulär för skift
+- `payment_transactions` - Betalningshistorik
 
-# iOS
-eas build --platform ios --profile production
-```
+### Säkerhet
+- Row Level Security (RLS) aktiverat på alla tabeller
+- Användare kan endast se data från sitt eget företag
+- Automatisk filtrering baserat på företagstillhörighet
+
+## 💳 Betalningsintegration
+
+### Stripe Setup
+1. Skapa Stripe-konto på [stripe.com](https://stripe.com)
+2. Hämta API-nycklar från Dashboard
+3. Konfigurera webhooks (valfritt för avancerad funktionalitet)
+
+### Betalningsflöde
+1. Användare klickar på "Kalender Export"
+2. PaymentModal öppnas med prissättning (99 kr)
+3. Användare väljer betalningsmetod (kort/Apple Pay/Google Pay)
+4. Stripe hanterar betalningen säkert
+5. Vid lyckad betalning aktiveras kalenderexport för användaren
+
+## 🔧 API Endpoints
+
+### Frontend API (src/lib/api.ts)
+- `userAPI` - Användarhantering
+- `formsAPI` - Formulärhantering  
+- `chatAPI` - Chat och gruppfunktioner
+- `calendarAPI` - Kalenderexport
+- `companyAPI` - Företags-/avdelningsdata
+
+### Backend API (api/)
+- `POST /api/create-payment-intent` - Skapa Stripe payment intent
 
 ## 🚀 Deployment
 
-### Android (Google Play Store)
-1. Create Google Play Console account
-2. Upload AAB file from EAS build
-3. Fill in app information
-4. Submit for review
+### Vercel Deployment
+```bash
+# Installera Vercel CLI
+npm i -g vercel
 
-### iOS (App Store)
-1. Create Apple Developer account
-2. Upload IPA file to App Store Connect
-3. Fill in app information
-4. Submit for review
+# Deploy
+vercel
 
-See `DEPLOYMENT_GUIDE.md` for detailed instructions.
+# Sätt miljövariabler i Vercel Dashboard
+```
 
-## 🔧 Configuration
+### Netlify Deployment
+```bash
+# Bygg projektet
+npm run build
 
-### Environment Variables
-- `EXPO_PUBLIC_SUPABASE_URL` - Supabase project URL
-- `EXPO_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
+# Ladda upp dist/ mappen till Netlify
+# Eller anslut GitHub repo för automatisk deploy
+```
 
-### App Configuration
-- `app.json` - Expo configuration
-- `eas.json` - EAS build configuration
+### Miljövariabler för produktion
+Se till att alla miljövariabler är konfigurerade i din hosting-plattform:
+- Supabase URL och nycklar
+- Stripe nycklar
+- OAuth-credentials (konfigureras i Supabase)
 
-## 📊 Features in Detail
+## 📱 Användning
 
-### Authentication
-- Email/password registration and login
-- Google OAuth integration
-- Password reset via email
-- Secure session management
-- Automatic login state persistence
+### För Administratörer
+1. Logga in via Supabase Dashboard
+2. Lägg till företag i `companies` tabellen
+3. Lägg till avdelningar i `departments` tabellen
+4. Användare kan sedan välja sitt företag vid första inloggningen
 
-### Chat System
-- Real-time messaging with Supabase
-- Team-based chat rooms
-- Online status indicators
-- Message history
-- Team member management
+### För Användare
+1. Gå till appen och logga in med Google/Apple/Facebook
+2. Välj ditt företag och avdelning
+3. Börja chatta i grupper eller skapa formulär
+4. Köp kalenderexport för 99 kr (engångsbetalning)
 
-### User Interface
-- Modern, responsive design
-- Dark/light theme support
-- Multi-language interface
-- Intuitive navigation
-- Loading states and error handling
+## 🔒 Säkerhet
 
-### Performance
-- Optimized for mobile
-- Efficient real-time updates
-- Minimal network usage
-- Smooth animations
+- Alla API-anrop autentiseras via Supabase Auth
+- Row Level Security förhindrar åtkomst till andra företags data
+- Stripe hanterar alla betalningar säkert (PCI-compliant)
+- OAuth-providers hanterar autentisering
+- HTTPS krävs för produktion
 
-## 🤝 Contributing
+## 🐛 Felsökning
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+### Vanliga problem
 
-## 📄 License
+**Supabase-anslutning fungerar inte**
+- Kontrollera att URL och API-nycklar är korrekta
+- Verifiera att RLS-policies är korrekt konfigurerade
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+**OAuth fungerar inte**
+- Kontrollera redirect URIs i OAuth-provider settings
+- Verifiera att credentials är korrekt konfigurerade i Supabase
 
-## 🆘 Support
+**Stripe-betalningar fungerar inte**
+- Kontrollera att API-nycklar är för rätt miljö (test/live)
+- Verifiera CORS-inställningar för API endpoints
 
-If you encounter any issues:
+**Meddelanden uppdateras inte i realtid**
+- Kontrollera nätverksanslutning
+- Verifiera att Supabase realtime är aktiverat
 
-1. Check the [Expo documentation](https://docs.expo.dev/)
-2. Check the [Supabase documentation](https://supabase.com/docs)
-3. Create an issue on GitHub
-4. Check the troubleshooting section in `DEPLOYMENT_GUIDE.md`
+## 📞 Support
 
-## 🗺️ Roadmap
+För support och frågor:
+- Skapa en issue på GitHub
+- Kontakta utvecklaren via e-post
+- Läs dokumentationen på [Supabase Docs](https://supabase.com/docs)
 
-- [ ] Voice messages
-- [ ] File sharing
-- [ ] Video calls
-- [ ] Advanced team management
-- [ ] Analytics dashboard
-- [ ] Custom themes
-- [ ] Offline message sync
-- [ ] Message reactions
-- [ ] User profiles with avatars
+## 📄 Licens
 
-## 📞 Contact
+Detta projekt är licensierat under MIT License. Se `LICENSE` filen för detaljer.
 
-For questions or support, please create an issue on GitHub or contact the development team.
+## 🤝 Bidra
+
+Bidrag är välkomna! Se `CONTRIBUTING.md` för riktlinjer.
+
+1. Forka projektet
+2. Skapa en feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commita dina ändringar (`git commit -m 'Add some AmazingFeature'`)
+4. Pusha till branchen (`git push origin feature/AmazingFeature`)
+5. Öppna en Pull Request
 
 ---
 
-**Made with ❤️ using React Native, Expo, and Supabase**
+**Utvecklad med ❤️ för skiftarbetare**
