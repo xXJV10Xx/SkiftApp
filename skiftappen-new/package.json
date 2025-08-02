@@ -1,0 +1,31 @@
+{
+  "name": "skiftappen",
+  "version": "1.0.0",
+  "description": "Skiftappen - A shift scheduling application",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run frontend:start",
+    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "frontend:start": "cd frontend && npm start",
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:android": "cd frontend && npm run android",
+    "frontend:ios": "cd frontend && npm run ios",
+    "frontend:web": "cd frontend && npm run web",
+    "backend:start": "cd backend && npm start",
+    "backend:dev": "cd backend && npm run dev",
+    "scrape": "node scripts/scrape-all.cjs",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "build": "cd frontend && npm run build",
+    "lint": "cd frontend && npm run lint"
+  },
+  "keywords": ["shift", "scheduling", "react-native", "expo", "nodejs"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
