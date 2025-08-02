@@ -18,10 +18,27 @@ jobs:
           node-version: '20'
 
       - name: Installera beroenden
-        run: npm install
+        run: |
+          npm install puppeteer-core @supabase/supabase-js
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser
+
+      - name: Skapa debug-mapp
+        run: mkdir -p scripts/debug
 
       - name: Kör scraping
         run: node scripts/scrape-upload.cjs
         env:
-          SUPABASE_URL: https://fsefeherdbtsddqimjco.supabase.co
-          SUPABASE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzZWZlaGVyZGJ0c2RkcWltamNvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mjc4NTA0NywiZXhwIjoyMDY4MzYxMDQ3fQ.IN-OF4_M7KhNwfAtrOcjS2SfVIbw_80lpgyzlngc_Lg
+          CHROME_BIN: /usr/bin/chromium-browser
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SKIFT_USERNAME: ${{ secrets.SKIFT_USERNAME }}
+          SKIFT_PASSWORD: ${{ secrets.SKIFT_PASSWORD }}
+
+      - name: Ladda upp debug-skärmbilder om det misslyckas
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: debug-screenshots
+          path: scripts/debug/
+          retention-days: 5
