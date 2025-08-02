@@ -1,0 +1,7 @@
+[
+  {
+    "title": "Test Company",
+    "schema": "test-schema",
+    "teams": ["A", "B", "C"]
+  }
+]
