@@ -123,45 +123,33 @@ export type Database = {
       shifts: {
         Row: {
           id: string;
-          employee_id: string | null;
-          company_id: string | null;
-          team_id: string | null;
-          start_time: string;
-          end_time: string;
-          position: string | null;
+          company: string;
           location: string | null;
-          status: string;
-          notes: string | null;
-          created_at: string;
-          updated_at: string;
+          team: string;
+          date: string;
+          shift_type: string;
+          shift_time: string;
+          scraped_at: string;
         };
         Insert: {
           id?: string;
-          employee_id?: string | null;
-          company_id?: string | null;
-          team_id?: string | null;
-          start_time: string;
-          end_time: string;
-          position?: string | null;
+          company: string;
           location?: string | null;
-          status?: string;
-          notes?: string | null;
-          created_at?: string;
-          updated_at?: string;
+          team: string;
+          date: string;
+          shift_type: string;
+          shift_time: string;
+          scraped_at?: string;
         };
         Update: {
           id?: string;
-          employee_id?: string | null;
-          company_id?: string | null;
-          team_id?: string | null;
-          start_time?: string;
-          end_time?: string;
-          position?: string | null;
+          company?: string;
           location?: string | null;
-          status?: string;
-          notes?: string | null;
-          created_at?: string;
-          updated_at?: string;
+          team?: string;
+          date?: string;
+          shift_type?: string;
+          shift_time?: string;
+          scraped_at?: string;
         };
       };
       chat_rooms: {
