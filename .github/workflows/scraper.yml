@@ -1,44 +1,38 @@
-name: Daglig scraping från Skiftschema.se
+name: Skiftschema Scraper
 
 on:
   schedule:
-    - cron: '0 3 * * *'  # varje dag kl 03:00 svensk tid
-  workflow_dispatch:     # kan köras manuellt från GitHub
+    - cron: '0 2 * * *'  # Runs at 2:00 AM UTC daily
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Installera Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '20'
-
-      - name: Installera beroenden
-        run: |
-          npm install puppeteer-core @supabase/supabase-js
-          sudo apt-get update
-          sudo apt-get install -y chromium-browser
-
-      - name: Skapa debug-mapp
-        run: mkdir -p scripts/debug
-
-      - name: Kör scraping
-        run: node scripts/scrape-upload.cjs
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm install puppeteer@19.7.0 @supabase/supabase-js dotenv
+        
+      - name: Run scraping script with debugging
         env:
-          CHROME_BIN: /usr/bin/chromium-browser
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          SKIFT_USERNAME: ${{ secrets.SKIFT_USERNAME }}
-          SKIFT_PASSWORD: ${{ secrets.SKIFT_PASSWORD }}
-
-      - name: Ladda upp debug-skärmbilder om det misslyckas
+        run: |
+          mkdir -p debug-screenshots
+          node scripts/scrape-upload.cjs
+          
+      - name: Upload debug screenshots if failure
         if: failure()
         uses: actions/upload-artifact@v3
         with:
           name: debug-screenshots
-          path: scripts/debug/
-          retention-days: 5
+          path: debug-screenshots/
+          retention-days: 3
