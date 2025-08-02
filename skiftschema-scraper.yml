@@ -1,0 +1,105 @@
+name: Skiftschema Scraper
+
+on:
+  schedule:
+    # Run every day at 2:00 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    # Allow manual triggering
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install node-fetch cheerio @supabase/supabase-js
+
+      - name: Run scraper
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          node -e "
+          const fetch = require('node-fetch');
+          const cheerio = require('cheerio');
+          const { createClient } = require('@supabase/supabase-js');
+
+          async function scrapeSkiftschema() {
+            try {
+              // Initialize Supabase client
+              const supabase = createClient(
+                process.env.SUPABASE_URL,
+                process.env.SUPABASE_SERVICE_ROLE_KEY
+              );
+              
+              // Define the URL to scrape
+              const url = 'https://skiftschema.se/public-schedules';
+              
+              console.log(`Fetching data from ${url}`);
+              
+              // Fetch the webpage content
+              const response = await fetch(url, {
+                headers: {
+                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                }
+              });
+              
+              if (!response.ok) {
+                throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
+              }
+              
+              const html = await response.text();
+              
+              // Parse the HTML using cheerio
+              const $ = cheerio.load(html);
+              
+              // Extract data (adjust selectors based on the actual website structure)
+              const scheduleData = [];
+              
+              // Example: Find schedule elements and extract data
+              $('.schedule-item').each((i, el) => {
+                const item = {
+                  title: $(el).find('.title').text().trim(),
+                  date: $(el).find('.date').text().trim(),
+                  time: $(el).find('.time').text().trim(),
+                  location: $(el).find('.location').text().trim()
+                };
+                scheduleData.push(item);
+              });
+              
+              console.log(`Found ${scheduleData.length} schedule items`);
+              
+              // If we found data, insert it into Supabase
+              if (scheduleData.length > 0) {
+                const { data, error } = await supabase
+                  .from('shift_schedules')
+                  .insert({
+                    source: 'skiftschema.se',
+                    data: scheduleData,
+                    scraped_at: new Date().toISOString()
+                  });
+                
+                if (error) {
+                  throw new Error(`Failed to insert data: ${error.message}`);
+                }
+                
+                console.log(`Successfully scraped and inserted ${scheduleData.length} schedule items`);
+              } else {
+                console.log('No schedule data found to insert');
+              }
+            } catch (error) {
+              console.error('Error in scraper:', error);
+              process.exit(1);
+            }
+          }
+
+          scrapeSkiftschema();
+          "
