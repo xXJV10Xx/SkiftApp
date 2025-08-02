@@ -1,276 +1,245 @@
-# 🚀 Skiftappen - Team Chat App
+# 🏢 SkiftApp Backend
 
-A modern React Native mobile application for team communication with real-time chat, authentication, and multi-language support.
+En komplett backend för skiftschemahantering med Google Calendar-integration och Supabase.
 
-## 📱 Features
+## 🚀 Funktioner
 
-### 🔐 Authentication
-- **Supabase Authentication** with email/password
-- **Google OAuth** integration
-- **Password reset** functionality
-- **Secure session management**
+- ✅ **Google OAuth 2.0** - Säker autentisering
+- ✅ **Google Calendar API** - Automatisk synkning av skift
+- ✅ **Supabase Integration** - Databas och realtidsuppdateringar  
+- ✅ **Push-notifikationer** - Meddelanden om kalenderhändelser
+- ✅ **RESTful API** - Komplett CRUD för skift och kalenderhändelser
+- ✅ **Token Management** - Automatisk refresh av Google tokens
 
-### 💬 Real-time Chat
-- **Team-based chat** system
-- **Real-time messages** with Supabase
-- **Online status** indicators
-- **Team member management**
-- **Message history**
+## 📦 Installation
 
-### 🌍 Internationalization
-- **Swedish** (default)
-- **English** support
-- **Dynamic language switching**
-- **Localized UI elements**
+### 1. Klona och installera dependencies
 
-### 🎨 Theme System
-- **Light mode**
-- **Dark mode**
-- **System theme** (follows device settings)
-- **Dynamic color schemes**
-
-### 📱 Mobile Features
-- **Push notifications** for new messages
-- **Offline support**
-- **Responsive design**
-- **Native performance**
-
-### 🚀 Production Ready
-- **EAS Build** configuration
-- **App Store** deployment ready
-- **Google Play Store** deployment ready
-- **Environment configuration**
-
-## 🛠️ Tech Stack
-
-- **React Native** - Mobile app framework
-- **Expo** - Development platform
-- **TypeScript** - Type safety
-- **Supabase** - Backend as a Service
-  - Authentication
-  - Real-time database
-  - Row Level Security (RLS)
-- **Expo Router** - File-based navigation
-- **React Context** - State management
-
-## 📋 Prerequisites
-
-- Node.js (v18 or higher)
-- npm or yarn
-- Expo CLI
-- iOS Simulator (for iOS development)
-- Android Studio (for Android development)
-
-## 🚀 Quick Start
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/yourusername/skiftappen.git
-cd skiftappen
-```
-
-### 2. Install dependencies
 ```bash
 npm install
 ```
 
-### 3. Set up environment variables
-Create a `.env` file in the root directory:
+### 2. Konfigurera miljövariabler
+
+Kopiera `.env.example` till `.env` och fyll i dina värden:
+
+```bash
+cp .env.example .env
+```
+
 ```env
-EXPO_PUBLIC_SUPABASE_URL=https://fsefeherdbtsddqimjco.supabase.co
-EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzZWZlaGVyZGJ0c2RkcWltamNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3ODUwNDcsImV4cCI6MjA2ODM2MTA0N30.YEltOJVQU6Ox5YrkZJGzbMiojyQClkFwG-mBPilIAfk
+PORT=3000
+
+# Google OAuth
+GOOGLE_CLIENT_ID=din_google_client_id
+GOOGLE_CLIENT_SECRET=din_google_client_secret
+GOOGLE_REDIRECT_URI=http://localhost:3000/auth/google/callback
+
+# Frontend
+FRONTEND_URL=http://localhost:3001
+
+# Supabase
+SUPABASE_URL=https://din-supabase-url.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=din_service_role_key
 ```
 
-### 4. Set up Supabase
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
-2. Create a new project or use existing
-3. Run the SQL commands from `DATABASE_SETUP.md`
-4. Configure Google OAuth (optional)
+### 3. Konfigurera Google OAuth
 
-### 5. Start development server
+1. Gå till [Google Cloud Console](https://console.cloud.google.com/)
+2. Skapa ett nytt projekt eller välj befintligt
+3. Aktivera Google Calendar API
+4. Skapa OAuth 2.0 credentials
+5. Lägg till authorized redirect URIs:
+   - `http://localhost:3000/auth/google/callback` (utveckling)
+   - `https://din-backend.com/auth/google/callback` (produktion)
+
+### 4. Konfigurera Supabase
+
+Kör SQL-schemat i din Supabase-databas:
+
 ```bash
-npx expo start
+# Kopiera innehållet från supabase-schema.sql och kör i Supabase SQL Editor
 ```
 
-### 6. Test on device
-- Install **Expo Go** app on your phone
-- Scan the QR code from terminal
-- Test all features
+### 5. Starta servern
 
-## 🗄️ Database Setup
-
-### 1. Run SQL commands
-Copy and paste the SQL commands from `DATABASE_SETUP.md` into your Supabase SQL Editor.
-
-### 2. Enable real-time
-In Supabase Dashboard:
-- Go to **Database** → **Replication**
-- Enable real-time for all tables
-
-### 3. Test data
-Add some test companies and teams to test the chat functionality.
-
-## 📱 App Structure
-
-```
-skiftappen/
-├── app/                    # Expo Router pages
-│   ├── (tabs)/            # Tab navigation
-│   │   ├── index.tsx      # Home screen
-│   │   ├── chat.tsx       # Chat screen
-│   │   ├── profile.tsx    # Profile screen
-│   │   └── settings.tsx   # Settings screen
-│   ├── auth/              # Authentication
-│   │   ├── login.tsx      # Login screen
-│   │   └── forgot-password.tsx
-│   └── _layout.tsx        # Root layout
-├── context/               # React Context providers
-│   ├── AuthContext.tsx    # Authentication state
-│   ├── ChatContext.tsx    # Chat functionality
-│   ├── LanguageContext.tsx # Internationalization
-│   └── ThemeContext.tsx   # Theme management
-├── lib/                   # Utilities
-│   ├── supabase.ts        # Supabase client
-│   ├── i18n.ts           # Translations
-│   └── notifications.ts   # Push notifications
-└── components/            # Reusable components
-```
-
-## 🌍 Internationalization
-
-The app supports Swedish and English. To add more languages:
-
-1. Add translations to `lib/i18n.ts`
-2. Update the `Language` type
-3. Add language options to settings
-
-## 🎨 Theming
-
-The app supports three theme modes:
-- **Light** - Bright theme
-- **Dark** - Dark theme  
-- **System** - Follows device settings
-
-Colors are defined in `context/ThemeContext.tsx`.
-
-## 📱 Building for Production
-
-### 1. Install EAS CLI
 ```bash
-npm install -g @expo/eas-cli
+# Utveckling
+npm run dev
+
+# Produktion  
+npm start
 ```
 
-### 2. Login to Expo
-```bash
-eas login
+## 🔗 API Endpoints
+
+### Autentisering
+
+- `GET /auth/google` - Initiera Google OAuth
+- `GET /auth/google/callback` - OAuth callback
+
+### Kalenderhändelser
+
+- `POST /calendar/create-event` - Skapa ny händelse
+- `GET /calendar/events/:userEmail` - Hämta användarens händelser
+- `PUT /calendar/update-event/:eventId` - Uppdatera händelse
+- `DELETE /calendar/delete-event/:eventId` - Ta bort händelse
+
+### Skifthantering
+
+- `GET /calendar/shifts/:userEmail` - Hämta användarens skift
+- `POST /calendar/sync-shifts` - Synka skift till Google Calendar
+
+## 📋 API Exempel
+
+### Skapa kalenderhändelse
+
+```javascript
+POST /calendar/create-event
+Content-Type: application/json
+
+{
+  "userEmail": "user@example.com",
+  "title": "Arbetspass - Café Stockholm",
+  "description": "Morgonpass på caféet",
+  "startTime": "2024-01-15T08:00:00.000Z",
+  "endTime": "2024-01-15T16:00:00.000Z",
+  "location": "Café Stockholm, Drottninggatan 1",
+  "attendees": ["manager@cafe.com"]
+}
 ```
 
-### 3. Configure build
-```bash
-eas build:configure
+### Hämta händelser
+
+```javascript
+GET /calendar/events/user@example.com?timeMin=2024-01-01T00:00:00.000Z&timeMax=2024-01-31T23:59:59.000Z
 ```
 
-### 4. Build for platforms
-```bash
-# Android
-eas build --platform android --profile production
+### Synka skift
 
-# iOS
-eas build --platform ios --profile production
+```javascript
+POST /calendar/sync-shifts
+Content-Type: application/json
+
+{
+  "userEmail": "user@example.com"
+}
 ```
+
+## 🗄️ Databasschema
+
+### Huvudtabeller
+
+- **google_tokens** - Google OAuth tokens
+- **calendar_events** - Kalenderhändelser från Google
+- **shifts** - Användarens skift/arbetspass
+- **notifications** - Push-notifikationer
+- **user_profiles** - Användarprofiler
+- **employers** - Arbetsgivare/klienter
+- **payments** - Löner och betalningar
+
+### Exempel: Skapa skift
+
+```sql
+INSERT INTO shifts (user_email, title, start_time, end_time, location, hourly_rate)
+VALUES (
+  'user@example.com',
+  'Morgonpass - Café',
+  '2024-01-15 08:00:00+01',
+  '2024-01-15 16:00:00+01', 
+  'Café Stockholm',
+  150.00
+);
+```
+
+## 🔔 Push-notifikationer
+
+Systemet sparar automatiskt notifikationer i Supabase när:
+
+- ✅ Ny kalenderhändelse skapas
+- ✅ Händelse uppdateras  
+- ✅ Händelse tas bort
+- ✅ Skift synkas till kalender
+
+För att integrera med push-tjänster, uppdatera `sendPushNotification()` funktionen i `calendar.js`.
 
 ## 🚀 Deployment
 
-### Android (Google Play Store)
-1. Create Google Play Console account
-2. Upload AAB file from EAS build
-3. Fill in app information
-4. Submit for review
+### Replit
 
-### iOS (App Store)
-1. Create Apple Developer account
-2. Upload IPA file to App Store Connect
-3. Fill in app information
-4. Submit for review
+1. Importera detta repo till Replit
+2. Konfigurera miljövariabler i Secrets
+3. Kör `npm start`
 
-See `DEPLOYMENT_GUIDE.md` for detailed instructions.
+### Railway/Render
 
-## 🔧 Configuration
+1. Anslut GitHub repo
+2. Sätt miljövariabler
+3. Deploy automatiskt
 
-### Environment Variables
-- `EXPO_PUBLIC_SUPABASE_URL` - Supabase project URL
-- `EXPO_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
+### Vercel/Netlify
 
-### App Configuration
-- `app.json` - Expo configuration
-- `eas.json` - EAS build configuration
+För serverless deployment, konvertera till Vercel Functions eller Netlify Functions.
 
-## 📊 Features in Detail
+## 🔧 Utveckling
 
-### Authentication
-- Email/password registration and login
-- Google OAuth integration
-- Password reset via email
-- Secure session management
-- Automatic login state persistence
+### Projektstruktur
 
-### Chat System
-- Real-time messaging with Supabase
-- Team-based chat rooms
-- Online status indicators
-- Message history
-- Team member management
+```
+skiftapp-backend/
+├── server.js          # Huvudserver
+├── googleAuth.js       # Google OAuth hantering
+├── calendar.js         # Kalender API endpoints
+├── supabase-schema.sql # Databasschema
+├── package.json        # Dependencies
+├── .env.example        # Miljövariabler mall
+└── README.md          # Denna fil
+```
 
-### User Interface
-- Modern, responsive design
-- Dark/light theme support
-- Multi-language interface
-- Intuitive navigation
-- Loading states and error handling
+### Lägga till nya endpoints
 
-### Performance
-- Optimized for mobile
-- Efficient real-time updates
-- Minimal network usage
-- Smooth animations
+```javascript
+// I calendar.js
+router.post('/calendar/new-endpoint', async (req, res) => {
+  try {
+    // Din logik här
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+```
 
-## 🤝 Contributing
+## 🤝 Frontend Integration
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+### React/Next.js Exempel
 
-## 📄 License
+```javascript
+// Skapa händelse
+const createEvent = async (eventData) => {
+  const response = await fetch('/calendar/create-event', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(eventData)
+  });
+  return response.json();
+};
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+// Hämta händelser
+const getEvents = async (userEmail) => {
+  const response = await fetch(`/calendar/events/${userEmail}`);
+  return response.json();
+};
+```
 
-## 🆘 Support
+### Loveable Integration
 
-If you encounter any issues:
+Använd dessa endpoints direkt i din Loveable-app för att hantera kalenderfunktioner.
 
-1. Check the [Expo documentation](https://docs.expo.dev/)
-2. Check the [Supabase documentation](https://supabase.com/docs)
-3. Create an issue on GitHub
-4. Check the troubleshooting section in `DEPLOYMENT_GUIDE.md`
+## 📞 Support
 
-## 🗺️ Roadmap
-
-- [ ] Voice messages
-- [ ] File sharing
-- [ ] Video calls
-- [ ] Advanced team management
-- [ ] Analytics dashboard
-- [ ] Custom themes
-- [ ] Offline message sync
-- [ ] Message reactions
-- [ ] User profiles with avatars
-
-## 📞 Contact
-
-For questions or support, please create an issue on GitHub or contact the development team.
+För frågor och support, kontakta utvecklaren eller skapa en issue i GitHub-repot.
 
 ---
 
-**Made with ❤️ using React Native, Expo, and Supabase**
+**🎉 Nu är din SkiftApp backend redo att användas!**
