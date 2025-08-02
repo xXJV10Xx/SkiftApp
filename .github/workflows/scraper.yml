@@ -2,37 +2,26 @@ name: Skiftschema Scraper
 
 on:
   schedule:
-    - cron: '0 2 * * *'  # Runs at 2:00 AM UTC daily
-  workflow_dispatch:  # Allows manual triggering
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-        
+        uses: actions/checkout@v4
+
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          
+          node-version: '20'
+
       - name: Install dependencies
-        run: npm install puppeteer@19.7.0 @supabase/supabase-js dotenv
-        
-      - name: Run scraping script with debugging
+        run: npm install puppeteer-core @supabase/supabase-js
+
+      - name: Run scraper
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: |
-          mkdir -p debug-screenshots
-          node scripts/scrape-upload.cjs
-          
-      - name: Upload debug screenshots if failure
-        if: failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: debug-screenshots
-          path: debug-screenshots/
-          retention-days: 3
+        run: node scripts/scrape-all.cjs

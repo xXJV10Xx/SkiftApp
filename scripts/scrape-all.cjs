@@ -1,38 +1,88 @@
 const puppeteer = require('puppeteer-core');
-const cheerio = require('cheerio');
 const { createClient } = require('@supabase/supabase-js');
-const schemas = require('./schemas.json');
-const delay = ms => new Promise(r => setTimeout(r, ms));
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-(async () => {
-  const br = await puppeteer.launch({ args:['--no-sandbox','--disable-setuid-sandbox'], headless:true });
-  const page = await br.newPage();
-  const out = [];
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
-  for (const { title, schema, teams } of schemas) {
-    for (const team of teams) {
-      const url = `https://www.skiftschema.se/schema/${schema}/${team}`;
-      console.log('→', url);
-      try {
-        await page.goto(url, { waitUntil:'domcontentloaded' });
-        await delay(500);
-        const $ = cheerio.load(await page.content());
-        $('.dag').each((i, el) => {
-          const date = $(el).find('.datum').text().trim();
-          const shift = $(el).find('.skiftkod').text().trim();
-          const time = $(el).find('.tid').text().trim() || null;
-          if (date && shift) out.push({ company: title, department: title, team, date, shift, time, source_url:url, scraped_at: new Date().toISOString() });
-        });
-      } catch(e) { console.error('✘', url, e.message); }
+const BASE_URL = 'https://www.skiftschema.se';
+
+async function run() {
+  const browser = await puppeteer.launch({ headless: 'new' });
+  const page = await browser.newPage();
+  await page.goto(BASE_URL, { waitUntil: 'networkidle2' });
+
+  const companies = await page.$$eval('.list-group-item > a', links =>
+    links.map(link => ({
+      name: link.innerText.trim(),
+      url: link.href
+    }))
+  );
+
+  for (const company of companies) {
+    console.log(`📦 Hittar företag: ${company.name}`);
+    const { data: companyData } = await supabase
+      .from('companies')
+      .insert({ name: company.name })
+      .select()
+      .single();
+
+    await page.goto(company.url, { waitUntil: 'networkidle2' });
+
+    const links = await page.$$eval('.list-group-item > a', els =>
+      els.map(a => ({ name: a.innerText.trim(), url: a.href }))
+    );
+
+    for (const department of links) {
+      console.log(`  🏢 Avdelning: ${department.name}`);
+      const { data: departmentData } = await supabase
+        .from('departments')
+        .insert({ name: department.name, company_id: companyData.id })
+        .select()
+        .single();
+
+      await page.goto(department.url, { waitUntil: 'networkidle2' });
+
+      const teams = await page.$$eval('.list-group-item > a', els =>
+        els.map(a => ({ name: a.innerText.trim(), url: a.href }))
+      );
+
+      for (const team of teams) {
+        console.log(`    👥 Skiftlag: ${team.name}`);
+        const { data: teamData } = await supabase
+          .from('teams')
+          .insert({ name: team.name, department_id: departmentData.id })
+          .select()
+          .single();
+
+        await page.goto(team.url, { waitUntil: 'networkidle2' });
+
+        const days = await page.$$eval('.day', els =>
+          els.map(el => {
+            const date = el.getAttribute('data-date');
+            const type = el.innerText.trim()[0]; // F, E, N eller L
+            return { date, type };
+          })
+        );
+
+        const rows = days
+          .filter(day => ['F', 'E', 'N', 'L'].includes(day.type))
+          .map(day => ({
+            team_id: teamData.id,
+            date: day.date,
+            shift_type: day.type
+          }));
+
+        if (rows.length) {
+          await supabase.from('shifts').insert(rows);
+          console.log(`      ✅ ${rows.length} skift sparade`);
+        }
+      }
     }
   }
 
-  console.log('Found', out.length, 'entries');
-  if (out.length) {
-    const { error } = await supabase.from('shifts').insert(out);
-    if (error) console.error('Supabase error', error.message);
-    else console.log('✅ Uploaded to Supabase');
-  }
-  await br.close();
-})();
+  await browser.close();
+}
+
+run();
