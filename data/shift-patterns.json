@@ -1,0 +1,60 @@
+{
+  "2-2": {
+    "name": "2-2 skift",
+    "pattern": [
+      2,
+      2
+    ],
+    "description": "2 dagar på, 2 dagar av"
+  },
+  "3-3": {
+    "name": "3-3 skift",
+    "pattern": [
+      3,
+      3
+    ],
+    "description": "3 dagar på, 3 dagar av"
+  },
+  "4-4": {
+    "name": "4-4 skift",
+    "pattern": [
+      4,
+      4
+    ],
+    "description": "4 dagar på, 4 dagar av"
+  },
+  "5-5": {
+    "name": "5-5 skift",
+    "pattern": [
+      5,
+      5
+    ],
+    "description": "5 dagar på, 5 dagar av"
+  },
+  "2-2-2-4": {
+    "name": "2-2-2-4 skift",
+    "pattern": [
+      2,
+      2,
+      2,
+      4
+    ],
+    "description": "Kontinuerligt skift"
+  },
+  "6-2": {
+    "name": "6-2 skift",
+    "pattern": [
+      6,
+      2
+    ],
+    "description": "6 dagar på, 2 dagar av"
+  },
+  "7-7": {
+    "name": "7-7 skift",
+    "pattern": [
+      7,
+      7
+    ],
+    "description": "7 dagar på, 7 dagar av"
+  }
+}
