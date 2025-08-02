@@ -295,6 +295,119 @@ export type Database = {
           created_at?: string;
         };
       };
+      groups: {
+        Row: {
+          id: string;
+          company_id: string | null;
+          department_id: string | null;
+          name: string | null;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          company_id?: string | null;
+          department_id?: string | null;
+          name?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          company_id?: string | null;
+          department_id?: string | null;
+          name?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+        };
+      };
+      group_members: {
+        Row: {
+          id: string;
+          group_id: string | null;
+          user_id: string | null;
+          is_online: boolean;
+          joined_at: string;
+        };
+        Insert: {
+          id?: string;
+          group_id?: string | null;
+          user_id?: string | null;
+          is_online?: boolean;
+          joined_at?: string;
+        };
+        Update: {
+          id?: string;
+          group_id?: string | null;
+          user_id?: string | null;
+          is_online?: boolean;
+          joined_at?: string;
+        };
+      };
+      messages: {
+        Row: {
+          id: string;
+          group_id: string | null;
+          sender_id: string | null;
+          content: string | null;
+          type: string;
+          metadata: any | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          group_id?: string | null;
+          sender_id?: string | null;
+          content?: string | null;
+          type?: string;
+          metadata?: any | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          group_id?: string | null;
+          sender_id?: string | null;
+          content?: string | null;
+          type?: string;
+          metadata?: any | null;
+          created_at?: string;
+        };
+      };
+      forms: {
+        Row: {
+          id: string;
+          type: string | null;
+          sender_id: string | null;
+          group_id: string | null;
+          date: string | null;
+          shift: string | null;
+          description: string | null;
+          interested_user_ids: string[] | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          type?: string | null;
+          sender_id?: string | null;
+          group_id?: string | null;
+          date?: string | null;
+          shift?: string | null;
+          description?: string | null;
+          interested_user_ids?: string[] | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          type?: string | null;
+          sender_id?: string | null;
+          group_id?: string | null;
+          date?: string | null;
+          shift?: string | null;
+          description?: string | null;
+          interested_user_ids?: string[] | null;
+          created_at?: string;
+        };
+      };
     };
   };
 };
