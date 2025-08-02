@@ -1,8 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Company } from '@/data/companies';
-import { calculateShiftForDate, formatDate, generateMonthSchedule } from '@/data/ShiftSchedules';
-import { Calendar, ChevronLeft, ChevronRight, Clock } from 'lucide-react-native';
+import { calculateShiftForDate, formatDate, generateMonthSchedule, SHIFT_TYPES } from '@/data/ShiftSchedules';
+import { useConvertedShifts } from '@/lib/useConvertedShifts';
+import { exportToGoogleCalendar, exportToAppleCalendar } from '@/lib/calendarExports';
+import { Calendar, ChevronLeft, ChevronRight, Clock, Download } from 'lucide-react-native';
 import React, { useState } from 'react';
 
 interface ShiftCalendarProps {
@@ -24,6 +26,10 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
 
   // Generera schema för aktuell månad
   const monthSchedule = generateMonthSchedule(year, month, { id: shiftTypeId }, team);
+  
+  // Konvertera skift för kalenderexport
+  const shiftType = SHIFT_TYPES[shiftTypeId];
+  const convertedEvents = useConvertedShifts(monthSchedule, team, shiftType);
 
   const goToPreviousMonth = () => {
     setCurrentDate(new Date(year, month - 1, 1));
@@ -109,6 +115,28 @@ export const ShiftCalendar: React.FC<ShiftCalendarProps> = ({
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
+        </div>
+        
+        {/* Export buttons */}
+        <div className="flex items-center gap-2 mt-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => exportToGoogleCalendar(convertedEvents)}
+            className="flex items-center gap-2"
+          >
+            <Download className="h-4 w-4" />
+            Exportera till Google
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => exportToAppleCalendar(convertedEvents)}
+            className="flex items-center gap-2"
+          >
+            <Download className="h-4 w-4" />
+            Exportera till Apple
+          </Button>
         </div>
       </CardHeader>
       <CardContent>
