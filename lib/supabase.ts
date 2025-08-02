@@ -272,6 +272,35 @@ export type Database = {
           updated_at?: string;
         };
       };
+      users: {
+        Row: {
+          id: string;
+          email: string;
+          first_name: string | null;
+          last_name: string | null;
+          has_paid_export: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          email: string;
+          first_name?: string | null;
+          last_name?: string | null;
+          has_paid_export?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          email?: string;
+          first_name?: string | null;
+          last_name?: string | null;
+          has_paid_export?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       message_reactions: {
         Row: {
           id: string;

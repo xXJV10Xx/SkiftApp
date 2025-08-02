@@ -1,3 +1,4 @@
+import CalendarExport from '@/components/CalendarExport';
 import { CompanySelector } from '@/components/CompanySelector';
 import { ShiftCalendar } from '@/components/ShiftCalendar';
 import { ShiftStats } from '@/components/ShiftStats';
@@ -211,6 +212,9 @@ const Index = () => {
               team={selectedTeam}
               shiftTypeId={selectedCompany.shifts[0]} // Använd första tillgängliga skifttyp
             />
+
+            {/* Export funktionalitet */}
+            <CalendarExport shifts={[]} />
           </div>
         )}
         </main>
