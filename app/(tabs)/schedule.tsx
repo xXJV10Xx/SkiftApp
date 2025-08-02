@@ -1,15 +1,20 @@
-import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react-native';
+import { Calendar, ChevronLeft, ChevronRight, Download } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useCompany } from '../../context/CompanyContext';
 import { useShift } from '../../context/ShiftContext';
 import { useTheme } from '../../context/ThemeContext';
+import { ShiftExportButton } from '../../components/ShiftExportButton';
+import useConvertedShifts from '../../hooks/useConvertedShifts';
 
 export default function ScheduleScreen() {
   const { colors } = useTheme();
   const { selectedCompany, selectedTeam } = useCompany();
   const { monthSchedule, generateSchedule } = useShift();
   const [currentDate, setCurrentDate] = useState(new Date());
+  
+  // Hämta konverterade skift för export
+  const { events, loading: exportLoading } = useConvertedShifts(selectedTeam || undefined);
 
   const goToPreviousMonth = () => {
     const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
@@ -188,6 +193,12 @@ export default function ScheduleScreen() {
       fontSize: 9,
       color: colors.textSecondary,
     },
+    exportContainer: {
+      backgroundColor: colors.card,
+      padding: 16,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+    },
     legendContainer: {
       backgroundColor: colors.card,
       padding: 16,
@@ -359,6 +370,17 @@ export default function ScheduleScreen() {
           ))}
         </View>
       </ScrollView>
+
+      {/* Export Section */}
+      {selectedTeam && (
+        <View style={styles.exportContainer}>
+          <ShiftExportButton 
+            events={events} 
+            teamId={selectedTeam}
+            loading={exportLoading}
+          />
+        </View>
+      )}
 
       {/* Legend */}
       <View style={styles.legendContainer}>
