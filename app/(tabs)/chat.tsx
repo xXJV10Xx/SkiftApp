@@ -15,12 +15,16 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useChat } from '../../context/ChatContext';
 import { useCompany } from '../../context/CompanyContext';
+import { useSubscription } from '../../context/SubscriptionContext';
 import { useTheme } from '../../context/ThemeContext';
+import { AdBanner } from '../../components/AdBanner';
+import { PremiumLock } from '../../components/PremiumLock';
 
 export default function ChatScreen() {
   const { colors } = useTheme();
   const { user } = useAuth();
   const { selectedCompany, selectedTeam, selectedDepartment } = useCompany();
+  const { isPremium, isTrialActive } = useSubscription();
   const {
     messages,
     chatRooms,
@@ -444,6 +448,31 @@ export default function ChatScreen() {
       fontSize: 16,
       fontWeight: '600',
     },
+    premiumChatFeatures: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      paddingVertical: 16,
+      paddingHorizontal: 20,
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      margin: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    premiumFeatureButton: {
+      backgroundColor: colors.primary,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 20,
+      minWidth: 90,
+      alignItems: 'center',
+    },
+    premiumFeatureText: {
+      color: 'white',
+      fontSize: 11,
+      fontWeight: '600',
+      textAlign: 'center',
+    },
   });
 
   if (!currentChatRoom) {
@@ -455,6 +484,25 @@ export default function ChatScreen() {
             <MessageSquare size={24} color={colors.primary} />
           </TouchableOpacity>
         </View>
+
+        {/* Premium Feature: Avancerade chat-funktioner */}
+        <PremiumLock 
+          feature="Avancerade chat-funktioner" 
+          description="Få tillgång till fildelning, röstmeddelanden och privat chat"
+          showUpgradeButton={false}
+        >
+          <View style={styles.premiumChatFeatures}>
+            <TouchableOpacity style={styles.premiumFeatureButton}>
+              <Text style={styles.premiumFeatureText}>📎 Fildelning</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.premiumFeatureButton}>
+              <Text style={styles.premiumFeatureText}>🎤 Röstmeddelanden</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.premiumFeatureButton}>
+              <Text style={styles.premiumFeatureText}>🔒 Privat chat</Text>
+            </TouchableOpacity>
+          </View>
+        </PremiumLock>
 
         {showRoomSelector && (
           <View style={styles.roomSelector}>
@@ -572,6 +620,9 @@ export default function ChatScreen() {
           <Send size={20} color="white" />
         </TouchableOpacity>
       </View>
+      
+      {/* Ad Banner för icke-premium användare */}
+      <AdBanner position="bottom" size="banner" />
     </KeyboardAvoidingView>
   );
 }

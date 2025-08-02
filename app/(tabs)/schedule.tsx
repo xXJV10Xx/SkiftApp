@@ -3,12 +3,16 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useCompany } from '../../context/CompanyContext';
 import { useShift } from '../../context/ShiftContext';
+import { useSubscription } from '../../context/SubscriptionContext';
 import { useTheme } from '../../context/ThemeContext';
+import { AdBanner } from '../../components/AdBanner';
+import { PremiumLock } from '../../components/PremiumLock';
 
 export default function ScheduleScreen() {
   const { colors } = useTheme();
   const { selectedCompany, selectedTeam } = useCompany();
   const { monthSchedule, generateSchedule } = useShift();
+  const { isPremium, isTrialActive } = useSubscription();
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const goToPreviousMonth = () => {
@@ -236,6 +240,31 @@ export default function ScheduleScreen() {
       color: colors.textSecondary,
       textAlign: 'center',
     },
+    advancedFeatures: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      paddingVertical: 16,
+      paddingHorizontal: 20,
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      margin: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    featureButton: {
+      backgroundColor: colors.primary,
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 20,
+      minWidth: 100,
+      alignItems: 'center',
+    },
+    featureButtonText: {
+      color: 'white',
+      fontSize: 12,
+      fontWeight: '600',
+      textAlign: 'center',
+    },
   });
 
   if (!selectedCompany || !selectedTeam) {
@@ -308,6 +337,25 @@ export default function ScheduleScreen() {
         </Text>
       </View>
 
+      {/* Premium Feature: Avancerad schemavy */}
+      <PremiumLock 
+        feature="Avancerad schemavy" 
+        description="Få tillgång till detaljerad schemavisning med statistik, exportfunktioner och teamöversikt"
+        showUpgradeButton={false}
+      >
+        <View style={styles.advancedFeatures}>
+          <TouchableOpacity style={styles.featureButton}>
+            <Text style={styles.featureButtonText}>📊 Schemastatistik</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.featureButton}>
+            <Text style={styles.featureButtonText}>📤 Exportera schema</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.featureButton}>
+            <Text style={styles.featureButtonText}>👥 Teamöversikt</Text>
+          </TouchableOpacity>
+        </View>
+      </PremiumLock>
+
       <ScrollView style={styles.calendarContainer}>
         {/* Week header */}
         <View style={styles.weekHeader}>
@@ -359,6 +407,9 @@ export default function ScheduleScreen() {
           ))}
         </View>
       </ScrollView>
+
+      {/* Ad Banner för icke-premium användare */}
+      <AdBanner position="bottom" size="banner" />
 
       {/* Legend */}
       <View style={styles.legendContainer}>

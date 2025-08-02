@@ -295,6 +295,41 @@ export type Database = {
           created_at?: string;
         };
       };
+      subscriptions: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          is_active: boolean;
+          plan: 'monthly' | 'semiannual' | 'annual' | null;
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          trial_ends_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          is_active?: boolean;
+          plan?: 'monthly' | 'semiannual' | 'annual' | null;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          trial_ends_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          is_active?: boolean;
+          plan?: 'monthly' | 'semiannual' | 'annual' | null;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          trial_ends_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
   };
 };

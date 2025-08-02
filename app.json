@@ -38,6 +38,13 @@
           "icon": "./assets/images/icon.png",
           "color": "#ffffff"
         }
+      ],
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.skiftappen.app",
+          "enableGooglePay": true
+        }
       ]
     ],
     "scheme": "skiftappen",
