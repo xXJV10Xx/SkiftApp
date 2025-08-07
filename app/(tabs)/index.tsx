@@ -1,245 +1,4 @@
-<<<<<<< HEAD
-import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { CompanySelector } from '../../components/CompanySelector';
-import { ShiftCalendar } from '../../components/ShiftCalendar';
-import { ShiftStats } from '../../components/ShiftStats';
-import { TeamSelector } from '../../components/TeamSelector';
-import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
-import { COMPANIES } from '../../data/companies';
-
-export default function Page() {
-  const { user } = useAuth();
-  const { colors } = useTheme();
-  const [selectedCompany, setSelectedCompany] = useState(Object.values(COMPANIES)[0]);
-  const [selectedTeam, setSelectedTeam] = useState(selectedCompany.teams[0]);
-  const [selectedShiftType, setSelectedShiftType] = useState(selectedCompany.shifts[0]);
-
-  return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
-      
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerContent}>
-            <Text style={[styles.greeting, { color: colors.text }]}>
-              Hej, {user?.email?.split('@')[0] || 'Användare'}! 👋
-            </Text>
-            <Text style={[styles.date, { color: colors.textSecondary }]}>
-              {new Date().toLocaleDateString('sv-SE', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}
-            </Text>
-          </View>
-          <TouchableOpacity style={[styles.profileButton, { backgroundColor: colors.primary }]}>
-            <Ionicons name="person" size={20} color="white" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Company & Team Selection */}
-        <View style={[styles.section, { backgroundColor: colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            🏭 Välj företag och lag
-          </Text>
-          
-          <CompanySelector
-            companies={Object.values(COMPANIES)}
-            selectedCompany={selectedCompany}
-            onSelectCompany={setSelectedCompany}
-          />
-          
-          <TeamSelector
-            companyId={selectedCompany.id}
-            selectedTeam={selectedTeam}
-            onSelectTeam={setSelectedTeam}
-            selectedShiftTypeId={selectedShiftType}
-            onSelectShiftType={setSelectedShiftType}
-          />
-        </View>
-
-        {/* Quick Stats */}
-        <View style={[styles.section, { backgroundColor: colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            📊 Snabbstatistik
-          </Text>
-          <ShiftStats
-            company={selectedCompany}
-            team={selectedTeam}
-            shiftTypeId={selectedShiftType}
-          />
-        </View>
-
-        {/* Today's Shift */}
-        <View style={[styles.section, { backgroundColor: colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            📅 Dagens skift
-          </Text>
-          <View style={[styles.todayShift, { backgroundColor: colors.primary + '10' }]}>
-            <View style={styles.todayShiftHeader}>
-              <Ionicons name="time" size={24} color={colors.primary} />
-              <Text style={[styles.todayShiftTitle, { color: colors.primary }]}>
-                {new Date().toLocaleDateString('sv-SE', { weekday: 'long' })}
-              </Text>
-            </View>
-            <Text style={[styles.todayShiftTime, { color: colors.text }]}>
-              06:00 - 14:00
-            </Text>
-            <Text style={[styles.todayShiftType, { color: colors.textSecondary }]}>
-              Morgonskift
-            </Text>
-          </View>
-        </View>
-
-        {/* Calendar Preview */}
-        <View style={[styles.section, { backgroundColor: colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            📅 Skiftschema
-          </Text>
-          <ShiftCalendar
-            companyId={selectedCompany.id}
-            team={selectedTeam}
-            shiftTypeId={selectedShiftType}
-          />
-        </View>
-
-        {/* Quick Actions */}
-        <View style={[styles.section, { backgroundColor: colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            ⚡ Snabba åtgärder
-          </Text>
-          <View style={styles.quickActions}>
-            <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.primary }]}>
-              <Ionicons name="chatbubbles" size={20} color="white" />
-              <Text style={styles.actionText}>Chatta</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.secondary }]}>
-              <Ionicons name="calendar" size={20} color="white" />
-              <Text style={styles.actionText}>Schema</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.secondary }]}>
-              <Ionicons name="notifications" size={20} color="white" />
-              <Text style={styles.actionText}>Notifieringar</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.success }]}>
-              <Ionicons name="settings" size={20} color="white" />
-              <Text style={styles.actionText}>Inställningar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-  headerContent: {
-    flex: 1,
-  },
-  greeting: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  date: {
-    fontSize: 14,
-  },
-  profileButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  section: {
-    marginHorizontal: 20,
-    marginBottom: 16,
-    borderRadius: 16,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 16,
-  },
-  todayShift: {
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(0, 122, 255, 0.2)',
-  },
-  todayShiftHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  todayShiftTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
-  },
-  todayShiftTime: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  todayShiftType: {
-    fontSize: 14,
-  },
-  quickActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  actionButton: {
-    flex: 1,
-    minWidth: '45%',
-    paddingVertical: 16,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    gap: 8,
-  },
-  actionText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-});
-=======
-import { Building2, Calendar, Clock, TrendingUp, Users } from 'lucide-react-native';
+import { Building2, Calendar, Clock, TrendingUp, Users, ChevronRight } from 'lucide-react-native';
 import React, { useEffect } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useCompany } from '../../context/CompanyContext';
@@ -267,6 +26,8 @@ export default function HomeScreen() {
     nextShift, 
     shiftStats, 
     selectedShiftType,
+    monthSchedule,
+    generateSchedule,
     loading: shiftLoading 
   } = useShift();
 
@@ -282,6 +43,14 @@ export default function HomeScreen() {
 
     initializeData();
   }, []);
+
+  // Generate current month schedule when company/team changes
+  useEffect(() => {
+    if (selectedCompany && selectedTeam) {
+      const today = new Date();
+      generateSchedule(today.getFullYear(), today.getMonth());
+    }
+  }, [selectedCompany, selectedTeam]);
 
   const handleCompanySelect = async (companyId: string) => {
     const company = COMPANIES[companyId];
@@ -310,7 +79,7 @@ export default function HomeScreen() {
       // Update employee profile with selected team
       if (employee) {
         await updateEmployeeProfile({
-          team_id: teamName // This should be the actual team ID from database
+          team_id: teamName
         });
       }
     } catch (error) {
@@ -336,7 +105,7 @@ export default function HomeScreen() {
 
   const formatTime = (timeStr: string) => {
     if (!timeStr) return '';
-    return timeStr.substring(0, 5); // Remove seconds
+    return timeStr.substring(0, 5);
   };
 
   const getShiftName = (shiftCode: string) => {
@@ -351,6 +120,20 @@ export default function HomeScreen() {
     };
     return shiftNames[shiftCode] || shiftCode;
   };
+
+  // Get today's shift from the generated schedule
+  const getTodayShift = () => {
+    if (!monthSchedule || monthSchedule.length === 0) return null;
+    
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0, 10);
+    
+    return monthSchedule.find(day => 
+      day.date.toISOString().slice(0, 10) === todayStr
+    );
+  };
+
+  const todayShift = getTodayShift();
 
   const styles = StyleSheet.create({
     container: {
@@ -510,6 +293,25 @@ export default function HomeScreen() {
       color: 'white',
       opacity: 0.9,
     },
+    quickPreviewCard: {
+      backgroundColor: colors.card,
+      borderRadius: 12,
+      padding: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    quickPreviewText: {
+      fontSize: 14,
+      color: colors.text,
+      marginBottom: 4,
+    },
+    quickPreviewSubtext: {
+      fontSize: 12,
+      color: colors.textSecondary,
+    },
     loadingText: {
       fontSize: 16,
       color: colors.textSecondary,
@@ -573,7 +375,7 @@ export default function HomeScreen() {
                   <View 
                     style={[
                       styles.teamColor, 
-                      { backgroundColor: selectedCompany.colors[team] }
+                      { backgroundColor: selectedCompany.colors?.[team] || colors.primary }
                     ]} 
                   />
                   <Text style={styles.teamName}>Lag {team}</Text>
@@ -598,7 +400,7 @@ export default function HomeScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Avdelningar</Text>
             <View style={styles.departmentGrid}>
-              {selectedCompany.departments.map((dept) => (
+              {selectedCompany.departments?.map((dept) => (
                 <TouchableOpacity
                   key={dept}
                   style={[
@@ -627,15 +429,15 @@ export default function HomeScreen() {
           </Text>
         </View>
 
-        {/* Current Shift */}
-        {currentShift && (
+        {/* Today's Shift */}
+        {todayShift && (
           <View style={styles.currentShiftCard}>
             <Text style={styles.currentShiftTitle}>
-              Aktuellt skift: {getShiftName(currentShift.shift.code)}
+              Dagens skift: {getShiftName(todayShift.shift.code)}
             </Text>
-            {currentShift.shift.time.start && currentShift.shift.time.end && (
+            {todayShift.shift.time.start && todayShift.shift.time.end && (
               <Text style={styles.currentShiftTime}>
-                {formatTime(currentShift.shift.time.start)} - {formatTime(currentShift.shift.time.end)}
+                {formatTime(todayShift.shift.time.start)} - {formatTime(todayShift.shift.time.end)}
               </Text>
             )}
           </View>
@@ -673,6 +475,22 @@ export default function HomeScreen() {
           </View>
         )}
 
+        {/* Quick Calendar Preview */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Schema</Text>
+          <TouchableOpacity style={styles.quickPreviewCard}>
+            <View>
+              <Text style={styles.quickPreviewText}>
+                Visa fullständigt schema
+              </Text>
+              <Text style={styles.quickPreviewSubtext}>
+                {monthSchedule?.length || 0} dagar inlästa för {new Date().toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' })}
+              </Text>
+            </View>
+            <ChevronRight size={20} color={colors.textSecondary} />
+          </TouchableOpacity>
+        </View>
+
         {/* Next Shift */}
         {nextShift && (
           <View style={styles.section}>
@@ -698,25 +516,10 @@ export default function HomeScreen() {
           </View>
         )}
 
-        {/* Shift Type Info */}
-        {selectedShiftType && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Skifttyp</Text>
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>{selectedShiftType.name}</Text>
-              <Text style={styles.cardContent}>{selectedShiftType.description}</Text>
-              <Text style={styles.cardContent}>
-                Cykel: {selectedShiftType.cycle} dagar
-              </Text>
-            </View>
-          </View>
-        )}
-
         {(companyLoading || shiftLoading) && (
-          <Text style={styles.loadingText}>Laddar...</Text>
+          <Text style={styles.loadingText}>Laddar schema...</Text>
         )}
       </View>
     </ScrollView>
   );
 }
->>>>>>> 2a1aa03ff65d9371d2c06bc876527b6c0a92a77d

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { SHIFT_TYPES, ShiftType, calculateShiftForDate, generateMonthSchedule, calculateWorkedHours, getNextShift } from '../data/ShiftSchedules';
+import { scheduleGenerator } from '../universal-schedule-system';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthContext';
 import { useCompany } from './CompanyContext';
@@ -47,44 +48,141 @@ export const ShiftProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [selectedCompany]);
 
-  const generateSchedule = (year: number, month: number) => {
-    if (!selectedCompany || !selectedTeam || !selectedShiftType) return;
+  const generateSchedule = async (year: number, month: number) => {
+    if (!selectedCompany || !selectedTeam) return;
 
     try {
       setLoading(true);
 
-      // Generate month schedule
-      const schedule = generateMonthSchedule(year, month, selectedShiftType, selectedTeam);
+      // Use Universal Schedule System for accurate data
+      const companyId = selectedCompany.id;
+      const fromDate = new Date(year, month, 1).toISOString().slice(0, 10);
+      const toDate = new Date(year, month + 1, 0).toISOString().slice(0, 10);
+      
+      let schedule = [];
+      try {
+        // Try to generate from Universal Schedule System
+        const rawSchedule = scheduleGenerator.generateCompanySchedule(companyId, fromDate, toDate);
+        
+        // Filter for selected team and format for React Native
+        schedule = rawSchedule
+          .filter(entry => entry.team.toString() === selectedTeam)
+          .map(entry => {
+            const date = new Date(entry.date);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            date.setHours(0, 0, 0, 0);
+
+            return {
+              date,
+              day: date.getDate(),
+              isToday: date.getTime() === today.getTime(),
+              isWeekend: date.getDay() === 0 || date.getDay() === 6,
+              shift: {
+                code: entry.type,
+                time: {
+                  start: entry.start_time,
+                  end: entry.end_time
+                }
+              }
+            };
+          });
+
+        // Save to Supabase schedule cache
+        await syncScheduleToSupabase(schedule, companyId, selectedTeam, year, month);
+
+      } catch (universalError) {
+        console.log('Universal system unavailable, using fallback:', universalError);
+        // Fallback to old system if Universal System fails
+        if (selectedShiftType) {
+          schedule = generateMonthSchedule(year, month, selectedShiftType, selectedTeam);
+        }
+      }
+
       setMonthSchedule(schedule);
 
       // Calculate current shift
       const today = new Date();
-      const todayShift = calculateShiftForDate(today, selectedShiftType, selectedTeam);
-      setCurrentShift({
-        date: today,
-        shift: todayShift,
-        company: selectedCompany,
-        team: selectedTeam
-      });
+      const todaySchedule = schedule.find(day => day.isToday);
+      if (todaySchedule) {
+        setCurrentShift({
+          date: today,
+          shift: todaySchedule.shift,
+          company: selectedCompany,
+          team: selectedTeam
+        });
+      }
 
       // Calculate next shift
-      const next = getNextShift(selectedShiftType, selectedTeam, today);
-      setNextShift(next);
+      const futureShifts = schedule.filter(day => day.date > today && day.shift.code !== 'L');
+      if (futureShifts.length > 0) {
+        const nextShiftDay = futureShifts[0];
+        const daysUntil = Math.ceil((nextShiftDay.date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        setNextShift({
+          date: nextShiftDay.date,
+          shift: nextShiftDay.shift,
+          daysUntil
+        });
+      }
 
       // Calculate statistics
-      const stats = calculateWorkedHours(schedule);
+      const workDays = schedule.filter(day => day.shift.code !== 'L').length;
+      const totalHours = workDays * 8; // Assume 8-hour shifts
+      const averageHours = workDays > 0 ? totalHours / workDays : 0;
+
       setShiftStats({
-        ...stats,
+        totalHours,
+        workDays,
+        averageHours: averageHours.toFixed(1),
         currentMonth: `${year}-${month + 1}`,
         company: selectedCompany.name,
-        team: selectedTeam,
-        shiftType: selectedShiftType.name
+        team: selectedTeam
       });
 
     } catch (error) {
       console.error('Error generating schedule:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const syncScheduleToSupabase = async (schedule: any[], companyId: string, teamId: string, year: number, month: number) => {
+    if (!user) return;
+
+    try {
+      // Clear existing cached schedule for this month/team
+      const { error: deleteError } = await supabase
+        .from('schedule_cache')
+        .delete()
+        .eq('company_id', companyId)
+        .eq('team_identifier', teamId)
+        .gte('date', new Date(year, month, 1).toISOString().slice(0, 10))
+        .lt('date', new Date(year, month + 1, 1).toISOString().slice(0, 10));
+
+      if (deleteError) console.error('Error clearing old schedule:', deleteError);
+
+      // Insert new schedule data
+      const cacheData = schedule.map(day => ({
+        company_id: companyId,
+        team_identifier: teamId,
+        date: day.date.toISOString().slice(0, 10),
+        shift_code: day.shift.code,
+        start_time: day.shift.time.start,
+        end_time: day.shift.time.end,
+        created_by: user.id
+      }));
+
+      const { error: insertError } = await supabase
+        .from('schedule_cache')
+        .insert(cacheData);
+
+      if (insertError) {
+        console.error('Error syncing schedule to Supabase:', insertError);
+      } else {
+        console.log(`✅ Synced ${cacheData.length} schedule entries to Supabase`);
+      }
+    } catch (error) {
+      console.error('Error in schedule sync:', error);
     }
   };
 

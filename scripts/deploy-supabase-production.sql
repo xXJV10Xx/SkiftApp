@@ -162,7 +162,7 @@ CREATE TABLE user_preferences (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Schedule cache for performance
+-- Schedule cache for performance - stores generated schedules
 CREATE TABLE schedule_cache (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   company_id company_category NOT NULL,
@@ -171,9 +171,17 @@ CREATE TABLE schedule_cache (
   shift_code shift_code NOT NULL,
   start_time TIME,
   end_time TIME,
+  is_weekend BOOLEAN DEFAULT false,
+  created_by UUID REFERENCES profiles(id),
   created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(company_id, team_identifier, date)
 );
+
+-- Create indexes for schedule_cache performance
+CREATE INDEX idx_schedule_cache_company_team_date ON schedule_cache(company_id, team_identifier, date);
+CREATE INDEX idx_schedule_cache_date_range ON schedule_cache(date);
+CREATE INDEX idx_schedule_cache_company_date ON schedule_cache(company_id, date);
 
 -- ===============================================
 -- INSERT ALL 31 VERIFIED COMPANIES
@@ -521,8 +529,26 @@ CREATE POLICY "Users can manage own preferences" ON user_preferences
   FOR ALL USING (auth.uid() = user_id);
 
 -- Schedule cache policies (public read for performance)
-CREATE POLICY "Schedule cache is viewable by everyone" ON schedule_cache
-  FOR SELECT USING (true);
+-- Row Level Security Policies for schedule_cache  
+CREATE POLICY "Allow users to view schedule for their company" ON schedule_cache
+  FOR SELECT USING (
+    company_id IN (
+      SELECT company_id FROM profiles WHERE id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Allow authenticated users to insert schedule" ON schedule_cache
+  FOR INSERT WITH CHECK (
+    auth.role() = 'authenticated' AND 
+    created_by = auth.uid()
+  );
+
+CREATE POLICY "Allow users to update their own schedule cache" ON schedule_cache
+  FOR UPDATE USING (created_by = auth.uid())
+  WITH CHECK (created_by = auth.uid());
+
+CREATE POLICY "Allow users to delete their own schedule cache" ON schedule_cache
+  FOR DELETE USING (created_by = auth.uid());
 
 -- ===============================================
 -- CREATE FUNCTIONS AND TRIGGERS
