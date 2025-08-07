@@ -1,0 +1,27 @@
+name: Daglig scraping från Skiftschema.se
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # varje dag kl 03:00 svensk tid
+  workflow_dispatch:     # kan köras manuellt från GitHub
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installera Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Installera beroenden
+        run: npm install
+
+      - name: Kör scraping
+        run: node scripts/scrape-upload.cjs
+        env:
+          SUPABASE_URL: https://fsefeherdbtsddqimjco.supabase.co
+          SUPABASE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzZWZlaGVyZGJ0c2RkcWltamNvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1Mjc4NTA0NywiZXhwIjoyMDY4MzYxMDQ3fQ.IN-OF4_M7KhNwfAtrOcjS2SfVIbw_80lpgyzlngc_Lg

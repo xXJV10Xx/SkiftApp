@@ -35,10 +35,29 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // Create employee profile if user signs up
+      if (session?.user && _event === 'SIGNED_UP') {
+        const { error } = await supabase
+          .from('employees')
+          .insert({
+            id: session.user.id,
+            email: session.user.email!,
+            first_name: session.user.user_metadata?.full_name?.split(' ')[0] || '',
+            last_name: session.user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
+            avatar_url: session.user.user_metadata?.avatar_url,
+            is_active: true,
+            profile_completed: false
+          });
+
+        if (error) {
+          console.error('Error creating employee profile:', error);
+        }
+      }
     });
 
     return () => subscription.unsubscribe();

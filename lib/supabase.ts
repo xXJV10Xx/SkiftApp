@@ -5,15 +5,123 @@ const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOi
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Updated Database types for 31-company system
+export type CompanyCategory = 
+  'abb_hvc_5skift' | 'aga_avesta_6skift' | 'arctic_paper_grycksbo_3skift' |
+  'barilla_sverige_filipstad' | 'billerudkorsnas_gruvon_grums' | 'boliden_aitik_gruva_k3' |
+  'borlange_energi' | 'borlange_kommun_polskoterska' | 'cambrex_karlskoga_5skift' |
+  'dentsply_molndal_5skift' | 'finess_hygiene_ab_5skift' | 'kubal_sundsvall_6skift' |
+  'lkab_malmberget_5skift' | 'nordic_paper_backhammar_3skift' | 'orica_gyttorp_exel_5skift' |
+  'outokumpu_avesta_5skift' | 'ovako_hofors_rorverk_4_5skift' | 'preemraff_lysekil_5skift' |
+  'ryssviken_boendet' | 'sandvik_mt_2skift' | 'scania_cv_ab_transmission_5skift' |
+  'schneider_electric_5skift' | 'seco_tools_fagersta_2skift' | 'skarnas_hamn_5_skift' |
+  'skf_ab_5skift2' | 'sodra_cell_monsteras_3skift' | 'ssab_4_7skift' | 'ssab-oxelosund' |
+  'stora_enso_fors_5skift' | 'truck_service_2skift' | 'uddeholm_tooling_2skift' |
+  'voestalpine_precision_strip_2skift';
+
+export type SubscriptionStatus = 'active' | 'inactive' | 'canceled' | 'past_due';
+export type SubscriptionPlan = 'free' | 'basic' | 'premium';
+export type ShiftCode = 'F' | 'E' | 'N' | 'L' | 'D' | 'D12' | 'N12';
+
 export type Database = {
   public: {
     Tables: {
+      companies: {
+        Row: {
+          id: string;
+          company_id: CompanyCategory;
+          name: string;
+          display_name: string;
+          description: string | null;
+          industry: string | null;
+          location: string | null;
+          skiftschema_url: string | null;
+          verified: boolean;
+          total_teams: number;
+          default_team: string;
+          colors: Record<string, string>;
+          departments: string[];
+          created_at: string;
+          updated_at: string;
+          last_verified: string | null;
+        };
+        Insert: {
+          id?: string;
+          company_id: CompanyCategory;
+          name: string;
+          display_name: string;
+          description?: string | null;
+          industry?: string | null;
+          location?: string | null;
+          skiftschema_url?: string | null;
+          verified?: boolean;
+          total_teams?: number;
+          default_team?: string;
+          colors?: Record<string, string>;
+          departments?: string[];
+          created_at?: string;
+          updated_at?: string;
+          last_verified?: string | null;
+        };
+        Update: {
+          id?: string;
+          company_id?: CompanyCategory;
+          name?: string;
+          display_name?: string;
+          description?: string | null;
+          industry?: string | null;
+          location?: string | null;
+          skiftschema_url?: string | null;
+          verified?: boolean;
+          total_teams?: number;
+          default_team?: string;
+          colors?: Record<string, string>;
+          departments?: string[];
+          created_at?: string;
+          updated_at?: string;
+          last_verified?: string | null;
+        };
+      };
+      teams: {
+        Row: {
+          id: string;
+          company_id: CompanyCategory;
+          team_identifier: string;
+          display_name: string;
+          color: string;
+          is_active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          company_id: CompanyCategory;
+          team_identifier: string;
+          display_name: string;
+          color?: string;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          company_id?: CompanyCategory;
+          team_identifier?: string;
+          display_name?: string;
+          color?: string;
+          is_active?: boolean;
+          created_at?: string;
+        };
+      };
       profiles: {
         Row: {
           id: string;
           email: string;
           full_name: string | null;
           avatar_url: string | null;
+          company_id: CompanyCategory;
+          selected_team: string;
+          phone_number: string | null;
+          timezone: string;
+          language: string;
           created_at: string;
           updated_at: string;
         };
@@ -22,6 +130,11 @@ export type Database = {
           email: string;
           full_name?: string | null;
           avatar_url?: string | null;
+          company_id?: CompanyCategory;
+          selected_team?: string;
+          phone_number?: string | null;
+          timezone?: string;
+          language?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -30,295 +143,99 @@ export type Database = {
           email?: string;
           full_name?: string | null;
           avatar_url?: string | null;
+          company_id?: CompanyCategory;
+          selected_team?: string;
+          phone_number?: string | null;
+          timezone?: string;
+          language?: string;
           created_at?: string;
           updated_at?: string;
         };
       };
-      companies: {
-        Row: {
-          id: string;
-          name: string;
-          description: string | null;
-          logo_url: string | null;
-          address: string | null;
-          phone: string | null;
-          email: string | null;
-          website: string | null;
-          industry: string | null;
-          size: string | null; // 'small', 'medium', 'large'
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          description?: string | null;
-          logo_url?: string | null;
-          address?: string | null;
-          phone?: string | null;
-          email?: string | null;
-          website?: string | null;
-          industry?: string | null;
-          size?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          description?: string | null;
-          logo_url?: string | null;
-          address?: string | null;
-          phone?: string | null;
-          email?: string | null;
-          website?: string | null;
-          industry?: string | null;
-          size?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      departments: {
-        Row: {
-          id: string;
-          name: string;
-          description: string | null;
-          company_id: string;
-          manager_id: string | null;
-          color: string;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          description?: string | null;
-          company_id: string;
-          manager_id?: string | null;
-          color: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          description?: string | null;
-          company_id?: string;
-          manager_id?: string | null;
-          color?: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      teams: {
-        Row: {
-          id: string;
-          name: string;
-          color: string;
-          company_id: string;
-          department_id: string | null;
-          description: string | null;
-          team_leader_id: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          color: string;
-          company_id: string;
-          department_id?: string | null;
-          team_leader_id?: string | null;
-          description?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          color?: string;
-          company_id?: string;
-          department_id?: string | null;
-          team_leader_id?: string | null;
-          description?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      team_members: {
+      subscriptions: {
         Row: {
           id: string;
           user_id: string;
-          team_id: string;
-          role: string; // 'member', 'leader', 'manager'
-          joined_at: string;
-          is_active: boolean;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          team_id: string;
-          role?: string;
-          joined_at?: string;
-          is_active?: boolean;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          team_id?: string;
-          role?: string;
-          joined_at?: string;
-          is_active?: boolean;
-        };
-      };
-      shifts: {
-        Row: {
-          id: string;
-          name: string;
-          start_time: string;
-          end_time: string;
-          break_duration: number; // minutes
-          color: string;
-          company_id: string;
-          department_id: string | null;
-          team_id: string | null;
-          is_active: boolean;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          start_time: string;
-          end_time: string;
-          break_duration?: number;
-          color: string;
-          company_id: string;
-          department_id?: string | null;
-          team_id?: string | null;
-          is_active?: boolean;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          start_time?: string;
-          end_time?: string;
-          break_duration?: number;
-          color?: string;
-          company_id?: string;
-          department_id?: string | null;
-          team_id?: string | null;
-          is_active?: boolean;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      shift_schedules: {
-        Row: {
-          id: string;
-          user_id: string;
-          shift_id: string;
-          date: string;
-          status: string; // 'scheduled', 'confirmed', 'completed', 'cancelled'
-          notes: string | null;
+          plan: SubscriptionPlan;
+          status: SubscriptionStatus;
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          price_id: string | null;
+          current_period_start: string | null;
+          current_period_end: string | null;
+          trial_end: string | null;
+          cancel_at_period_end: boolean;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
           user_id: string;
-          shift_id: string;
-          date: string;
-          status?: string;
-          notes?: string | null;
+          plan?: SubscriptionPlan;
+          status?: SubscriptionStatus;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          price_id?: string | null;
+          current_period_start?: string | null;
+          current_period_end?: string | null;
+          trial_end?: string | null;
+          cancel_at_period_end?: boolean;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
           user_id?: string;
-          shift_id?: string;
-          date?: string;
-          status?: string;
-          notes?: string | null;
+          plan?: SubscriptionPlan;
+          status?: SubscriptionStatus;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          price_id?: string | null;
+          current_period_start?: string | null;
+          current_period_end?: string | null;
+          trial_end?: string | null;
+          cancel_at_period_end?: boolean;
           created_at?: string;
           updated_at?: string;
         };
       };
-      shift_swaps: {
-        Row: {
-          id: string;
-          requester_id: string;
-          requested_user_id: string;
-          shift_schedule_id: string;
-          status: string; // 'pending', 'accepted', 'rejected', 'cancelled'
-          reason: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          requester_id: string;
-          requested_user_id: string;
-          shift_schedule_id: string;
-          status?: string;
-          reason?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          requester_id?: string;
-          requested_user_id?: string;
-          shift_schedule_id?: string;
-          status?: string;
-          reason?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      chat_channels: {
+      chat_rooms: {
         Row: {
           id: string;
           name: string;
-          type: string; // 'team', 'department', 'company', 'private'
-          team_id: string | null;
-          department_id: string | null;
-          company_id: string | null;
-          participants: string[] | null; // Array of user IDs for private chats
-          created_by: string;
-          last_message: string | null;
-          last_message_time: string | null;
+          description: string | null;
+          company_id: CompanyCategory | null;
+          team_identifier: string | null;
+          is_public: boolean;
+          is_company_specific: boolean;
+          is_team_specific: boolean;
+          created_by: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
           name: string;
-          type: string;
-          team_id?: string | null;
-          department_id?: string | null;
-          company_id?: string | null;
-          participants?: string[] | null;
-          created_by: string;
-          last_message?: string | null;
-          last_message_time?: string | null;
+          description?: string | null;
+          company_id?: CompanyCategory | null;
+          team_identifier?: string | null;
+          is_public?: boolean;
+          is_company_specific?: boolean;
+          is_team_specific?: boolean;
+          created_by?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
           name?: string;
-          type?: string;
-          team_id?: string | null;
-          department_id?: string | null;
-          company_id?: string | null;
-          participants?: string[] | null;
-          created_by?: string;
-          last_message?: string | null;
-          last_message_time?: string | null;
+          description?: string | null;
+          company_id?: CompanyCategory | null;
+          team_identifier?: string | null;
+          is_public?: boolean;
+          is_company_specific?: boolean;
+          is_team_specific?: boolean;
+          created_by?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -326,196 +243,111 @@ export type Database = {
       chat_messages: {
         Row: {
           id: string;
-          team_id: string | null;
-          department_id: string | null;
-          company_id: string | null;
-          channel_id: string | null; // For private chats
+          room_id: string;
           user_id: string;
-          message: string;
-          message_type: string; // 'text', 'image', 'file', 'system', 'shift_interest'
-          image_url: string | null;
-          shift_interest: any | null; // JSON object for shift interest data
-          reply_to_id: string | null;
+          content: string;
+          message_type: string;
+          edited_at: string | null;
+          reply_to: string | null;
           created_at: string;
-          updated_at: string;
         };
         Insert: {
           id?: string;
-          team_id?: string | null;
-          department_id?: string | null;
-          company_id?: string | null;
-          channel_id?: string | null;
+          room_id: string;
           user_id: string;
-          message: string;
+          content: string;
           message_type?: string;
-          image_url?: string | null;
-          shift_interest?: any | null;
-          reply_to_id?: string | null;
+          edited_at?: string | null;
+          reply_to?: string | null;
           created_at?: string;
-          updated_at?: string;
         };
         Update: {
           id?: string;
-          team_id?: string | null;
-          department_id?: string | null;
-          company_id?: string | null;
-          channel_id?: string | null;
+          room_id?: string;
           user_id?: string;
-          message?: string;
+          content?: string;
           message_type?: string;
-          image_url?: string | null;
-          shift_interest?: any | null;
-          reply_to_id?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      online_status: {
-        Row: {
-          id: string;
-          user_id: string;
-          is_online: boolean;
-          last_seen: string;
-          current_shift_id: string | null;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          is_online: boolean;
-          last_seen?: string;
-          current_shift_id?: string | null;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          is_online?: boolean;
-          last_seen?: string;
-          current_shift_id?: string | null;
-          updated_at?: string;
-        };
-      };
-      notifications: {
-        Row: {
-          id: string;
-          user_id: string;
-          title: string;
-          message: string;
-          type: string; // 'shift_swap', 'chat', 'system', 'reminder'
-          is_read: boolean;
-          related_id: string | null; // ID to related record
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          title: string;
-          message: string;
-          type: string;
-          is_read?: boolean;
-          related_id?: string | null;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          title?: string;
-          message?: string;
-          type?: string;
-          is_read?: boolean;
-          related_id?: string | null;
+          edited_at?: string | null;
+          reply_to?: string | null;
           created_at?: string;
         };
       };
-      calendar_syncs: {
+      user_preferences: {
         Row: {
           id: string;
           user_id: string;
-          calendar_type: string; // 'google', 'apple'
-          is_enabled: boolean;
-          last_sync: string;
-          sync_frequency: string; // 'hourly', 'daily', 'weekly'
-          access_token: string | null;
-          refresh_token: string | null;
-          calendar_id: string | null; // External calendar ID
+          notifications_enabled: boolean;
+          email_notifications: boolean;
+          push_notifications: boolean;
+          shift_reminders: boolean;
+          reminder_hours: number;
+          theme: string;
+          calendar_sync_enabled: boolean;
+          calendar_sync_provider: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
           user_id: string;
-          calendar_type: string;
-          is_enabled?: boolean;
-          last_sync?: string;
-          sync_frequency?: string;
-          access_token?: string | null;
-          refresh_token?: string | null;
-          calendar_id?: string | null;
+          notifications_enabled?: boolean;
+          email_notifications?: boolean;
+          push_notifications?: boolean;
+          shift_reminders?: boolean;
+          reminder_hours?: number;
+          theme?: string;
+          calendar_sync_enabled?: boolean;
+          calendar_sync_provider?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
           user_id?: string;
-          calendar_type?: string;
-          is_enabled?: boolean;
-          last_sync?: string;
-          sync_frequency?: string;
-          access_token?: string | null;
-          refresh_token?: string | null;
-          calendar_id?: string | null;
+          notifications_enabled?: boolean;
+          email_notifications?: boolean;
+          push_notifications?: boolean;
+          shift_reminders?: boolean;
+          reminder_hours?: number;
+          theme?: string;
+          calendar_sync_enabled?: boolean;
+          calendar_sync_provider?: string | null;
           created_at?: string;
           updated_at?: string;
         };
       };
-      calendar_events: {
+      schedule_cache: {
         Row: {
           id: string;
-          user_id: string;
-          title: string;
-          description: string | null;
-          start_time: string;
-          end_time: string;
-          location: string | null;
-          calendar_type: string; // 'google', 'apple', 'skiftapp'
-          external_event_id: string | null; // ID from external calendar
-          is_synced: boolean;
-          sync_direction: string; // 'inbound', 'outbound', 'bidirectional'
+          company_id: CompanyCategory;
+          team_identifier: string;
+          date: string;
+          shift_code: ShiftCode;
+          start_time: string | null;
+          end_time: string | null;
           created_at: string;
-          updated_at: string;
         };
         Insert: {
           id?: string;
-          user_id: string;
-          title: string;
-          description?: string | null;
-          start_time: string;
-          end_time: string;
-          location?: string | null;
-          calendar_type: string;
-          external_event_id?: string | null;
-          is_synced?: boolean;
-          sync_direction?: string;
+          company_id: CompanyCategory;
+          team_identifier: string;
+          date: string;
+          shift_code: ShiftCode;
+          start_time?: string | null;
+          end_time?: string | null;
           created_at?: string;
-          updated_at?: string;
         };
         Update: {
           id?: string;
-          user_id?: string;
-          title?: string;
-          description?: string | null;
-          start_time?: string;
-          end_time?: string;
-          location?: string | null;
-          calendar_type?: string;
-          external_event_id?: string | null;
-          is_synced?: boolean;
-          sync_direction?: string;
+          company_id?: CompanyCategory;
+          team_identifier?: string;
+          date?: string;
+          shift_code?: ShiftCode;
+          start_time?: string | null;
+          end_time?: string | null;
           created_at?: string;
-          updated_at?: string;
         };
       };
     };
   };
-}; 
+};
