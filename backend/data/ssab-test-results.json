@@ -1,0 +1,103 @@
+{
+  "timestamp": "2025-08-03T10:07:17.082Z",
+  "mainData": {
+    "hasFullCalendar": true,
+    "title": "Skiftscheman i Sverige - SSAB Borlänge 5-skift",
+    "url": "https://skiftschema.se/schema/ssab_5skift/",
+    "teamTabs": [
+      {
+        "text": "Alla",
+        "href": "https://skiftschema.se/schema/ssab_5skift/"
+      },
+      {
+        "text": "A-lag",
+        "href": "https://skiftschema.se/schema/ssab_5skift/A"
+      },
+      {
+        "text": "B-lag",
+        "href": "https://skiftschema.se/schema/ssab_5skift/B"
+      },
+      {
+        "text": "C-lag",
+        "href": "https://skiftschema.se/schema/ssab_5skift/C"
+      },
+      {
+        "text": "D-lag",
+        "href": "https://skiftschema.se/schema/ssab_5skift/D"
+      },
+      {
+        "text": "E-lag",
+        "href": "https://skiftschema.se/schema/ssab_5skift/E"
+      }
+    ],
+    "dateCells": 84,
+    "shiftEvents": 84,
+    "weekHeaders": [
+      "V",
+      "mån",
+      "tis",
+      "ons",
+      "tor",
+      "fre",
+      "lör",
+      "sön"
+    ]
+  },
+  "teamResults": [
+    {
+      "team": "Alla",
+      "url": "https://skiftschema.se/schema/ssab_5skift/",
+      "title": "Skiftscheman i Sverige - SSAB Borlänge 5-skift",
+      "dateCells": 84,
+      "shiftEvents": 0,
+      "schedule": [],
+      "shiftTypes": [],
+      "hasData": false
+    },
+    {
+      "team": "A-lag",
+      "url": "https://skiftschema.se/schema/ssab_5skift/A",
+      "title": "Skiftscheman i Sverige - SSAB Borlänge 5-skift",
+      "dateCells": 84,
+      "shiftEvents": 0,
+      "schedule": [],
+      "shiftTypes": [],
+      "hasData": false
+    },
+    {
+      "team": "B-lag",
+      "url": "https://skiftschema.se/schema/ssab_5skift/B",
+      "title": "Skiftscheman i Sverige - SSAB Borlänge 5-skift",
+      "dateCells": 84,
+      "shiftEvents": 0,
+      "schedule": [],
+      "shiftTypes": [],
+      "hasData": false
+    },
+    {
+      "team": "C-lag",
+      "url": "https://skiftschema.se/schema/ssab_5skift/C",
+      "title": "Skiftscheman i Sverige - SSAB Borlänge 5-skift",
+      "dateCells": 84,
+      "shiftEvents": 0,
+      "schedule": [],
+      "shiftTypes": [],
+      "hasData": false
+    },
+    {
+      "team": "D-lag",
+      "url": "https://skiftschema.se/schema/ssab_5skift/D",
+      "title": "Skiftscheman i Sverige - SSAB Borlänge 5-skift",
+      "dateCells": 84,
+      "shiftEvents": 0,
+      "schedule": [],
+      "shiftTypes": [],
+      "hasData": false
+    }
+  ],
+  "summary": {
+    "totalTeams": 5,
+    "teamsWithData": 0,
+    "totalScheduleEntries": 0
+  }
+}

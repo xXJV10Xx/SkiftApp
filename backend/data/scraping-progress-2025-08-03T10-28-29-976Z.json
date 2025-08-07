@@ -1,0 +1,98 @@
+{
+  "timestamp": "2025-08-03T10:28:29.976Z",
+  "companiesScraped": 9,
+  "totalShifts": 0,
+  "errors": 0,
+  "data": [
+    {
+      "company": "SSAB Borlänge 5-skift",
+      "baseUrl": "https://skiftschema.se/schema/ssab_5skift/",
+      "teams": [],
+      "summary": {
+        "totalTeams": 0,
+        "totalShifts": 0,
+        "shiftTypes": []
+      }
+    },
+    {
+      "company": "SSAB 4+7 skift",
+      "baseUrl": "https://skiftschema.se/schema/ssab_4_7skift/",
+      "teams": [],
+      "summary": {
+        "totalTeams": 0,
+        "totalShifts": 0,
+        "shiftTypes": []
+      }
+    },
+    {
+      "company": "Boliden Aitik Gruva K3",
+      "baseUrl": "https://skiftschema.se/schema/boliden_aitik_gruva_k3/",
+      "teams": [],
+      "summary": {
+        "totalTeams": 0,
+        "totalShifts": 0,
+        "shiftTypes": []
+      }
+    },
+    {
+      "company": "Boliden Aitik K2",
+      "baseUrl": "https://skiftschema.se/schema/boliden_aitik_k2/",
+      "teams": [],
+      "summary": {
+        "totalTeams": 0,
+        "totalShifts": 0,
+        "shiftTypes": []
+      }
+    },
+    {
+      "company": "Boliden Garpenberg",
+      "baseUrl": "https://skiftschema.se/schema/boliden_garpenberg_anrikningverk/",
+      "teams": [],
+      "summary": {
+        "totalTeams": 0,
+        "totalShifts": 0,
+        "shiftTypes": []
+      }
+    },
+    {
+      "company": "Sandvik Mining 2-skift",
+      "baseUrl": "https://skiftschema.se/schema/sandvik_mining_2skift/",
+      "teams": [],
+      "summary": {
+        "totalTeams": 0,
+        "totalShifts": 0,
+        "shiftTypes": []
+      }
+    },
+    {
+      "company": "Sandvik MT 2-skift",
+      "baseUrl": "https://skiftschema.se/schema/sandvik_mt_2skift/",
+      "teams": [],
+      "summary": {
+        "totalTeams": 0,
+        "totalShifts": 0,
+        "shiftTypes": []
+      }
+    },
+    {
+      "company": "Ovako Hofors Stålverk",
+      "baseUrl": "https://skiftschema.se/schema/ovako_hofors_stalverk_4skift/",
+      "teams": [],
+      "summary": {
+        "totalTeams": 0,
+        "totalShifts": 0,
+        "shiftTypes": []
+      }
+    },
+    {
+      "company": "Stora Enso Fors",
+      "baseUrl": "https://skiftschema.se/schema/stora_enso_fors_5skift/",
+      "teams": [],
+      "summary": {
+        "totalTeams": 0,
+        "totalShifts": 0,
+        "shiftTypes": []
+      }
+    }
+  ]
+}

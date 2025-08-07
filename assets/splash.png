@@ -1,1 +1,3 @@
- 
+# This is a placeholder for the splash.png file
+# The actual image should be a PNG file with dimensions 1242x2436 for iOS
+# For now, we'll use the existing icon.png as the splash screen 

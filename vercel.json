@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "name": "ssab-skiftschema-premium",
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    },
+    {
+      "src": "backend/server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/backend/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
+    }
+  ],
+  "env": {
+    "VITE_SUPABASE_URL": "@vite-supabase-url",
+    "VITE_SUPABASE_ANON_KEY": "@vite-supabase-anon-key",
+    "VITE_APP_URL": "@vite-app-url"
+  },
+  "build": {
+    "env": {
+      "VITE_SUPABASE_URL": "@vite-supabase-url",
+      "VITE_SUPABASE_ANON_KEY": "@vite-supabase-anon-key",
+      "VITE_APP_URL": "@vite-app-url"
+    }
+  }
+}

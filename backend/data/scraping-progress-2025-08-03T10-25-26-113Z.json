@@ -1,0 +1,38 @@
+{
+  "timestamp": "2025-08-03T10:25:26.113Z",
+  "companiesScraped": 3,
+  "totalShifts": 0,
+  "errors": 0,
+  "data": [
+    {
+      "company": "SSAB Borlänge 5-skift",
+      "baseUrl": "https://skiftschema.se/schema/ssab_5skift/",
+      "teams": [],
+      "summary": {
+        "totalTeams": 0,
+        "totalShifts": 0,
+        "shiftTypes": []
+      }
+    },
+    {
+      "company": "SSAB 4+7 skift",
+      "baseUrl": "https://skiftschema.se/schema/ssab_4_7skift/",
+      "teams": [],
+      "summary": {
+        "totalTeams": 0,
+        "totalShifts": 0,
+        "shiftTypes": []
+      }
+    },
+    {
+      "company": "Boliden Aitik Gruva K3",
+      "baseUrl": "https://skiftschema.se/schema/boliden_aitik_gruva_k3/",
+      "teams": [],
+      "summary": {
+        "totalTeams": 0,
+        "totalShifts": 0,
+        "shiftTypes": []
+      }
+    }
+  ]
+}

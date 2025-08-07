@@ -1,0 +1,21 @@
+{
+  "totalCompanies": 80,
+  "totalSchedules": 435,
+  "successRate": "42.15%",
+  "errors": 597,
+  "errorRate": "57.85%",
+  "companiesByScheduleCount": {
+    "0": 46,
+    "2": 1,
+    "4": 1,
+    "6": 2,
+    "10": 3,
+    "12": 4,
+    "13": 1,
+    "14": 17,
+    "16": 4,
+    "24": 1
+  },
+  "shiftTypesDistribution": {},
+  "patternsFound": 0
+}

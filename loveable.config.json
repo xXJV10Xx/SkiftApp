@@ -1,0 +1,70 @@
+{
+  "name": "ssab-skiftschema-premium",
+  "description": "Premium shift scheduling application for SSAB Oxelösund teams 31-35",
+  "framework": "react",
+  "buildTool": "vite",
+  "packageManager": "npm",
+  "architecture": {
+    "type": "fullstack",
+    "frontend": {
+      "path": "./frontend",
+      "framework": "react",
+      "buildCommand": "npm run build",
+      "devCommand": "npm run dev",
+      "outputDir": "dist",
+      "port": 3001
+    },
+    "backend": {
+      "path": "./backend",
+      "framework": "express",
+      "startCommand": "node server.js",
+      "port": 3002
+    }
+  },
+  "database": {
+    "type": "supabase",
+    "schema": "./supabase_schema.sql",
+    "features": [
+      "authentication",
+      "realtime",
+      "storage"
+    ]
+  },
+  "features": [
+    "authentication",
+    "real-time-chat",
+    "subscription-management",
+    "calendar-export",
+    "mobile-responsive",
+    "pwa"
+  ],
+  "environment": {
+    "required": [
+      "VITE_SUPABASE_URL",
+      "VITE_SUPABASE_ANON_KEY"
+    ],
+    "optional": [
+      "VITE_STRIPE_PUBLISHABLE_KEY",
+      "VITE_GOOGLE_ANALYTICS_ID"
+    ]
+  },
+  "deployment": {
+    "platforms": ["vercel", "netlify"],
+    "buildScript": "cd frontend && npm install && npm run build",
+    "staticFiles": "frontend/dist"
+  },
+  "dependencies": {
+    "frontend": [
+      "react",
+      "react-router-dom",
+      "@supabase/supabase-js",
+      "@supabase/auth-ui-react",
+      "lucide-react",
+      "axios"
+    ],
+    "backend": [
+      "express",
+      "cors"
+    ]
+  }
+}

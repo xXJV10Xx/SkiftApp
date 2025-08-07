@@ -5,18 +5,15 @@ import { useAuth } from './AuthContext';
 
 interface ChatMessage {
   id: string;
-  chat_room_id: string;
-  sender_id: string;
+  room_id: string;
+  user_id: string;
   content: string;
   message_type: string;
-  file_url: string | null;
+  edited_at: string | null;
   reply_to: string | null;
-  is_edited: boolean;
   created_at: string;
-  updated_at: string;
   sender?: {
-    first_name: string;
-    last_name: string;
+    full_name: string;
     email: string;
     avatar_url: string | null;
   };
@@ -24,25 +21,16 @@ interface ChatMessage {
 
 interface ChatRoom {
   id: string;
-  company_id: string | null;
-  team_id: string | null;
   name: string;
   description: string | null;
-  type: string;
-  department: string | null;
-  is_private: boolean;
-  auto_join_department: string | null;
-  auto_join_team: boolean;
+  company_id: string | null;
+  team_identifier: string | null;
+  is_public: boolean;
+  is_company_specific: boolean;
+  is_team_specific: boolean;
   created_by: string | null;
   created_at: string;
   updated_at: string;
-  companies?: {
-    name: string;
-  };
-  teams?: {
-    name: string;
-    color: string;
-  };
 }
 
 interface ChatMember {
@@ -86,45 +74,30 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [channel, setChannel] = useState<RealtimeChannel | null>(null);
 
-  // Fetch chat rooms user is member of
+  // Fetch accessible chat rooms
   const fetchChatRooms = async () => {
     if (!user) return;
 
     try {
       setLoading(true);
       
+      // Get user's profile to know their company and team
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('company_id, selected_team')
+        .eq('id', user.id)
+        .single();
+
+      if (!profile) return;
+
+      // Fetch public rooms, company rooms, and team rooms
       const { data, error } = await supabase
-        .from('chat_room_members')
-        .select(`
-          chat_rooms (
-            id,
-            company_id,
-            team_id,
-            name,
-            description,
-            type,
-            department,
-            is_private,
-            auto_join_department,
-            auto_join_team,
-            created_by,
-            created_at,
-            updated_at,
-            companies (
-              name
-            ),
-            teams (
-              name,
-              color
-            )
-          )
-        `)
-        .eq('employee_id', user.id);
+        .from('chat_rooms')
+        .select('*')
+        .or(`is_public.eq.true,and(is_company_specific.eq.true,company_id.eq.${profile.company_id}),and(is_team_specific.eq.true,company_id.eq.${profile.company_id},team_identifier.eq.${profile.selected_team})`);
 
       if (error) throw error;
-
-      const rooms = data?.map(item => item.chat_rooms).filter(Boolean) as ChatRoom[];
-      setChatRooms(rooms || []);
+      setChatRooms(data || []);
     } catch (error) {
       console.error('Error fetching chat rooms:', error);
     } finally {
@@ -136,17 +109,16 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchMessages = async (roomId: string) => {
     try {
       const { data, error } = await supabase
-        .from('messages')
+        .from('chat_messages')
         .select(`
           *,
-          sender:employees!sender_id (
-            first_name,
-            last_name,
+          sender:profiles!user_id (
+            full_name,
             email,
             avatar_url
           )
         `)
-        .eq('chat_room_id', roomId)
+        .eq('room_id', roomId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
@@ -156,29 +128,11 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // Fetch chat room members
+  // Fetch chat room members (simplified for new schema)
   const fetchChatMembers = async (roomId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('chat_room_members')
-        .select(`
-          *,
-          employees (
-            first_name,
-            last_name,
-            email,
-            avatar_url,
-            department,
-            position
-          )
-        `)
-        .eq('chat_room_id', roomId);
-
-      if (error) throw error;
-      setChatMembers(data || []);
-    } catch (error) {
-      console.error('Error fetching chat members:', error);
-    }
+    // Since we use RLS policies, we can't directly query members
+    // Just set empty for now - could be enhanced later
+    setChatMembers([]);
   };
 
   // Send message
@@ -187,10 +141,10 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       const { error } = await supabase
-        .from('messages')
+        .from('chat_messages')
         .insert({
-          chat_room_id: currentChatRoom.id,
-          sender_id: user.id,
+          room_id: currentChatRoom.id,
+          user_id: user.id,
           content,
           message_type: messageType
         });
@@ -202,48 +156,18 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // Join chat room
+  // Join chat room (simplified - just select the room)
   const joinChatRoom = async (roomId: string) => {
-    if (!user) return;
-
-    try {
-      const { error } = await supabase
-        .from('chat_room_members')
-        .insert({
-          chat_room_id: roomId,
-          employee_id: user.id,
-          role: 'member'
-        });
-
-      if (error) throw error;
-      await fetchChatRooms();
-    } catch (error) {
-      console.error('Error joining chat room:', error);
-      throw error;
+    const room = chatRooms.find(r => r.id === roomId);
+    if (room) {
+      setCurrentChatRoom(room);
     }
   };
 
-  // Leave chat room
+  // Leave chat room (simplified - just deselect)
   const leaveChatRoom = async (roomId: string) => {
-    if (!user) return;
-
-    try {
-      const { error } = await supabase
-        .from('chat_room_members')
-        .delete()
-        .eq('chat_room_id', roomId)
-        .eq('employee_id', user.id);
-
-      if (error) throw error;
-      
-      if (currentChatRoom?.id === roomId) {
-        setCurrentChatRoom(null);
-      }
-      
-      await fetchChatRooms();
-    } catch (error) {
-      console.error('Error leaving chat room:', error);
-      throw error;
+    if (currentChatRoom?.id === roomId) {
+      setCurrentChatRoom(null);
     }
   };
 
@@ -255,7 +179,13 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       const { data, error } = await supabase
         .from('chat_rooms')
         .insert({
-          ...roomData,
+          name: roomData.name,
+          description: roomData.description,
+          company_id: roomData.company_id,
+          team_identifier: roomData.team_id,
+          is_public: !roomData.is_private,
+          is_company_specific: roomData.type === 'company' || roomData.type === 'team',
+          is_team_specific: roomData.type === 'team',
           created_by: user.id
         })
         .select()
@@ -263,8 +193,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (error) throw error;
 
-      // Auto-join creator to the room
-      await joinChatRoom(data.id);
+      // Refresh chat rooms
+      await fetchChatRooms();
     } catch (error) {
       console.error('Error creating chat room:', error);
       throw error;
@@ -289,8 +219,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'messages',
-          filter: `chat_room_id=eq.${currentChatRoom.id}`,
+          table: 'chat_messages',
+          filter: `room_id=eq.${currentChatRoom.id}`,
         },
         (payload) => {
           const newMessage = payload.new as ChatMessage;
@@ -302,8 +232,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         {
           event: 'UPDATE',
           schema: 'public',
-          table: 'messages',
-          filter: `chat_room_id=eq.${currentChatRoom.id}`,
+          table: 'chat_messages',
+          filter: `room_id=eq.${currentChatRoom.id}`,
         },
         (payload) => {
           const updatedMessage = payload.new as ChatMessage;

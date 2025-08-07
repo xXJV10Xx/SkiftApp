@@ -1,0 +1,49 @@
+{
+  "companies": [
+    {
+      "name": "SSAB Borlänge 5-skift",
+      "teams": []
+    },
+    {
+      "name": "SSAB 4+7 skift",
+      "teams": []
+    },
+    {
+      "name": "Boliden Aitik Gruva K3",
+      "teams": []
+    },
+    {
+      "name": "Boliden Aitik K2",
+      "teams": []
+    },
+    {
+      "name": "Boliden Garpenberg",
+      "teams": []
+    },
+    {
+      "name": "Sandvik Mining 2-skift",
+      "teams": []
+    },
+    {
+      "name": "Sandvik MT 2-skift",
+      "teams": []
+    },
+    {
+      "name": "Ovako Hofors Stålverk",
+      "teams": []
+    },
+    {
+      "name": "Stora Enso Fors",
+      "teams": []
+    },
+    {
+      "name": "ABB HVC 5-skift",
+      "teams": []
+    }
+  ],
+  "shiftPatterns": {},
+  "metadata": {
+    "extractedAt": "2025-08-03T10:29:01.089Z",
+    "totalCompanies": 10
+  }
+}

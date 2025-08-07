@@ -1,0 +1,44 @@
+{
+  "companies": [
+    {
+      "company": "SSAB Borlänge 5-skift",
+      "baseUrl": "https://skiftschema.se/schema/ssab_5skift/",
+      "teams": [],
+      "summary": {
+        "totalTeams": 0,
+        "totalShifts": 0,
+        "shiftTypes": []
+      }
+    },
+    {
+      "company": "SSAB 4+7 skift",
+      "baseUrl": "https://skiftschema.se/schema/ssab_4_7skift/",
+      "teams": [],
+      "summary": {
+        "totalTeams": 0,
+        "totalShifts": 0,
+        "shiftTypes": []
+      }
+    }
+  ],
+  "patterns": {},
+  "mappingGuide": {
+    "F": {
+      "name": "Förmiddag",
+      "time": "06:00-14:00"
+    },
+    "E": {
+      "name": "Eftermiddag",
+      "time": "14:00-22:00"
+    },
+    "N": {
+      "name": "Natt",
+      "time": "22:00-06:00"
+    },
+    "L": {
+      "name": "Ledigt",
+      "time": null
+    }
+  },
+  "integrationNotes": "Data extracted from skiftschema.se for SSAB teams. Patterns can be integrated into the existing SSAB calculation system."
+}

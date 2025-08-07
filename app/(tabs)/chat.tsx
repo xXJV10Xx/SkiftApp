@@ -62,25 +62,21 @@ export default function ChatScreen() {
     try {
       // Create team chat room
       await createChatRoom({
-        company_id: selectedCompany.id,
-        team_id: selectedTeam,
-        name: `Lag ${selectedTeam} - ${selectedCompany.name}`,
+        name: `Lag ${selectedTeam} - ${selectedCompany.display_name}`,
         description: `Chat för lag ${selectedTeam}`,
+        company_id: selectedCompany.company_id,
+        team_id: selectedTeam,
         type: 'team',
-        department: selectedDepartment,
-        is_private: false,
-        auto_join_team: true
+        is_private: false
       });
 
-      // Create department chat room
+      // Create company chat room
       await createChatRoom({
-        company_id: selectedCompany.id,
-        name: `${selectedDepartment} - ${selectedCompany.name}`,
-        description: `Chat för avdelning ${selectedDepartment}`,
-        type: 'department',
-        department: selectedDepartment,
-        is_private: false,
-        auto_join_department: selectedDepartment
+        name: `${selectedCompany.display_name} - Allmän`,
+        description: `Allmän chat för ${selectedCompany.display_name}`,
+        company_id: selectedCompany.company_id,
+        type: 'company',
+        is_private: false
       });
 
       // Refresh chat rooms
@@ -136,7 +132,7 @@ export default function ChatScreen() {
   };
 
   const renderMessage = ({ item }: { item: any }) => {
-    const isOwnMessage = item.sender_id === user?.id;
+    const isOwnMessage = item.user_id === user?.id;
     const time = new Date(item.created_at).toLocaleTimeString('sv-SE', {
       hour: '2-digit',
       minute: '2-digit',
@@ -150,7 +146,7 @@ export default function ChatScreen() {
         ]}>
           {!isOwnMessage && (
             <Text style={styles.messageAuthor}>
-              {item.sender?.first_name} {item.sender?.last_name}
+              {item.sender?.full_name || 'Okänd användare'}
             </Text>
           )}
           <Text style={[

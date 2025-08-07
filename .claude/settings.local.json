@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git clone:*)",
+      "Bash(node:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run:*)",
+      "Bash(npm test)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(npx:*)",
+      "Bash(yarn add:*)",
+      "Bash(npm:*)",
+      "WebFetch(domain:skiftschema.se)",
+      "Bash(ls:*)",
+      "Bash(timeout 60 npx tsx scrape-all-companies.ts)",
+      "Bash(find:*)",
+      "Bash(timeout 180 npx tsx scrape-known-companies.ts)",
+      "Bash(timeout 600 npx tsx scrape-all-33-companies.ts)",
+      "Bash(timeout 120 npx tsx scrape-skiftschema.ts)",
+      "Bash(timeout 900 npx tsx scrape-33-companies-targeted.ts)",
+      "Bash(timeout 60 npx tsx test-single-company-scrape.ts)",
+      "Bash(timeout 120 npx tsx analyze-skiftschema-structure.ts)",
+      "Bash(timeout 1800 npx tsx scrape-final-33-companies.ts)",
+      "Bash(timeout 120 npx tsx test-ssab-scrape.ts)",
+      "Bash(timeout 300 npx tsx working-company-scraper.ts)",
+      "Bash(cp:*)",
+      "Bash(tsx:*)",
+      "Bash(timeout 1800 npx tsx final-31-companies-accuracy-test.ts)",
+      "Bash(git add:*)",
+      "Bash(git checkout:*)",
+      "Bash(git rm:*)",
+      "Bash(git push:*)",
+      "Bash(rm:*)"
+    ],
+    "deny": []
+  }
+}

@@ -14,6 +14,7 @@ import {
     View,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
+import { signInDemo } from '../../lib/demo-setup';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -58,10 +59,10 @@ export default function LoginScreen() {
     try {
       const { error } = await signInWithGoogle();
       if (error) {
-        Alert.alert('Fel', error.message);
+        Alert.alert('Fel', 'Google-inloggning är inte konfigurerad än. Använd e-post och lösenord istället.');
       }
     } catch (error) {
-      Alert.alert('Fel', 'Ett oväntat fel uppstod');
+      Alert.alert('Fel', 'Google-inloggning är inte tillgänglig just nu. Använd e-post och lösenord.');
     } finally {
       setLoading(false);
     }
@@ -69,6 +70,20 @@ export default function LoginScreen() {
 
   const handleForgotPassword = () => {
     router.push('/auth/forgot-password');
+  };
+
+  const handleDemoLogin = async () => {
+    setLoading(true);
+    try {
+      const { error } = await signInDemo();
+      if (error) {
+        Alert.alert('Fel', 'Kunde inte logga in med demo-kontot. Prova att skapa ett konto istället.');
+      }
+    } catch (error) {
+      Alert.alert('Fel', 'Ett oväntat fel uppstod');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -153,6 +168,15 @@ export default function LoginScreen() {
           >
             <Ionicons name="logo-google" size={20} color="#fff" />
             <Text style={styles.googleButtonText}>Fortsätt med Google</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.googleButton, { backgroundColor: '#28a745' }]}
+            onPress={handleDemoLogin}
+            disabled={loading}
+          >
+            <Ionicons name="person" size={20} color="#fff" />
+            <Text style={styles.googleButtonText}>Demo Inloggning</Text>
           </TouchableOpacity>
 
           <View style={styles.switchContainer}>

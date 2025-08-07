@@ -1,0 +1,27 @@
+[build]
+  base = "frontend"
+  publish = "frontend/dist"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://your-backend-url.vercel.app/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[context.production]
+  environment = { VITE_SUPABASE_URL = "https://your-project.supabase.co", VITE_APP_URL = "https://your-domain.netlify.app" }
+
+[context.deploy-preview]
+  environment = { VITE_SUPABASE_URL = "https://your-project.supabase.co", VITE_APP_URL = "https://deploy-preview-$REVIEW_ID--your-site-name.netlify.app" }
+
+[context.branch-deploy]
+  environment = { VITE_SUPABASE_URL = "https://your-project.supabase.co", VITE_APP_URL = "https://$BRANCH--your-site-name.netlify.app" }

@@ -1,0 +1,183 @@
+# Artillery Load Test Configuration
+config:
+  target: 'http://localhost:3002'
+  phases:
+    # Warm-up phase
+    - duration: 30
+      arrivalRate: 5
+      name: "Warm-up"
+    
+    # Ramp-up phase
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 50
+      name: "Ramp-up load"
+    
+    # Sustained load phase
+    - duration: 120
+      arrivalRate: 50
+      name: "Sustained load"
+    
+    # Peak load phase
+    - duration: 60
+      arrivalRate: 100
+      name: "Peak load"
+    
+    # Cool-down phase
+    - duration: 30
+      arrivalRate: 10
+      name: "Cool-down"
+
+  defaults:
+    headers:
+      'Content-Type': 'application/json'
+      'User-Agent': 'Artillery/LoadTest'
+
+  # Performance thresholds
+  ensure:
+    # 95% of requests should complete within 500ms
+    - p95: 500
+    # 99% of requests should complete within 1000ms
+    - p99: 1000
+    # Error rate should be less than 1%
+    - maxErrorRate: 1
+    # Average response time should be under 200ms
+    - median: 200
+
+  # Environment variables
+  variables:
+    teams:
+      - 31
+      - 32
+      - 33
+      - 34
+      - 35
+    dates:
+      - "2024-01-01"
+      - "2024-06-15"
+      - "2024-12-31"
+
+# Test scenarios
+scenarios:
+  # Health check scenario (20% of traffic)
+  - name: "Health Check"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/health"
+          expect:
+            - statusCode: 200
+            - hasProperty: "status"
+
+  # Get team shifts scenario (40% of traffic)
+  - name: "Get Team Shifts"
+    weight: 40
+    flow:
+      - get:
+          url: "/api/shifts/{{ $randomPick(teams) }}"
+          qs:
+            startDate: "2024-01-01"
+            endDate: "2024-01-07"
+            limit: 10
+          expect:
+            - statusCode: 200
+            - hasProperty: "shifts"
+            - hasProperty: "team"
+
+  # Get day shifts scenario (25% of traffic)
+  - name: "Get Day Shifts"
+    weight: 25
+    flow:
+      - get:
+          url: "/api/day/{{ $randomPick(dates) }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: "shifts"
+            - hasProperty: "date"
+
+  # Get month schedule scenario (10% of traffic)
+  - name: "Get Month Schedule"
+    weight: 10
+    flow:
+      - get:
+          url: "/api/month/2024/1"
+          expect:
+            - statusCode: 200
+            - hasProperty: "shifts"
+            - hasProperty: "statistics"
+
+  # Get next shift scenario (5% of traffic)
+  - name: "Get Next Shift"
+    weight: 5
+    flow:
+      - get:
+          url: "/api/shifts/{{ $randomPick(teams) }}/next"
+          expect:
+            - statusCode: 200
+            - hasProperty: "next_shift"
+
+  # Error handling test scenarios
+  - name: "Error Scenarios"
+    weight: 5
+    flow:
+      # Test invalid team number
+      - get:
+          url: "/api/shifts/30"
+          expect:
+            - statusCode: 400
+            - hasProperty: "error"
+      
+      # Test invalid date format
+      - get:
+          url: "/api/day/invalid-date"
+          expect:
+            - statusCode: 400
+            - hasProperty: "error"
+      
+      # Test non-existent endpoint
+      - get:
+          url: "/api/non-existent"
+          expect:
+            - statusCode: 404
+
+# Custom functions for dynamic data
+functions:
+  randomTeam: |
+    function randomTeam(context, events, done) {
+      const teams = [31, 32, 33, 34, 35];
+      context.vars.randomTeam = teams[Math.floor(Math.random() * teams.length)];
+      return done();
+    }
+
+  randomDate: |
+    function randomDate(context, events, done) {
+      const dates = ['2024-01-01', '2024-06-15', '2024-12-31'];
+      context.vars.randomDate = dates[Math.floor(Math.random() * dates.length)];
+      return done();
+    }
+
+# Plugins for additional metrics
+plugins:
+  # Metrics plugin for detailed performance data
+  metrics-by-endpoint:
+    # Track metrics by endpoint
+    useOnlyRequestNames: true
+    
+  # Plugin to track custom metrics
+  publish-metrics:
+    type: "json"
+    output: "./tests/performance/results.json"
+
+# Before/After hooks
+before:
+  flow:
+    - log: "Starting load test..."
+    - think: 2
+
+after:
+  flow:
+    - log: "Load test completed!"
+    - function: "generateReport"
+
+# Additional configuration
+processor: "./tests/performance/custom-functions.js"

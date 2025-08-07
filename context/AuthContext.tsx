@@ -80,13 +80,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: 'skiftappen://auth/callback',
-      },
-    });
-    return { error };
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'skiftappen://auth/callback',
+        },
+      });
+      return { error };
+    } catch (error) {
+      console.error('Google OAuth error:', error);
+      return { 
+        error: { 
+          message: 'Google-inloggning är inte konfigurerad än. Använd e-post och lösenord istället.' 
+        } 
+      };
+    }
   };
 
   const signOut = async () => {

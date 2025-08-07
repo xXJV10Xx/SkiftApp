@@ -1,0 +1,3193 @@
+{
+  "timestamp": "2025-08-03T08:42:49.714Z",
+  "scrapedCount": 140,
+  "totalUrls": 1032,
+  "companies": 80,
+  "allSchedules": [
+    {
+      "company": "ABB HVC 5-skift",
+      "companyId": "abb_hvc_5skift",
+      "shifts": [
+        "main",
+        "main",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "main",
+        "main",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "schedules": [
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:36:31.806Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/abb_hvc_5skift/",
+            "company": "ABB HVC 5-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:36:33.949Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/abb_hvc_5skift/",
+            "company": "ABB HVC 5-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:36:36.003Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/abb_hvc_5skift/1",
+            "company": "ABB HVC 5-skift",
+            "shift": "1",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:36:38.210Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/abb_hvc_5skift/2",
+            "company": "ABB HVC 5-skift",
+            "shift": "2",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:36:40.401Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/abb_hvc_5skift/3",
+            "company": "ABB HVC 5-skift",
+            "shift": "3",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:36:42.835Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/abb_hvc_5skift/4",
+            "company": "ABB HVC 5-skift",
+            "shift": "4",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:36:44.842Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/abb_hvc_5skift/5",
+            "company": "ABB HVC 5-skift",
+            "shift": "5",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:36:46.898Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/abb_hvc_5skift/",
+            "company": "ABB HVC 5-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:36:49.247Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/abb_hvc_5skift/",
+            "company": "ABB HVC 5-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:36:51.766Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/abb_hvc_5skift/1",
+            "company": "ABB HVC 5-skift",
+            "shift": "1",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:36:53.827Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/abb_hvc_5skift/2",
+            "company": "ABB HVC 5-skift",
+            "shift": "2",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:36:55.860Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/abb_hvc_5skift/3",
+            "company": "ABB HVC 5-skift",
+            "shift": "3",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:36:58.214Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/abb_hvc_5skift/4",
+            "company": "ABB HVC 5-skift",
+            "shift": "4",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:00.743Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/abb_hvc_5skift/5",
+            "company": "ABB HVC 5-skift",
+            "shift": "5",
+            "scheduleLength": 0
+          }
+        }
+      ],
+      "totalShifts": 14
+    },
+    {
+      "company": "Aga Avesta 6-skift",
+      "companyId": "aga_avesta_6skift",
+      "shifts": [
+        "main",
+        "main",
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "main",
+        "main",
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+      ],
+      "schedules": [
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:03.138Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/aga_avesta_6skift/",
+            "company": "Aga Avesta 6-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:05.209Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/aga_avesta_6skift/",
+            "company": "Aga Avesta 6-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:07.482Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/aga_avesta_6skift/A",
+            "company": "Aga Avesta 6-skift",
+            "shift": "A",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:09.512Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/aga_avesta_6skift/B",
+            "company": "Aga Avesta 6-skift",
+            "shift": "B",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:12.172Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/aga_avesta_6skift/C",
+            "company": "Aga Avesta 6-skift",
+            "shift": "C",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:14.512Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/aga_avesta_6skift/D",
+            "company": "Aga Avesta 6-skift",
+            "shift": "D",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:16.717Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/aga_avesta_6skift/E",
+            "company": "Aga Avesta 6-skift",
+            "shift": "E",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:18.825Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/aga_avesta_6skift/F",
+            "company": "Aga Avesta 6-skift",
+            "shift": "F",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:21.352Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/aga_avesta_6skift/",
+            "company": "Aga Avesta 6-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:23.578Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/aga_avesta_6skift/",
+            "company": "Aga Avesta 6-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:25.956Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/aga_avesta_6skift/A",
+            "company": "Aga Avesta 6-skift",
+            "shift": "A",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:28.152Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/aga_avesta_6skift/B",
+            "company": "Aga Avesta 6-skift",
+            "shift": "B",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:30.359Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/aga_avesta_6skift/C",
+            "company": "Aga Avesta 6-skift",
+            "shift": "C",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:32.498Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/aga_avesta_6skift/D",
+            "company": "Aga Avesta 6-skift",
+            "shift": "D",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:35.748Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/aga_avesta_6skift/E",
+            "company": "Aga Avesta 6-skift",
+            "shift": "E",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:41.468Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/aga_avesta_6skift/F",
+            "company": "Aga Avesta 6-skift",
+            "shift": "F",
+            "scheduleLength": 0
+          }
+        }
+      ],
+      "totalShifts": 16
+    },
+    {
+      "company": "Arctic Paper Grycksbo 3-skift",
+      "companyId": "arctic_paper_grycksbo_3skift",
+      "shifts": [
+        "main",
+        "main",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "main",
+        "main",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "schedules": [
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:46.290Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/arctic_paper_grycksbo_3skift/",
+            "company": "Arctic Paper Grycksbo 3-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:49.343Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/arctic_paper_grycksbo_3skift/",
+            "company": "Arctic Paper Grycksbo 3-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:52.393Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/arctic_paper_grycksbo_3skift/1",
+            "company": "Arctic Paper Grycksbo 3-skift",
+            "shift": "1",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:55.333Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/arctic_paper_grycksbo_3skift/2",
+            "company": "Arctic Paper Grycksbo 3-skift",
+            "shift": "2",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:37:58.029Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/arctic_paper_grycksbo_3skift/3",
+            "company": "Arctic Paper Grycksbo 3-skift",
+            "shift": "3",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:01.503Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/arctic_paper_grycksbo_3skift/4",
+            "company": "Arctic Paper Grycksbo 3-skift",
+            "shift": "4",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:04.188Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/arctic_paper_grycksbo_3skift/5",
+            "company": "Arctic Paper Grycksbo 3-skift",
+            "shift": "5",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:06.954Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/arctic_paper_grycksbo_3skift/",
+            "company": "Arctic Paper Grycksbo 3-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:09.977Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/arctic_paper_grycksbo_3skift/",
+            "company": "Arctic Paper Grycksbo 3-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:12.749Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/arctic_paper_grycksbo_3skift/1",
+            "company": "Arctic Paper Grycksbo 3-skift",
+            "shift": "1",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:15.617Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/arctic_paper_grycksbo_3skift/2",
+            "company": "Arctic Paper Grycksbo 3-skift",
+            "shift": "2",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:18.401Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/arctic_paper_grycksbo_3skift/3",
+            "company": "Arctic Paper Grycksbo 3-skift",
+            "shift": "3",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:20.949Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/arctic_paper_grycksbo_3skift/4",
+            "company": "Arctic Paper Grycksbo 3-skift",
+            "shift": "4",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:23.561Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/arctic_paper_grycksbo_3skift/5",
+            "company": "Arctic Paper Grycksbo 3-skift",
+            "shift": "5",
+            "scheduleLength": 0
+          }
+        }
+      ],
+      "totalShifts": 14
+    },
+    {
+      "company": "Avesta 6-veckors nattschema",
+      "companyId": "avesta_6v_nattschema",
+      "shifts": [
+        "main",
+        "main",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "main",
+        "main",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "schedules": [
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:26.185Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/avesta_6v_nattschema/",
+            "company": "Avesta 6-veckors nattschema",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:28.856Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/avesta_6v_nattschema/",
+            "company": "Avesta 6-veckors nattschema",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:31.737Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/avesta_6v_nattschema/1",
+            "company": "Avesta 6-veckors nattschema",
+            "shift": "1",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:34.383Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/avesta_6v_nattschema/2",
+            "company": "Avesta 6-veckors nattschema",
+            "shift": "2",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:37.062Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/avesta_6v_nattschema/3",
+            "company": "Avesta 6-veckors nattschema",
+            "shift": "3",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:39.785Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/avesta_6v_nattschema/4",
+            "company": "Avesta 6-veckors nattschema",
+            "shift": "4",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:42.824Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/avesta_6v_nattschema/5",
+            "company": "Avesta 6-veckors nattschema",
+            "shift": "5",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:45.848Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/avesta_6v_nattschema/6",
+            "company": "Avesta 6-veckors nattschema",
+            "shift": "6",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:48.857Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/avesta_6v_nattschema/",
+            "company": "Avesta 6-veckors nattschema",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:52.142Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/avesta_6v_nattschema/",
+            "company": "Avesta 6-veckors nattschema",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:55.195Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/avesta_6v_nattschema/1",
+            "company": "Avesta 6-veckors nattschema",
+            "shift": "1",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:38:58.056Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/avesta_6v_nattschema/2",
+            "company": "Avesta 6-veckors nattschema",
+            "shift": "2",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:00.766Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/avesta_6v_nattschema/3",
+            "company": "Avesta 6-veckors nattschema",
+            "shift": "3",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:03.511Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/avesta_6v_nattschema/4",
+            "company": "Avesta 6-veckors nattschema",
+            "shift": "4",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:06.096Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/avesta_6v_nattschema/5",
+            "company": "Avesta 6-veckors nattschema",
+            "shift": "5",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:08.752Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/avesta_6v_nattschema/6",
+            "company": "Avesta 6-veckors nattschema",
+            "shift": "6",
+            "scheduleLength": 0
+          }
+        }
+      ],
+      "totalShifts": 16
+    },
+    {
+      "company": "Barilla Sverige Filipstad",
+      "companyId": "barilla_sverige_filipstad",
+      "shifts": [
+        "main",
+        "main",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "main",
+        "main",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "schedules": [
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:11.454Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/barilla_sverige_filipstad/",
+            "company": "Barilla Sverige Filipstad",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:13.919Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/barilla_sverige_filipstad/",
+            "company": "Barilla Sverige Filipstad",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:16.495Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/barilla_sverige_filipstad/1",
+            "company": "Barilla Sverige Filipstad",
+            "shift": "1",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:19.051Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/barilla_sverige_filipstad/2",
+            "company": "Barilla Sverige Filipstad",
+            "shift": "2",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:21.652Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/barilla_sverige_filipstad/3",
+            "company": "Barilla Sverige Filipstad",
+            "shift": "3",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:24.331Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/barilla_sverige_filipstad/4",
+            "company": "Barilla Sverige Filipstad",
+            "shift": "4",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:27.055Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/barilla_sverige_filipstad/5",
+            "company": "Barilla Sverige Filipstad",
+            "shift": "5",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:29.799Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/barilla_sverige_filipstad/",
+            "company": "Barilla Sverige Filipstad",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:32.761Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/barilla_sverige_filipstad/",
+            "company": "Barilla Sverige Filipstad",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:35.454Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/barilla_sverige_filipstad/1",
+            "company": "Barilla Sverige Filipstad",
+            "shift": "1",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:38.157Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/barilla_sverige_filipstad/2",
+            "company": "Barilla Sverige Filipstad",
+            "shift": "2",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:40.769Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/barilla_sverige_filipstad/3",
+            "company": "Barilla Sverige Filipstad",
+            "shift": "3",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:43.306Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/barilla_sverige_filipstad/4",
+            "company": "Barilla Sverige Filipstad",
+            "shift": "4",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:45.800Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/barilla_sverige_filipstad/5",
+            "company": "Barilla Sverige Filipstad",
+            "shift": "5",
+            "scheduleLength": 0
+          }
+        }
+      ],
+      "totalShifts": 14
+    },
+    {
+      "company": "Billerudkorsnäs Gruvön Grums 3-skift",
+      "companyId": "billerudkorsnas_gruvon_grums",
+      "shifts": [
+        "main",
+        "main",
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "main",
+        "main",
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "schedules": [
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:48.281Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/billerudkorsnas_gruvon_grums/",
+            "company": "Billerudkorsnäs Gruvön Grums 3-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:50.760Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/billerudkorsnas_gruvon_grums/",
+            "company": "Billerudkorsnäs Gruvön Grums 3-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:53.576Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/billerudkorsnas_gruvon_grums/A",
+            "company": "Billerudkorsnäs Gruvön Grums 3-skift",
+            "shift": "A",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:55.992Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/billerudkorsnas_gruvon_grums/B",
+            "company": "Billerudkorsnäs Gruvön Grums 3-skift",
+            "shift": "B",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:39:59.057Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/billerudkorsnas_gruvon_grums/C",
+            "company": "Billerudkorsnäs Gruvön Grums 3-skift",
+            "shift": "C",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:01.629Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/billerudkorsnas_gruvon_grums/D",
+            "company": "Billerudkorsnäs Gruvön Grums 3-skift",
+            "shift": "D",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:04.179Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/billerudkorsnas_gruvon_grums/E",
+            "company": "Billerudkorsnäs Gruvön Grums 3-skift",
+            "shift": "E",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:06.762Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/billerudkorsnas_gruvon_grums/",
+            "company": "Billerudkorsnäs Gruvön Grums 3-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:09.763Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/billerudkorsnas_gruvon_grums/",
+            "company": "Billerudkorsnäs Gruvön Grums 3-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:12.208Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/billerudkorsnas_gruvon_grums/A",
+            "company": "Billerudkorsnäs Gruvön Grums 3-skift",
+            "shift": "A",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:14.812Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/billerudkorsnas_gruvon_grums/B",
+            "company": "Billerudkorsnäs Gruvön Grums 3-skift",
+            "shift": "B",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:17.338Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/billerudkorsnas_gruvon_grums/C",
+            "company": "Billerudkorsnäs Gruvön Grums 3-skift",
+            "shift": "C",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:19.944Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/billerudkorsnas_gruvon_grums/D",
+            "company": "Billerudkorsnäs Gruvön Grums 3-skift",
+            "shift": "D",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:22.363Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/billerudkorsnas_gruvon_grums/E",
+            "company": "Billerudkorsnäs Gruvön Grums 3-skift",
+            "shift": "E",
+            "scheduleLength": 0
+          }
+        }
+      ],
+      "totalShifts": 14
+    },
+    {
+      "company": "Boliden Aitik Gruva K3",
+      "companyId": "boliden_aitik_gruva_k3",
+      "shifts": [
+        "main",
+        "main",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "main",
+        "main",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "schedules": [
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:24.940Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_gruva_k3/",
+            "company": "Boliden Aitik Gruva K3",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:27.386Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_gruva_k3/",
+            "company": "Boliden Aitik Gruva K3",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:29.830Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_gruva_k3/1",
+            "company": "Boliden Aitik Gruva K3",
+            "shift": "1",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:32.492Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_gruva_k3/2",
+            "company": "Boliden Aitik Gruva K3",
+            "shift": "2",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:35.084Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_gruva_k3/3",
+            "company": "Boliden Aitik Gruva K3",
+            "shift": "3",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:37.671Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_gruva_k3/4",
+            "company": "Boliden Aitik Gruva K3",
+            "shift": "4",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:40.250Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_gruva_k3/5",
+            "company": "Boliden Aitik Gruva K3",
+            "shift": "5",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:42.611Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_gruva_k3/",
+            "company": "Boliden Aitik Gruva K3",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:45.182Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_gruva_k3/",
+            "company": "Boliden Aitik Gruva K3",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:47.624Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_gruva_k3/1",
+            "company": "Boliden Aitik Gruva K3",
+            "shift": "1",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:50.022Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_gruva_k3/2",
+            "company": "Boliden Aitik Gruva K3",
+            "shift": "2",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:52.482Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_gruva_k3/3",
+            "company": "Boliden Aitik Gruva K3",
+            "shift": "3",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:55.146Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_gruva_k3/4",
+            "company": "Boliden Aitik Gruva K3",
+            "shift": "4",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:40:57.763Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_gruva_k3/5",
+            "company": "Boliden Aitik Gruva K3",
+            "shift": "5",
+            "scheduleLength": 0
+          }
+        }
+      ],
+      "totalShifts": 14
+    },
+    {
+      "company": "Boliden Aitik Tillredning K2",
+      "companyId": "boliden_aitik_k2",
+      "shifts": [
+        "main",
+        "main",
+        "1",
+        "2",
+        "3",
+        "main",
+        "main",
+        "1",
+        "2",
+        "3"
+      ],
+      "schedules": [
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:00.671Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_k2/",
+            "company": "Boliden Aitik Tillredning K2",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:03.449Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_k2/",
+            "company": "Boliden Aitik Tillredning K2",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:06.763Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_k2/1",
+            "company": "Boliden Aitik Tillredning K2",
+            "shift": "1",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:09.549Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_k2/2",
+            "company": "Boliden Aitik Tillredning K2",
+            "shift": "2",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:11.987Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_k2/3",
+            "company": "Boliden Aitik Tillredning K2",
+            "shift": "3",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:14.505Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_k2/",
+            "company": "Boliden Aitik Tillredning K2",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:17.127Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_k2/",
+            "company": "Boliden Aitik Tillredning K2",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:19.607Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_k2/1",
+            "company": "Boliden Aitik Tillredning K2",
+            "shift": "1",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:22.144Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_k2/2",
+            "company": "Boliden Aitik Tillredning K2",
+            "shift": "2",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:25.161Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_aitik_k2/3",
+            "company": "Boliden Aitik Tillredning K2",
+            "shift": "3",
+            "scheduleLength": 0
+          }
+        }
+      ],
+      "totalShifts": 10
+    },
+    {
+      "company": "Boliden Garpenberg Anrikningsverk",
+      "companyId": "boliden_garpenberg_anrikningverk",
+      "shifts": [
+        "main",
+        "main",
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "main",
+        "main",
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "schedules": [
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:27.644Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_garpenberg_anrikningverk/",
+            "company": "Boliden Garpenberg Anrikningsverk",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:30.236Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_garpenberg_anrikningverk/",
+            "company": "Boliden Garpenberg Anrikningsverk",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:32.754Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_garpenberg_anrikningverk/A",
+            "company": "Boliden Garpenberg Anrikningsverk",
+            "shift": "A",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:35.774Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_garpenberg_anrikningverk/B",
+            "company": "Boliden Garpenberg Anrikningsverk",
+            "shift": "B",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:38.799Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_garpenberg_anrikningverk/C",
+            "company": "Boliden Garpenberg Anrikningsverk",
+            "shift": "C",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:41.750Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_garpenberg_anrikningverk/D",
+            "company": "Boliden Garpenberg Anrikningsverk",
+            "shift": "D",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:44.498Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_garpenberg_anrikningverk/E",
+            "company": "Boliden Garpenberg Anrikningsverk",
+            "shift": "E",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:47.530Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_garpenberg_anrikningverk/",
+            "company": "Boliden Garpenberg Anrikningsverk",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:51.543Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_garpenberg_anrikningverk/",
+            "company": "Boliden Garpenberg Anrikningsverk",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:55.062Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_garpenberg_anrikningverk/A",
+            "company": "Boliden Garpenberg Anrikningsverk",
+            "shift": "A",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:41:58.818Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_garpenberg_anrikningverk/B",
+            "company": "Boliden Garpenberg Anrikningsverk",
+            "shift": "B",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:42:02.603Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_garpenberg_anrikningverk/C",
+            "company": "Boliden Garpenberg Anrikningsverk",
+            "shift": "C",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:42:06.120Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_garpenberg_anrikningverk/D",
+            "company": "Boliden Garpenberg Anrikningsverk",
+            "shift": "D",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:42:09.514Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/boliden_garpenberg_anrikningverk/E",
+            "company": "Boliden Garpenberg Anrikningsverk",
+            "shift": "E",
+            "scheduleLength": 0
+          }
+        }
+      ],
+      "totalShifts": 14
+    },
+    {
+      "company": "Borlänge Energi 5-skift",
+      "companyId": "borlange_energi",
+      "shifts": [
+        "main",
+        "main",
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "main",
+        "main",
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "schedules": [
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:42:12.550Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/borlange_energi/",
+            "company": "Borlänge Energi 5-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:42:15.307Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/borlange_energi/",
+            "company": "Borlänge Energi 5-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:42:18.322Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/borlange_energi/A",
+            "company": "Borlänge Energi 5-skift",
+            "shift": "A",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:42:20.805Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/borlange_energi/B",
+            "company": "Borlänge Energi 5-skift",
+            "shift": "B",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:42:23.720Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/borlange_energi/C",
+            "company": "Borlänge Energi 5-skift",
+            "shift": "C",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:42:26.181Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/borlange_energi/D",
+            "company": "Borlänge Energi 5-skift",
+            "shift": "D",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:42:29.199Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/borlange_energi/E",
+            "company": "Borlänge Energi 5-skift",
+            "shift": "E",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:42:32.146Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/borlange_energi/",
+            "company": "Borlänge Energi 5-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:42:34.952Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/borlange_energi/",
+            "company": "Borlänge Energi 5-skift",
+            "shift": "main",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:42:37.469Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/borlange_energi/A",
+            "company": "Borlänge Energi 5-skift",
+            "shift": "A",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:42:40.265Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/borlange_energi/B",
+            "company": "Borlänge Energi 5-skift",
+            "shift": "B",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:42:42.732Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/borlange_energi/C",
+            "company": "Borlänge Energi 5-skift",
+            "shift": "C",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:42:45.658Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/borlange_energi/D",
+            "company": "Borlänge Energi 5-skift",
+            "shift": "D",
+            "scheduleLength": 0
+          }
+        },
+        {
+          "schedule": [],
+          "metadata": {
+            "scrapedAt": "2025-08-03T08:42:48.699Z",
+            "shiftTypes": [],
+            "patterns": [],
+            "weekHeaders": [
+              "mån",
+              "tis",
+              "ons",
+              "tor",
+              "fre",
+              "lör",
+              "sön"
+            ],
+            "url": "https://skiftschema.se/schema/borlange_energi/E",
+            "company": "Borlänge Energi 5-skift",
+            "shift": "E",
+            "scheduleLength": 0
+          }
+        }
+      ],
+      "totalShifts": 14
+    }
+  ],
+  "errors": [],
+  "statistics": {
+    "totalCompanies": 80,
+    "totalSchedules": 140,
+    "successRate": "13.57%",
+    "errors": 0,
+    "errorRate": "0.00%",
+    "companiesByScheduleCount": {
+      "10": 1,
+      "14": 7,
+      "16": 2
+    },
+    "shiftTypesDistribution": {},
+    "patternsFound": 0
+  }
+}

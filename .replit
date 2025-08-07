@@ -1,0 +1,49 @@
+modules = ["nodejs-18", "web"]
+
+[deployment]
+type = "static"
+build = ["sh", "-c", "cd frontend && npm install && npm run build"]
+publicDir = "frontend/dist"
+
+[[ports]]
+localPort = 3001
+externalPort = 80
+
+[[ports]]
+localPort = 3002
+externalPort = 3002
+
+[env]
+VITE_APP_URL = "https://$REPL_SLUG.$REPL_OWNER.repl.co"
+
+[nix]
+channel = "stable-22_11"
+
+[gitHubImport]
+requiredFiles = [".replit", "replit.nix"]
+
+[languages]
+
+[languages.javascript]
+pattern = "**/{*.js,*.jsx,*.ts,*.tsx}"
+
+[languages.javascript.languageServer]
+start = "typescript-language-server --stdio"
+
+[debugger]
+support = true
+
+[debugger.interactive]
+transport = "localhost:0"
+startCommand = ["dap-node"]
+
+[debugger.interactive.initializeMessage]
+command = "initialize"
+type = "request"
+
+[debugger.interactive.launchMessage]
+command = "launch"
+type = "request"
+program = "./index.js"
+stopOnEntry = false
+console = "externalTerminal"
