@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "name": "skiftapp-corrected-ssab",
   "builds": [
     {
       "src": "frontend/package.json",
@@ -14,14 +13,10 @@
       "use": "@vercel/node"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/backend/server.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/$1"
+      "source": "/api/(.*)",
+      "destination": "/backend/server.js"
     }
   ],
   "env": {
@@ -38,11 +33,6 @@
       "VITE_APP_URL": "https://skiftapp-corrected-ssab.vercel.app",
       "EXPO_PUBLIC_SUPABASE_URL": "https://fsefeherdbtsddqimjco.supabase.co",
       "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzZWZlaGVyZGJ0c2RkcWltamNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3ODUwNDcsImV4cCI6MjA2ODM2MTA0N30.YEltOJVQU6Ox5YrkZJGzbMiojyQClkFwG-mBPilIAfk"
-    }
-  },
-  "functions": {
-    "backend/server.js": {
-      "runtime": "nodejs20.x"
     }
   },
   "headers": [
